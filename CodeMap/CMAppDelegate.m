@@ -50,81 +50,8 @@
     }
     
     for (CMNode* node in parser.nodes) {
-        NSLog(node.description);
+        NSLog([node description]);
     }
-}
-
-- (NSArray*)parseLinesFromCodePart:(NSMutableString*)codeRead
-{
-    NSError* error = NULL;
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@".*\\n" options:NSRegularExpressionCaseInsensitive error:&error];
-    
-    NSArray* lineLocations = [regex matchesInString:codeRead options:NSMatchingProgress range:NSMakeRange(0, [codeRead length])];
-    
-    NSMutableArray* lines = [[NSMutableArray alloc] init];
-    int lenToRemove = 0;
-    for (NSTextCheckingResult* result in lineLocations) {
-        NSMutableString* line = [[codeRead substringWithRange:result.range] mutableCopy];
-        [lines addObject:line];
-        lenToRemove += result.range.length;//this is fixed :D
-    }
-    
-    [codeRead replaceCharactersInRange:NSMakeRange(0, lenToRemove) withString:@""];
-    
-    return lines;
-}
-
-- (void)parseLineOfCode:(NSMutableString*)lineOfCode
-{
-    NSError* error = NULL;
-    NSRegularExpression* quoteFinder = [NSRegularExpression regularExpressionWithPattern:@"\\\\{0}\"" options:NSRegularExpressionCaseInsensitive error:&error];
-    NSTextCheckingResult* quoteSearchResult = [quoteFinder firstMatchInString:lineOfCode options:NSMatchingProgress range:NSMakeRange(0, [lineOfCode length])];
-    
-    while (quoteSearchResult) {
-        [self addCodeNode:[lineOfCode substringToIndex:quoteSearchResult.range.location]];
-        [lineOfCode replaceCharactersInRange:NSMakeRange(0, quoteSearchResult.range.location) withString:@""];
-        [self removeFirstCharacter:lineOfCode];
-        
-        NSRange stringEndPosition = [quoteFinder firstMatchInString:lineOfCode options:NSMatchingProgress range:NSMakeRange(0, [lineOfCode length])].range;
-        [self addStringNode:[lineOfCode substringToIndex:stringEndPosition.location]];
-        [lineOfCode replaceCharactersInRange:NSMakeRange(0, stringEndPosition.location) withString:@""];
-        [self removeFirstCharacter:lineOfCode];
-        
-        quoteSearchResult = [quoteFinder firstMatchInString:lineOfCode options:NSMatchingProgress range:NSMakeRange(0, [lineOfCode length])];
-    }
-    
-    NSRange commentStart = [lineOfCode rangeOfString:@"//"];
-    if (commentStart.location != NSNotFound) {
-        [self addCodeNode:[lineOfCode substringToIndex:commentStart.location]];
-        [self addCommentNode:[lineOfCode substringFromIndex:commentStart.location]];
-    }
-}
-
-- (void)removeAllWhitespace:(NSMutableString*)code
-{
-    NSError* error = NULL;
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"\\s" options:NSRegularExpressionCaseInsensitive error:&error];
-    [regex replaceMatchesInString:code options:NSMatchingProgress range:NSMakeRange(0, [code length]) withTemplate:@""];
-}
-
-- (void)addCodeNode:(NSString*)code
-{
-    [self.nodes addObject:[[CMCodeNode alloc] initWithCode:code]];
-}
-
-- (void)addStringNode:(NSString*)string
-{
-    [self.nodes addObject:[[CMStringNode alloc] initWithCode:string]];
-}
-
-- (void)addCommentNode:(NSString*)comment
-{
-    [self.nodes addObject:[[CMCommentNode alloc] initWithCode:comment]];
-}
-
-- (void)removeFirstCharacter:(NSMutableString*)string
-{
-    [string replaceCharactersInRange:NSMakeRange(0, 1) withString:@""];
 }
 
 @end

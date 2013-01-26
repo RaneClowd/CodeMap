@@ -17,9 +17,4 @@
     return self;
 }
 
-- (NSString *)description
-{
-    return @"base class node";
-}
-
 @end

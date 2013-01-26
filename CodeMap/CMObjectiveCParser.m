@@ -69,29 +69,37 @@
     return [regex matchesInString:code options:NSMatchingProgress range:NSMakeRange(0, [code length])];
 }
 
-- (void)parseLineOfCode:(NSMutableString*)lineOfCode
+- (NSTextCheckingResult*)findFirstLocationOfPattern:(NSString*)pattern inCode:(NSString*)code
 {
     NSError* error = NULL;
-    NSRegularExpression* quoteFinder = [NSRegularExpression regularExpressionWithPattern:@"\\\\{0}\"" options:NSRegularExpressionCaseInsensitive error:&error];
-    NSTextCheckingResult* quoteSearchResult = [quoteFinder firstMatchInString:lineOfCode options:NSMatchingProgress range:NSMakeRange(0, [lineOfCode length])];
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
+    
+    return [regex firstMatchInString:code options:NSMatchingProgress range:NSMakeRange(0, [code length])];
+}
+
+- (void)parseLineOfCode:(NSMutableString*)lineOfCode
+{
+    NSTextCheckingResult* quoteSearchResult = [self findFirstLocationOfPattern:@"\\\\{0}\"" inCode:lineOfCode];
     
     while (quoteSearchResult) {
         [self addCodeNode:[lineOfCode substringToIndex:quoteSearchResult.range.location]];
         [lineOfCode replaceCharactersInRange:NSMakeRange(0, quoteSearchResult.range.location) withString:@""];
         [self removeFirstCharacter:lineOfCode];
         
-        NSRange stringEndPosition = [quoteFinder firstMatchInString:lineOfCode options:NSMatchingProgress range:NSMakeRange(0, [lineOfCode length])].range;
+        NSRange stringEndPosition = [self findFirstLocationOfPattern:@"\\\\{0}\"" inCode:lineOfCode].range;
         [self addStringNode:[lineOfCode substringToIndex:stringEndPosition.location]];
         [lineOfCode replaceCharactersInRange:NSMakeRange(0, stringEndPosition.location) withString:@""];
         [self removeFirstCharacter:lineOfCode];
         
-        quoteSearchResult = [quoteFinder firstMatchInString:lineOfCode options:NSMatchingProgress range:NSMakeRange(0, [lineOfCode length])];
+        quoteSearchResult = [self findFirstLocationOfPattern:@"\\\\{0}\"" inCode:lineOfCode];
     }
     
     NSRange commentStart = [lineOfCode rangeOfString:@"//"];
     if (commentStart.location != NSNotFound) {
         [self addCodeNode:[lineOfCode substringToIndex:commentStart.location]];
         [self addCommentNode:[lineOfCode substringFromIndex:commentStart.location]];
+    } else {
+        [self addCodeNode:lineOfCode];
     }
 }
 
