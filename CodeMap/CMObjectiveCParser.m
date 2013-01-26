@@ -15,6 +15,7 @@
 @interface CMObjectiveCParser ()
 
 @property (nonatomic,strong) NSMutableString* rawCode;
+@property (nonatomic,strong) int openBracketCount;
 
 @end
 

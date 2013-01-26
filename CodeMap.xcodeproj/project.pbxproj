@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9129537216B48D9300A5DBE7 /* CMObjectiveCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */; };
+		9174B73E16B49B0E009ABA46 /* CMMethodNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9174B73D16B49B0E009ABA46 /* CMMethodNode.m */; };
 		918FFD2816B430E500A98890 /* CMCodeNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2716B430E500A98890 /* CMCodeNode.m */; };
 		918FFD2B16B4310300A98890 /* CMStringNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2A16B4310300A98890 /* CMStringNode.m */; };
 		918FFD2E16B433D700A98890 /* CMCommentNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2D16B433D700A98890 /* CMCommentNode.m */; };
@@ -37,6 +38,8 @@
 /* Begin PBXFileReference section */
 		9129537016B48D9300A5DBE7 /* CMObjectiveCParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMObjectiveCParser.h; sourceTree = "<group>"; };
 		9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMObjectiveCParser.m; sourceTree = "<group>"; };
+		9174B73C16B49B0E009ABA46 /* CMMethodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMMethodNode.h; sourceTree = "<group>"; };
+		9174B73D16B49B0E009ABA46 /* CMMethodNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMMethodNode.m; sourceTree = "<group>"; };
 		918FFD2616B430E500A98890 /* CMCodeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMCodeNode.h; sourceTree = "<group>"; };
 		918FFD2716B430E500A98890 /* CMCodeNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMCodeNode.m; sourceTree = "<group>"; };
 		918FFD2916B4310300A98890 /* CMStringNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMStringNode.h; sourceTree = "<group>"; };
@@ -98,6 +101,8 @@
 				918FFD2D16B433D700A98890 /* CMCommentNode.m */,
 				918FFD2F16B4368E00A98890 /* CMNode.h */,
 				918FFD3016B4368E00A98890 /* CMNode.m */,
+				9174B73C16B49B0E009ABA46 /* CMMethodNode.h */,
+				9174B73D16B49B0E009ABA46 /* CMMethodNode.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -302,6 +307,7 @@
 				918FFD2E16B433D700A98890 /* CMCommentNode.m in Sources */,
 				918FFD3116B4368E00A98890 /* CMNode.m in Sources */,
 				9129537216B48D9300A5DBE7 /* CMObjectiveCParser.m in Sources */,
+				9174B73E16B49B0E009ABA46 /* CMMethodNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
