@@ -15,23 +15,25 @@
 #import "CMMethodNode.h"
 #import "CMImportNode.h"
 
+typedef enum {
+    ParsingCommentLine,
+    ParsingImport,
+    ParsingMethodSignature,
+    ParsingMethodBody,
+    ParsingNothingSpecial
+} ParsingState;
+
 @interface CMObjectiveCParser ()
 
 @property (nonatomic,strong) NSMutableString* rawCode;
 @property (nonatomic,strong) PKParser* parser;
 
+@property (nonatomic) ParsingState state;
 @property (nonatomic) int openBracketCount;
 @property (nonatomic,strong) NSMutableString* trackingValue;
 @property (nonatomic,strong) CMMethodNode* openMethod;
 
 @end
-
-typedef enum {
-    ParsingCommentLine,
-    ParsingImport,
-    ParsingMethodSignature,
-    ParsingNothingSpecial
-} ParsingState;
 
 @implementation CMObjectiveCParser
 
@@ -41,11 +43,7 @@ typedef enum {
     self.rawCode = [[NSMutableString alloc] init];
     self.nodes = [[NSMutableArray alloc] init];
     
-    NSString * path = @"/Users/kennyskaggs/Projects/Utilities/CodeMap/CodeMap/ObjectiveCGrammar.h";
-    NSFileHandle * fileHandle = [NSFileHandle fileHandleForReadingAtPath:path];
-    NSString* grammar = [[NSString alloc] initWithData:[fileHandle readDataToEndOfFile] encoding:NSUTF8StringEncoding];
-    
-    self.parser = [[PKParserFactory factory] parserFromGrammar:grammar assembler:self];
+    self.state = ParsingNothingSpecial;
     
     return self;
 }
@@ -58,11 +56,6 @@ typedef enum {
 - (void)parseCode
 {
     [self.parser parse:@"freezing cold beer."];
-}
-
-- (void)didMatchAdjective:(PKAssembly *)a
-{
-    NSLog(a);
 }
 
 - (void)parseCodePart:(NSString *)codePart
@@ -119,20 +112,18 @@ typedef enum {
     NSLog(@"%@", lineOfCode);
     unsigned long length = [lineOfCode length];
     
-    ParsingState state = ParsingNothingSpecial;
-    
     int index = 0;
     while (index < length) {
         char current = [lineOfCode characterAtIndex:index];
         index++;
         
-        switch (state) {
+        switch (self.state) {
             case ParsingNothingSpecial:
                 switch (current) {
                     case '/':
                         if ([lineOfCode characterAtIndex:index] == '/') {
                             index++;
-                            state = ParsingCommentLine;
+                            self.state = ParsingCommentLine;
                             self.trackingValue = [[NSMutableString alloc] init];
                         }
                         break;
@@ -140,13 +131,15 @@ typedef enum {
                     case '#':
                         if ([self scanString:lineOfCode forWord:@"import" startingAtIndex:index]) {
                             index += 6;
-                            state = ParsingImport;
+                            self.state = ParsingImport;
                             self.trackingValue = [[NSMutableString alloc] init];
                         }
                         break;
                         
                     case '-':
-                        state = 
+                        self.state = ParsingMethodSignature;
+                        self.trackingValue = [[NSMutableString alloc] init];
+                        break;
                         
                     default:
                         break;
@@ -155,7 +148,7 @@ typedef enum {
                 
             case ParsingCommentLine:
                 if (current == '\n') {
-                    state = ParsingNothingSpecial;
+                    self.state = ParsingNothingSpecial;
                     [self addCommentNode:self.trackingValue];
                 } else {
                     [self.trackingValue appendFormat:@"%c", current];
@@ -164,17 +157,35 @@ typedef enum {
                 
             case ParsingImport:
                 if (current == '"' || current == '<') {
-                    char importNameChar = [lineOfCode characterAtIndex:index];
-                    index++;
+                    char importNameChar = [self consumeCharIn:lineOfCode atIndex:&index];
                     while (importNameChar != '"' && importNameChar != '>') {
                         [self.trackingValue appendFormat:@"%c", importNameChar];
-                        importNameChar = [lineOfCode characterAtIndex:index];
-                        index++;
+                        importNameChar = [self consumeCharIn:lineOfCode atIndex:&index];
                     }
                     [self addImportNode:self.trackingValue];
-                    state = ParsingNothingSpecial;
+                    self.state = ParsingNothingSpecial;
                 }
                 break;
+                
+            case ParsingMethodSignature:
+                if (current != '{') {
+                    [self.trackingValue appendFormat:@"%c", current];
+                } else {
+                    [self addMethodNode:self.trackingValue];
+                    self.state = ParsingMethodBody;
+                    self.openBracketCount = 1;
+                }
+                break;
+                
+            case ParsingMethodBody:
+                if (current == '{') {
+                    self.openBracketCount++;
+                } else if (current == '}') {
+                    self.openBracketCount--;
+                }
+                if (self.openBracketCount == 0) {
+                    self.state = ParsingNothingSpecial;
+                }
                 
             default:
                 break;
@@ -203,6 +214,18 @@ typedef enum {
     } else {
         [self addCodeNode:lineOfCode];
     }*/
+}
+
+- (char)consumeCharIn:(NSString*)string atIndex:(int*)index
+{
+    char nextChar = [self peekCharIn:string atIndex:index];
+    *index += 1;
+    return nextChar;
+}
+
+- (char)peekCharIn:(NSString*)string atIndex:(int*)index
+{
+    return [string characterAtIndex:*index];
 }
 
 - (BOOL)scanString:(NSString*)string forWord:(NSString*)word startingAtIndex:(NSUInteger)index
@@ -235,6 +258,11 @@ typedef enum {
 - (void)addImportNode:(NSString*)fileName
 {
     [self.nodes addObject:[[CMImportNode alloc] initWithCode:fileName]];
+}
+
+- (void)addMethodNode:(NSString*)signature
+{
+    [self.nodes addObject:[[CMMethodNode alloc] initWithCode:signature]];
 }
 
 - (void)removeFirstCharacter:(NSMutableString*)string
