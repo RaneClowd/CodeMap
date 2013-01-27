@@ -20,6 +20,8 @@ typedef enum {
     ParsingImport,
     ParsingMethodSignature,
     ParsingMethodBody,
+    ParsingString,
+    ParsingChar,
     ParsingNothingSpecial
 } ParsingState;
 
@@ -28,7 +30,10 @@ typedef enum {
 @property (nonatomic,strong) NSMutableString* rawCode;
 @property (nonatomic,strong) PKParser* parser;
 
-@property (nonatomic) ParsingState state;
+@property (nonatomic) ParsingState currentState;
+@property (nonatomic) ParsingState previousState;
+@property (nonatomic) ParsingState thirdLevelState;
+
 @property (nonatomic) int openBracketCount;
 @property (nonatomic,strong) NSMutableString* trackingValue;
 @property (nonatomic,strong) CMMethodNode* openMethod;
@@ -43,7 +48,9 @@ typedef enum {
     self.rawCode = [[NSMutableString alloc] init];
     self.nodes = [[NSMutableArray alloc] init];
     
-    self.state = ParsingNothingSpecial;
+    self.currentState = ParsingNothingSpecial;
+    self.previousState = ParsingNothingSpecial;
+    self.thirdLevelState = ParsingNothingSpecial;
     
     return self;
 }
@@ -55,7 +62,7 @@ typedef enum {
 
 - (void)parseCode
 {
-    [self.parser parse:@"freezing cold beer."];
+    [self.parser parse:@"freezing cold { beer."];
 }
 
 - (void)parseCodePart:(NSString *)codePart
@@ -109,7 +116,10 @@ typedef enum {
 
 - (void)parseLineOfCode:(NSMutableString*)lineOfCode
 {
-    NSLog(@"%@", lineOfCode);
+    //NSLog(@"%@", lineOfCode);
+    
+    //does the machine handle wrenches? }
+    
     unsigned long length = [lineOfCode length];
     
     int index = 0;
@@ -117,27 +127,25 @@ typedef enum {
         char current = [lineOfCode characterAtIndex:index];
         index++;
         
-        switch (self.state) {
+        switch ([self currentState]) {
             case ParsingNothingSpecial:
                 switch (current) {
                     case '/':
-                        if ([lineOfCode characterAtIndex:index] == '/') {
-                            index++;
-                            self.state = ParsingCommentLine;
+                        if ([self scanString:lineOfCode forWord:@"/" startingAtIndex:&index]) {
+                            [self enterState:ParsingCommentLine];
                             self.trackingValue = [[NSMutableString alloc] init];
                         }
                         break;
                         
                     case '#':
-                        if ([self scanString:lineOfCode forWord:@"import" startingAtIndex:index]) {
-                            index += 6;
-                            self.state = ParsingImport;
+                        if ([self scanString:lineOfCode forWord:@"import" startingAtIndex:&index]) {
+                            [self enterState:ParsingImport];
                             self.trackingValue = [[NSMutableString alloc] init];
                         }
                         break;
                         
                     case '-':
-                        self.state = ParsingMethodSignature;
+                        [self enterState:ParsingMethodSignature];
                         self.trackingValue = [[NSMutableString alloc] init];
                         break;
                         
@@ -148,7 +156,7 @@ typedef enum {
                 
             case ParsingCommentLine:
                 if (current == '\n') {
-                    self.state = ParsingNothingSpecial;
+                    [self leaveCurrentState];
                     [self addCommentNode:self.trackingValue];
                 } else {
                     [self.trackingValue appendFormat:@"%c", current];
@@ -163,7 +171,7 @@ typedef enum {
                         importNameChar = [self consumeCharIn:lineOfCode atIndex:&index];
                     }
                     [self addImportNode:self.trackingValue];
-                    self.state = ParsingNothingSpecial;
+                    [self leaveCurrentState];
                 }
                 break;
                 
@@ -172,48 +180,84 @@ typedef enum {
                     [self.trackingValue appendFormat:@"%c", current];
                 } else {
                     [self addMethodNode:self.trackingValue];
-                    self.state = ParsingMethodBody;
+                    [self leaveCurrentState];
+                    [self enterState:ParsingMethodBody];
                     self.openBracketCount = 1;
                 }
                 break;
                 
-            case ParsingMethodBody:
-                if (current == '{') {
-                    self.openBracketCount++;
-                } else if (current == '}') {
-                    self.openBracketCount--;
+            case ParsingString:
+                if (current == '"') {
+                    [self leaveCurrentState];
+                } else if (current == '\\') {
+                    [self consumeCharIn:lineOfCode atIndex:&index];
                 }
+                break;
+                
+            case ParsingChar:
+                if (current == '\'') {
+                    [self leaveCurrentState];
+                } else if (current == '\\') {
+                    [self consumeCharIn:lineOfCode atIndex:&index];
+                }
+                break;
+                
+            case ParsingMethodBody:
+                switch (current) {
+                    case '{':
+                        self.openBracketCount++;
+                        break;
+                        
+                    case '"':
+                        [self enterState:ParsingString];
+                        break;
+                        
+                    case '\'':
+                        [self enterState:ParsingChar];
+                        break;
+                        
+                    case '/':
+                        if ([self scanString:lineOfCode forWord:@"/" startingAtIndex:&index]) {
+                            [self enterState:ParsingCommentLine];
+                            self.trackingValue = [[NSMutableString alloc] init];
+                        }
+                        break;
+                        
+                    case '}':
+                        self.openBracketCount--;
+                        break;
+                        
+                    default:
+                        break;
+                }
+                
                 if (self.openBracketCount == 0) {
-                    self.state = ParsingNothingSpecial;
+                    [self leaveCurrentState];
                 }
                 
             default:
                 break;
         }
     }
-    
-    /*NSTextCheckingResult* quoteSearchResult = [self findFirstLocationOfPattern:@"\\\\{0}\"" inCode:lineOfCode];
-    
-    while (quoteSearchResult) {
-        [self addCodeNode:[lineOfCode substringToIndex:quoteSearchResult.range.location]];
-        [lineOfCode replaceCharactersInRange:NSMakeRange(0, quoteSearchResult.range.location) withString:@""];
-        [self removeFirstCharacter:lineOfCode];
-        
-        NSRange stringEndPosition = [self findFirstLocationOfPattern:@"\\\\{0}\"" inCode:lineOfCode].range;
-        [self addStringNode:[lineOfCode substringToIndex:stringEndPosition.location]];
-        [lineOfCode replaceCharactersInRange:NSMakeRange(0, stringEndPosition.location) withString:@""];
-        [self removeFirstCharacter:lineOfCode];
-        
-        quoteSearchResult = [self findFirstLocationOfPattern:@"\\\\{0}\"" inCode:lineOfCode];
-    }
-    
-    NSRange commentStart = [lineOfCode rangeOfString:@"//"];
-    if (commentStart.location != NSNotFound) {
-        [self addCodeNode:[lineOfCode substringToIndex:commentStart.location]];
-        [self addCommentNode:[lineOfCode substringFromIndex:commentStart.location]];
-    } else {
-        [self addCodeNode:lineOfCode];
-    }*/
+}
+
+- (ParsingState)getState
+{
+    return self.currentState;
+}
+
+- (void)enterState:(ParsingState)state
+{
+    self.thirdLevelState = self.previousState;
+    self.previousState = self.currentState;
+    self.currentState = state;
+}
+
+- (void)leaveCurrentState
+{
+    self.currentState = self.previousState;
+    self.previousState = self.thirdLevelState;
+    self.thirdLevelState = ParsingNothingSpecial;
 }
 
 - (char)consumeCharIn:(NSString*)string atIndex:(int*)index
@@ -228,14 +272,12 @@ typedef enum {
     return [string characterAtIndex:*index];
 }
 
-- (BOOL)scanString:(NSString*)string forWord:(NSString*)word startingAtIndex:(NSUInteger)index
+- (BOOL)scanString:(NSString*)string forWord:(NSString*)word startingAtIndex:(int*)index
 {
-    /*long wordLen = [word length];
-    if ([string length] - index < wordLen) {
-        return NO;
-    }*/
-    
-    return [[[string substringFromIndex:index] substringToIndex:[word length]] isEqualToString:word];
+    long len = [word length];
+    BOOL exists = [[[string substringFromIndex:*index] substringToIndex:len] isEqualToString:word];
+    if (exists) *index += len;
+    return exists;
 }
 
 - (void)addCodeNode:(NSString*)code
@@ -262,7 +304,12 @@ typedef enum {
 
 - (void)addMethodNode:(NSString*)signature
 {
-    [self.nodes addObject:[[CMMethodNode alloc] initWithCode:signature]];
+    [self.nodes addObject:[[CMMethodNode alloc] initWithCode:[self trimWhiteSpaceFrom:signature]]];
+}
+
+- (NSString*)trimWhiteSpaceFrom:(NSString*)string
+{
+    return [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 - (void)removeFirstCharacter:(NSMutableString*)string

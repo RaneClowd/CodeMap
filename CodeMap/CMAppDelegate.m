@@ -33,24 +33,18 @@
 {
     CMObjectiveCParser* parser = [[CMObjectiveCParser alloc] init];
     
-    NSString * path = @"/Users/kennyskaggs/Projects/Utilities/CodeMap/CodeMap/CMAppDelegate.m";
+    NSString * path = @"/Users/kennyskaggs/Projects/Utilities/CodeMap/CodeMap/CMObjectiveCParser.m";
     NSFileHandle * fileHandle = [NSFileHandle fileHandleForReadingAtPath:path];
     
     NSData * buffer = [fileHandle readDataOfLength:1024];
     while ([buffer length] > 0) { // this is cool
-        
         [parser parseCodePart:[[NSMutableString alloc] initWithData:buffer encoding:NSUTF8StringEncoding]];
-        
-        //[parser appendPartOfCode:[[NSMutableString alloc] initWithData:buffer encoding:NSUTF8StringEncoding]];
-        
         
         buffer = [fileHandle readDataOfLength:1024];
     }
     
-    //[parser parseCode];
-    
     for (CMNode* node in parser.nodes) {
-        NSLog([node description]);
+        NSLog(@"%@", [node description]);
     }
 }
 
