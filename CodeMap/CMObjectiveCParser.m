@@ -7,17 +7,31 @@
 //
 
 #import "CMObjectiveCParser.h"
+#import <ParseKit/ParseKit.h>
 
 #import "CMCodeNode.h"
 #import "CMCommentNode.h"
 #import "CMStringNode.h"
+#import "CMMethodNode.h"
+#import "CMImportNode.h"
 
 @interface CMObjectiveCParser ()
 
 @property (nonatomic,strong) NSMutableString* rawCode;
-@property (nonatomic,strong) int openBracketCount;
+@property (nonatomic,strong) PKParser* parser;
+
+@property (nonatomic) int openBracketCount;
+@property (nonatomic,strong) NSMutableString* trackingValue;
+@property (nonatomic,strong) CMMethodNode* openMethod;
 
 @end
+
+typedef enum {
+    ParsingCommentLine,
+    ParsingImport,
+    ParsingMethodSignature,
+    ParsingNothingSpecial
+} ParsingState;
 
 @implementation CMObjectiveCParser
 
@@ -26,7 +40,29 @@
     self = [super init];
     self.rawCode = [[NSMutableString alloc] init];
     self.nodes = [[NSMutableArray alloc] init];
+    
+    NSString * path = @"/Users/kennyskaggs/Projects/Utilities/CodeMap/CodeMap/ObjectiveCGrammar.h";
+    NSFileHandle * fileHandle = [NSFileHandle fileHandleForReadingAtPath:path];
+    NSString* grammar = [[NSString alloc] initWithData:[fileHandle readDataToEndOfFile] encoding:NSUTF8StringEncoding];
+    
+    self.parser = [[PKParserFactory factory] parserFromGrammar:grammar assembler:self];
+    
     return self;
+}
+
+- (void)appendPartOfCode:(NSString*)codePart
+{
+    [self.rawCode appendString:codePart];
+}
+
+- (void)parseCode
+{
+    [self.parser parse:@"freezing cold beer."];
+}
+
+- (void)didMatchAdjective:(PKAssembly *)a
+{
+    NSLog(a);
 }
 
 - (void)parseCodePart:(NSString *)codePart
@@ -80,7 +116,72 @@
 
 - (void)parseLineOfCode:(NSMutableString*)lineOfCode
 {
-    NSTextCheckingResult* quoteSearchResult = [self findFirstLocationOfPattern:@"\\\\{0}\"" inCode:lineOfCode];
+    NSLog(@"%@", lineOfCode);
+    unsigned long length = [lineOfCode length];
+    
+    ParsingState state = ParsingNothingSpecial;
+    
+    int index = 0;
+    while (index < length) {
+        char current = [lineOfCode characterAtIndex:index];
+        index++;
+        
+        switch (state) {
+            case ParsingNothingSpecial:
+                switch (current) {
+                    case '/':
+                        if ([lineOfCode characterAtIndex:index] == '/') {
+                            index++;
+                            state = ParsingCommentLine;
+                            self.trackingValue = [[NSMutableString alloc] init];
+                        }
+                        break;
+                        
+                    case '#':
+                        if ([self scanString:lineOfCode forWord:@"import" startingAtIndex:index]) {
+                            index += 6;
+                            state = ParsingImport;
+                            self.trackingValue = [[NSMutableString alloc] init];
+                        }
+                        break;
+                        
+                    case '-':
+                        state = 
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            case ParsingCommentLine:
+                if (current == '\n') {
+                    state = ParsingNothingSpecial;
+                    [self addCommentNode:self.trackingValue];
+                } else {
+                    [self.trackingValue appendFormat:@"%c", current];
+                }
+                break;
+                
+            case ParsingImport:
+                if (current == '"' || current == '<') {
+                    char importNameChar = [lineOfCode characterAtIndex:index];
+                    index++;
+                    while (importNameChar != '"' && importNameChar != '>') {
+                        [self.trackingValue appendFormat:@"%c", importNameChar];
+                        importNameChar = [lineOfCode characterAtIndex:index];
+                        index++;
+                    }
+                    [self addImportNode:self.trackingValue];
+                    state = ParsingNothingSpecial;
+                }
+                break;
+                
+            default:
+                break;
+        }
+    }
+    
+    /*NSTextCheckingResult* quoteSearchResult = [self findFirstLocationOfPattern:@"\\\\{0}\"" inCode:lineOfCode];
     
     while (quoteSearchResult) {
         [self addCodeNode:[lineOfCode substringToIndex:quoteSearchResult.range.location]];
@@ -101,7 +202,17 @@
         [self addCommentNode:[lineOfCode substringFromIndex:commentStart.location]];
     } else {
         [self addCodeNode:lineOfCode];
-    }
+    }*/
+}
+
+- (BOOL)scanString:(NSString*)string forWord:(NSString*)word startingAtIndex:(NSUInteger)index
+{
+    /*long wordLen = [word length];
+    if ([string length] - index < wordLen) {
+        return NO;
+    }*/
+    
+    return [[[string substringFromIndex:index] substringToIndex:[word length]] isEqualToString:word];
 }
 
 - (void)addCodeNode:(NSString*)code
@@ -116,7 +227,14 @@
 
 - (void)addCommentNode:(NSString*)comment
 {
-    [self.nodes addObject:[[CMCommentNode alloc] initWithCode:comment]];
+    if ([comment length] > 0) {
+        [self.nodes addObject:[[CMCommentNode alloc] initWithCode:comment]];
+    }
+}
+
+- (void)addImportNode:(NSString*)fileName
+{
+    [self.nodes addObject:[[CMImportNode alloc] initWithCode:fileName]];
 }
 
 - (void)removeFirstCharacter:(NSMutableString*)string

@@ -41,6 +41,8 @@
         
         [parser parseCodePart:[[NSMutableString alloc] initWithData:buffer encoding:NSUTF8StringEncoding]];
         
+        //[parser appendPartOfCode:[[NSMutableString alloc] initWithData:buffer encoding:NSUTF8StringEncoding]];
+        
         /*NSArray* linesOfCode = [self parseLinesFromCodePart:codePart];
         for (NSMutableString* lineOfCode in linesOfCode) {
             [self parseLineOfCode:lineOfCode];
@@ -48,6 +50,8 @@
         
         buffer = [fileHandle readDataOfLength:1024];
     }
+    
+    //[parser parseCode];
     
     for (CMNode* node in parser.nodes) {
         NSLog([node description]);

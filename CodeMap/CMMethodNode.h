@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CMNode.h"
 
-@interface CMMethodNode : NSObject
+@interface CMMethodNode : CMNode
 
 @end

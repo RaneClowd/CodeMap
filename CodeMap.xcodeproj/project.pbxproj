@@ -13,6 +13,9 @@
 		918FFD2B16B4310300A98890 /* CMStringNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2A16B4310300A98890 /* CMStringNode.m */; };
 		918FFD2E16B433D700A98890 /* CMCommentNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2D16B433D700A98890 /* CMCommentNode.m */; };
 		918FFD3116B4368E00A98890 /* CMNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD3016B4368E00A98890 /* CMNode.m */; };
+		9199F9EC16B5761700315044 /* ParseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9199F9BF16B5732D00315044 /* ParseKit.framework */; };
+		9199F9EE16B576FB00315044 /* ObjectiveCGrammar.h in Resources */ = {isa = PBXBuildFile; fileRef = 9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */; };
+		9199F9F116B58E8700315044 /* CMImportNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199F9F016B58E8700315044 /* CMImportNode.m */; };
 		91FB020316B37C0900760CEB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91FB020216B37C0800760CEB /* Cocoa.framework */; };
 		91FB020D16B37C0900760CEB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 91FB020B16B37C0900760CEB /* InfoPlist.strings */; };
 		91FB020F16B37C0900760CEB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 91FB020E16B37C0900760CEB /* main.m */; };
@@ -26,6 +29,55 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		9199F9BE16B5732D00315044 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = ParseKit;
+		};
+		9199F9C016B5732D00315044 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D389F1CE0F1965E600558235;
+			remoteInfo = JSParseKit;
+		};
+		9199F9C216B5732D00315044 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D3FDC5830FFC4BFC00F1F797;
+			remoteInfo = ParseKitMobile;
+		};
+		9199F9C416B5732D00315044 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D3C7D87A0A411FBF005DD154;
+			remoteInfo = Tests;
+		};
+		9199F9C616B5732D00315044 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D33494100E2963FD00406085;
+			remoteInfo = DemoApp;
+		};
+		9199F9C816B5732D00315044 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D34185040E520D3F0081B0DC;
+			remoteInfo = DebugApp;
+		};
+		9199F9CA16B5732D00315044 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D389F2030F196A7500558235;
+			remoteInfo = JSDemoApp;
+		};
 		91FB022316B37C0900760CEB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 91FB01F516B37C0800760CEB /* Project object */;
@@ -48,6 +100,10 @@
 		918FFD2D16B433D700A98890 /* CMCommentNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMCommentNode.m; sourceTree = "<group>"; };
 		918FFD2F16B4368E00A98890 /* CMNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMNode.h; sourceTree = "<group>"; };
 		918FFD3016B4368E00A98890 /* CMNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMNode.m; sourceTree = "<group>"; };
+		9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParseKit.xcodeproj; path = "../ParseKit/todparsekit-read-only/ParseKit.xcodeproj"; sourceTree = "<group>"; };
+		9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectiveCGrammar.h; sourceTree = "<group>"; };
+		9199F9EF16B58E8700315044 /* CMImportNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMImportNode.h; sourceTree = "<group>"; };
+		9199F9F016B58E8700315044 /* CMImportNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMImportNode.m; sourceTree = "<group>"; };
 		91FB01FE16B37C0800760CEB /* CodeMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91FB020216B37C0800760CEB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		91FB020516B37C0900760CEB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -74,6 +130,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9199F9EC16B5761700315044 /* ParseKit.framework in Frameworks */,
 				91FB020316B37C0900760CEB /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -103,8 +160,24 @@
 				918FFD3016B4368E00A98890 /* CMNode.m */,
 				9174B73C16B49B0E009ABA46 /* CMMethodNode.h */,
 				9174B73D16B49B0E009ABA46 /* CMMethodNode.m */,
+				9199F9EF16B58E8700315044 /* CMImportNode.h */,
+				9199F9F016B58E8700315044 /* CMImportNode.m */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		9199F9AF16B5732D00315044 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9199F9BF16B5732D00315044 /* ParseKit.framework */,
+				9199F9C116B5732D00315044 /* JSParseKit.framework */,
+				9199F9C316B5732D00315044 /* libparsekit.a */,
+				9199F9C516B5732D00315044 /* Tests.octest */,
+				9199F9C716B5732D00315044 /* DemoApp.app */,
+				9199F9C916B5732D00315044 /* DebugApp.app */,
+				9199F9CB16B5732D00315044 /* JSDemoApp.app */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		91FB01F316B37C0800760CEB = {
@@ -129,6 +202,7 @@
 		91FB020116B37C0800760CEB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */,
 				91FB020216B37C0800760CEB /* Cocoa.framework */,
 				91FB022016B37C0900760CEB /* SenTestingKit.framework */,
 				91FB020416B37C0900760CEB /* Other Frameworks */,
@@ -156,6 +230,7 @@
 				91FB020916B37C0900760CEB /* Supporting Files */,
 				9129537016B48D9300A5DBE7 /* CMObjectiveCParser.h */,
 				9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */,
+				9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */,
 			);
 			path = CodeMap;
 			sourceTree = "<group>";
@@ -250,6 +325,12 @@
 			mainGroup = 91FB01F316B37C0800760CEB;
 			productRefGroup = 91FB01FF16B37C0800760CEB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 9199F9AF16B5732D00315044 /* Products */;
+					ProjectRef = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				91FB01FD16B37C0800760CEB /* CodeMap */,
@@ -257,6 +338,58 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		9199F9BF16B5732D00315044 /* ParseKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ParseKit.framework;
+			remoteRef = 9199F9BE16B5732D00315044 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9199F9C116B5732D00315044 /* JSParseKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = JSParseKit.framework;
+			remoteRef = 9199F9C016B5732D00315044 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9199F9C316B5732D00315044 /* libparsekit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libparsekit.a;
+			remoteRef = 9199F9C216B5732D00315044 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9199F9C516B5732D00315044 /* Tests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = Tests.octest;
+			remoteRef = 9199F9C416B5732D00315044 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9199F9C716B5732D00315044 /* DemoApp.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = DemoApp.app;
+			remoteRef = 9199F9C616B5732D00315044 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9199F9C916B5732D00315044 /* DebugApp.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = DebugApp.app;
+			remoteRef = 9199F9C816B5732D00315044 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9199F9CB16B5732D00315044 /* JSDemoApp.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = JSDemoApp.app;
+			remoteRef = 9199F9CA16B5732D00315044 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		91FB01FC16B37C0800760CEB /* Resources */ = {
@@ -266,6 +399,7 @@
 				91FB020D16B37C0900760CEB /* InfoPlist.strings in Resources */,
 				91FB021316B37C0900760CEB /* Credits.rtf in Resources */,
 				91FB021916B37C0900760CEB /* MainMenu.xib in Resources */,
+				9199F9EE16B576FB00315044 /* ObjectiveCGrammar.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +442,7 @@
 				918FFD3116B4368E00A98890 /* CMNode.m in Sources */,
 				9129537216B48D9300A5DBE7 /* CMObjectiveCParser.m in Sources */,
 				9174B73E16B49B0E009ABA46 /* CMMethodNode.m in Sources */,
+				9199F9F116B58E8700315044 /* CMImportNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -12,6 +12,8 @@
 
 @property (nonatomic,strong) NSMutableArray* nodes;
 
+- (void)appendPartOfCode:(NSString*)codePart;
+- (void)parseCode;
 - (void)parseCodePart:(NSString*)codePart;
 
 @end
