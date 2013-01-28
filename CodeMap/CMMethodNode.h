@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "CMNode.h"
+#import "CMInvocationNode.h"
 
 @interface CMMethodNode : CMNode
+
+- (void)addInvocationNode:(CMInvocationNode*)invocation;
 
 @end

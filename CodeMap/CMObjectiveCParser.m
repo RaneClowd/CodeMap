@@ -22,6 +22,8 @@ typedef enum {
     ParsingMethodBody,
     ParsingString,
     ParsingChar,
+    ParsingInvocationTarget,
+    ParsingInvocationSelector,
     ParsingNothingSpecial
 } ParsingState;
 
@@ -30,13 +32,11 @@ typedef enum {
 @property (nonatomic,strong) NSMutableString* rawCode;
 @property (nonatomic,strong) PKParser* parser;
 
-@property (nonatomic) ParsingState currentState;
-@property (nonatomic) ParsingState previousState;
-@property (nonatomic) ParsingState thirdLevelState;
+@property (nonatomic) NSMutableArray* stateStack;
 
 @property (nonatomic) int openBracketCount;
 @property (nonatomic,strong) NSMutableString* trackingValue;
-@property (nonatomic,strong) CMMethodNode* openMethod;
+@property (nonatomic,strong) CMMethodNode* openMethodNode;
 
 @end
 
@@ -48,9 +48,8 @@ typedef enum {
     self.rawCode = [[NSMutableString alloc] init];
     self.nodes = [[NSMutableArray alloc] init];
     
-    self.currentState = ParsingNothingSpecial;
-    self.previousState = ParsingNothingSpecial;
-    self.thirdLevelState = ParsingNothingSpecial;
+    self.stateStack = [[NSMutableArray alloc] init];
+    [self enterState:ParsingNothingSpecial];
     
     return self;
 }
@@ -127,7 +126,7 @@ typedef enum {
         char current = [lineOfCode characterAtIndex:index];
         index++;
         
-        switch ([self currentState]) {
+        switch ([self getState]) {
             case ParsingNothingSpecial:
                 switch (current) {
                     case '/':
@@ -179,7 +178,7 @@ typedef enum {
                 if (current != '{') {
                     [self.trackingValue appendFormat:@"%c", current];
                 } else {
-                    [self addMethodNode:self.trackingValue];
+                    [self openMethodNode:self.trackingValue];
                     [self leaveCurrentState];
                     [self enterState:ParsingMethodBody];
                     self.openBracketCount = 1;
@@ -199,6 +198,12 @@ typedef enum {
                     [self leaveCurrentState];
                 } else if (current == '\\') {
                     [self consumeCharIn:lineOfCode atIndex:&index];
+                }
+                break;
+                
+            case ParsingInvocationTarget:
+                if (current != ' ') {
+                    [self.trackingValue appendFormat:@"%c", current];
                 }
                 break;
                 
@@ -223,6 +228,11 @@ typedef enum {
                         }
                         break;
                         
+                    case '[':
+                        self.trackingValue = [[NSMutableString alloc] init];
+                        [self enterState:ParsingInvocationTarget];
+                        break;
+                        
                     case '}':
                         self.openBracketCount--;
                         break;
@@ -243,21 +253,17 @@ typedef enum {
 
 - (ParsingState)getState
 {
-    return self.currentState;
+    return [[self.stateStack lastObject] intValue];
 }
 
 - (void)enterState:(ParsingState)state
 {
-    self.thirdLevelState = self.previousState;
-    self.previousState = self.currentState;
-    self.currentState = state;
+    [self.stateStack addObject:[NSNumber numberWithInt:state]];
 }
 
 - (void)leaveCurrentState
 {
-    self.currentState = self.previousState;
-    self.previousState = self.thirdLevelState;
-    self.thirdLevelState = ParsingNothingSpecial;
+    [self.stateStack removeLastObject];
 }
 
 - (char)consumeCharIn:(NSString*)string atIndex:(int*)index
@@ -302,9 +308,10 @@ typedef enum {
     [self.nodes addObject:[[CMImportNode alloc] initWithCode:fileName]];
 }
 
-- (void)addMethodNode:(NSString*)signature
+- (void)openMethodNode:(NSString*)signature
 {
-    [self.nodes addObject:[[CMMethodNode alloc] initWithCode:[self trimWhiteSpaceFrom:signature]]];
+    self.openMethodNode = [[CMMethodNode alloc] initWithCode:[self trimWhiteSpaceFrom:signature]];
+    [self.nodes addObject:self.openMethodNode];
 }
 
 - (NSString*)trimWhiteSpaceFrom:(NSString*)string
