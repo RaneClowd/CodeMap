@@ -14,6 +14,7 @@
 #import "CMStringNode.h"
 #import "CMMethodNode.h"
 #import "CMImportNode.h"
+#import "CMValueNode.h"
 
 #import "CMStack.h"
 
@@ -128,8 +129,14 @@ typedef enum {
     
     int index = 0;
     while (index < length) {
-        char current = [lineOfCode characterAtIndex:index];
-        index++;
+        char current = [self consumeCharIn:lineOfCode atIndex:&index];
+        
+        if ([self getState] == ParsingIgnoringWhitespace)
+        {
+            if (![self charIsWhitespace:current]) {
+                [self leaveCurrentState];
+            }
+        }
         
         switch ([self getState]) {
             case ParsingNothingSpecial:
@@ -207,11 +214,14 @@ typedef enum {
                 break;
                 
             case ParsingInvocationTarget:
-                if (![self charIsWhitespace:current]) {
+                if (current == '[') {
+                    [self beginDefiningInvocation];
+                } else if (![self charIsWhitespace:current]) {
                     [self.trackingValue appendFormat:@"%c", current];
                 } else {
                     [self leaveCurrentState];
-                    [self definingInvocationFor:self.trackingValue];
+                    [self setValueForOpenNode:self.trackingValue];
+                    [self closeNode];
                     
                     self.trackingValue = [[NSMutableString alloc] init];
                     [self enterState:ParsingInvocationSelector];
@@ -222,16 +232,10 @@ typedef enum {
             case ParsingInvocationSelector:
                 if (current == ']') {
                     [self leaveCurrentState];
-                    [self definingInvocationSelector:self.trackingValue];
+                    [self setValueForOpenNode:self.trackingValue];
                     [self closeNode];
                 } else {
                     [self.trackingValue appendFormat:@"%c", current];
-                }
-                break;
-                
-            case ParsingIgnoringWhitespace:
-                if (![self charIsWhitespace:current]) {
-                    [self leaveCurrentState];
                 }
                 break;
                 
@@ -258,8 +262,7 @@ typedef enum {
                         
                     case '[':
                         self.trackingValue = [[NSMutableString alloc] init];
-                        [self enterState:ParsingInvocationTarget];
-                        [self enterState:ParsingIgnoringWhitespace];
+                        [self beginDefiningInvocation];
                         break;
                         
                     case '}':
@@ -337,15 +340,29 @@ typedef enum {
     [self enterNode:methodNode];
 }
 
-- (void)definingInvocationFor:(NSString*)target
+- (void)beginDefiningInvocation
 {
     CMInvocationNode* invocationNode = [[CMInvocationNode alloc] init];
-    invocationNode.target = target;
+    CMValueNode* targetNode = [[CMValueNode alloc] init];
+    CMValueNode* selectorNode = [[CMValueNode alloc] init];
+    
+    invocationNode.target = targetNode;
+    invocationNode.selector = selectorNode;
     
     CMNode* parentNode = [self getCurrentNode];
     [parentNode.childNodes addObject:invocationNode];
     
-    [self enterNode:invocationNode];
+    [self enterNode:selectorNode];
+    [self enterNode:targetNode];
+    
+    [self enterState:ParsingInvocationTarget];
+    [self enterState:ParsingIgnoringWhitespace];
+}
+
+- (void)setValueForOpenNode:(NSString*)value
+{
+    CMNode* node = [self getCurrentNode];
+    node.value = value;
 }
 
 - (void)definingInvocationSelector:(NSString*)selector

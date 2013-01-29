@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		911D70E016B844AF0055DED1 /* CMValueNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 911D70DF16B844AF0055DED1 /* CMValueNode.m */; };
 		9129537216B48D9300A5DBE7 /* CMObjectiveCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */; };
 		9174B73E16B49B0E009ABA46 /* CMMethodNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9174B73D16B49B0E009ABA46 /* CMMethodNode.m */; };
 		917D039716B755990017CEFE /* CMStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 917D039616B755990017CEFE /* CMStack.m */; };
@@ -91,6 +92,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		911D70DE16B844AF0055DED1 /* CMValueNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMValueNode.h; sourceTree = "<group>"; };
+		911D70DF16B844AF0055DED1 /* CMValueNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMValueNode.m; sourceTree = "<group>"; };
 		9129537016B48D9300A5DBE7 /* CMObjectiveCParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMObjectiveCParser.h; sourceTree = "<group>"; };
 		9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMObjectiveCParser.m; sourceTree = "<group>"; };
 		9174B73C16B49B0E009ABA46 /* CMMethodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMMethodNode.h; sourceTree = "<group>"; };
@@ -184,6 +187,8 @@
 				91EFC07316B6FD2000850F6A /* CMClassNode.m */,
 				91EFC07516B6FF5700850F6A /* CMInvocationNode.h */,
 				91EFC07616B6FF5700850F6A /* CMInvocationNode.m */,
+				911D70DE16B844AF0055DED1 /* CMValueNode.h */,
+				911D70DF16B844AF0055DED1 /* CMValueNode.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -469,6 +474,7 @@
 				91EFC07416B6FD2000850F6A /* CMClassNode.m in Sources */,
 				91EFC07716B6FF5700850F6A /* CMInvocationNode.m in Sources */,
 				917D039716B755990017CEFE /* CMStack.m in Sources */,
+				911D70E016B844AF0055DED1 /* CMValueNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

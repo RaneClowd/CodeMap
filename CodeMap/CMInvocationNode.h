@@ -10,8 +10,7 @@
 
 @interface CMInvocationNode : CMNode
 
-@property (nonatomic,strong) NSString* target;
-
-- (id)initWithSelector:(NSString*)code andTarget:(NSString*)target;
+@property (nonatomic,strong) CMNode* target;
+@property (nonatomic,strong) CMNode* selector;
 
 @end

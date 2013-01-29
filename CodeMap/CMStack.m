@@ -40,4 +40,9 @@
     return object;
 }
 
+- (NSString *)description
+{
+    return [self.stack description];
+}
+
 @end

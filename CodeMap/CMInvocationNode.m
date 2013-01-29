@@ -10,11 +10,9 @@
 
 @implementation CMInvocationNode
 
-- (id)initWithSelector:(NSString *)code andTarget:(NSString *)target
+- (NSString *)description
 {
-    self = [super initWithCode:code];
-    self.target = target;
-    return self;
+    return [NSString stringWithFormat:@" [ %@  %@ ]", [self.target description], [self.selector description]];
 }
 
 @end
