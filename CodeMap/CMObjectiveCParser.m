@@ -15,6 +15,8 @@
 #import "CMMethodNode.h"
 #import "CMImportNode.h"
 
+#import "CMStack.h"
+
 typedef enum {
     ParsingCommentLine,
     ParsingImport,
@@ -24,6 +26,7 @@ typedef enum {
     ParsingChar,
     ParsingInvocationTarget,
     ParsingInvocationSelector,
+    ParsingIgnoringWhitespace,
     ParsingNothingSpecial
 } ParsingState;
 
@@ -32,7 +35,8 @@ typedef enum {
 @property (nonatomic,strong) NSMutableString* rawCode;
 @property (nonatomic,strong) PKParser* parser;
 
-@property (nonatomic) NSMutableArray* stateStack;
+@property (nonatomic,strong) CMStack* stateStack;
+@property (nonatomic,strong) CMStack* nodeStack;
 
 @property (nonatomic) int openBracketCount;
 @property (nonatomic,strong) NSMutableString* trackingValue;
@@ -48,8 +52,10 @@ typedef enum {
     self.rawCode = [[NSMutableString alloc] init];
     self.nodes = [[NSMutableArray alloc] init];
     
-    self.stateStack = [[NSMutableArray alloc] init];
+    self.stateStack = [[CMStack alloc] init];
     [self enterState:ParsingNothingSpecial];
+    
+    self.nodeStack = [[CMStack alloc] init];
     
     return self;
 }
@@ -202,8 +208,25 @@ typedef enum {
                 break;
                 
             case ParsingInvocationTarget:
-                if (current != ' ') {
+                if ([self charIsWhitespace:current]) {
                     [self.trackingValue appendFormat:@"%c", current];
+                } else {
+                    [self leaveCurrentState];
+                    [self enterState:ParsingInvocationSelector];
+                }
+                break;
+                
+            case ParsingInvocationSelector:
+                if (current == ']') {
+                    [self.trackingValue appendFormat:@"%c", current];
+                } else if (![self charIsWhitespace:current]) {
+                    [self leaveCurrentState];
+                }
+                break;
+                
+            case ParsingIgnoringWhitespace:
+                if (![self charIsWhitespace:current]) {
+                    [self leaveCurrentState];
                 }
                 break;
                 
@@ -231,6 +254,7 @@ typedef enum {
                     case '[':
                         self.trackingValue = [[NSMutableString alloc] init];
                         [self enterState:ParsingInvocationTarget];
+                        [self enterState:ParsingIgnoringWhitespace];
                         break;
                         
                     case '}':
@@ -251,19 +275,9 @@ typedef enum {
     }
 }
 
-- (ParsingState)getState
+- (BOOL)charIsWhitespace:(char)character
 {
-    return [[self.stateStack lastObject] intValue];
-}
-
-- (void)enterState:(ParsingState)state
-{
-    [self.stateStack addObject:[NSNumber numberWithInt:state]];
-}
-
-- (void)leaveCurrentState
-{
-    [self.stateStack removeLastObject];
+    return [[NSCharacterSet whitespaceAndNewlineCharacterSet] characterIsMember:character];
 }
 
 - (char)consumeCharIn:(NSString*)string atIndex:(int*)index
@@ -322,6 +336,25 @@ typedef enum {
 - (void)removeFirstCharacter:(NSMutableString*)string
 {
     [string replaceCharactersInRange:NSMakeRange(0, 1) withString:@""];
+}
+
+#pragma mark - Stack Handling
+
+#pragma mark Parser State
+
+- (ParsingState)getState
+{
+    return [[self.stateStack peek] intValue];
+}
+
+- (void)enterState:(ParsingState)state
+{
+    [self.stateStack push:[NSNumber numberWithInt:state]];
+}
+
+- (void)leaveCurrentState
+{
+    [self.stateStack pop];
 }
 
 @end

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		9129537216B48D9300A5DBE7 /* CMObjectiveCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */; };
 		9174B73E16B49B0E009ABA46 /* CMMethodNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9174B73D16B49B0E009ABA46 /* CMMethodNode.m */; };
+		917D039716B755990017CEFE /* CMStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 917D039616B755990017CEFE /* CMStack.m */; };
 		918FFD2816B430E500A98890 /* CMCodeNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2716B430E500A98890 /* CMCodeNode.m */; };
 		918FFD2B16B4310300A98890 /* CMStringNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2A16B4310300A98890 /* CMStringNode.m */; };
 		918FFD2E16B433D700A98890 /* CMCommentNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2D16B433D700A98890 /* CMCommentNode.m */; };
@@ -94,6 +95,8 @@
 		9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMObjectiveCParser.m; sourceTree = "<group>"; };
 		9174B73C16B49B0E009ABA46 /* CMMethodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMMethodNode.h; sourceTree = "<group>"; };
 		9174B73D16B49B0E009ABA46 /* CMMethodNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMMethodNode.m; sourceTree = "<group>"; };
+		917D039516B755990017CEFE /* CMStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMStack.h; sourceTree = "<group>"; };
+		917D039616B755990017CEFE /* CMStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMStack.m; sourceTree = "<group>"; };
 		918FFD2616B430E500A98890 /* CMCodeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMCodeNode.h; sourceTree = "<group>"; };
 		918FFD2716B430E500A98890 /* CMCodeNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMCodeNode.m; sourceTree = "<group>"; };
 		918FFD2916B4310300A98890 /* CMStringNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMStringNode.h; sourceTree = "<group>"; };
@@ -153,6 +156,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		917D039416B755630017CEFE /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				917D039516B755990017CEFE /* CMStack.h */,
+				917D039616B755990017CEFE /* CMStack.m */,
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
 		918FFD2116B4307C00A98890 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -233,6 +245,7 @@
 		91FB020816B37C0900760CEB /* CodeMap */ = {
 			isa = PBXGroup;
 			children = (
+				917D039416B755630017CEFE /* Helpers */,
 				918FFD2116B4307C00A98890 /* Models */,
 				91FB021416B37C0900760CEB /* CMAppDelegate.h */,
 				91FB021516B37C0900760CEB /* CMAppDelegate.m */,
@@ -455,6 +468,7 @@
 				9199F9F116B58E8700315044 /* CMImportNode.m in Sources */,
 				91EFC07416B6FD2000850F6A /* CMClassNode.m in Sources */,
 				91EFC07716B6FF5700850F6A /* CMInvocationNode.m in Sources */,
+				917D039716B755990017CEFE /* CMStack.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
