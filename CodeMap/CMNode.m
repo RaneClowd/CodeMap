@@ -10,11 +10,23 @@
 
 @implementation CMNode
 
-- (id)initWithCode:(NSString *)code
+- (id)init
 {
     self = [super init];
+    self.childNodes = [[NSMutableArray alloc] init];
+    return self;
+}
+
+- (id)initWithCode:(NSString *)code
+{
+    self = [self init];
     self.value = code;
     return self;
+}
+
+- (NSString *)description
+{
+    return self.value;
 }
 
 @end

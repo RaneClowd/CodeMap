@@ -40,7 +40,6 @@ typedef enum {
 
 @property (nonatomic) int openBracketCount;
 @property (nonatomic,strong) NSMutableString* trackingValue;
-@property (nonatomic,strong) CMMethodNode* openMethodNode;
 
 @end
 
@@ -121,7 +120,7 @@ typedef enum {
 
 - (void)parseLineOfCode:(NSMutableString*)lineOfCode
 {
-    //NSLog(@"%@", lineOfCode);
+    NSLog(@"%@", lineOfCode);
     
     //does the machine handle wrenches? }
     
@@ -184,7 +183,7 @@ typedef enum {
                 if (current != '{') {
                     [self.trackingValue appendFormat:@"%c", current];
                 } else {
-                    [self openMethodNode:self.trackingValue];
+                    [self definingMethodWithSignature:self.trackingValue];
                     [self leaveCurrentState];
                     [self enterState:ParsingMethodBody];
                     self.openBracketCount = 1;
@@ -208,19 +207,25 @@ typedef enum {
                 break;
                 
             case ParsingInvocationTarget:
-                if ([self charIsWhitespace:current]) {
+                if (![self charIsWhitespace:current]) {
                     [self.trackingValue appendFormat:@"%c", current];
                 } else {
                     [self leaveCurrentState];
+                    [self definingInvocationFor:self.trackingValue];
+                    
+                    self.trackingValue = [[NSMutableString alloc] init];
                     [self enterState:ParsingInvocationSelector];
+                    [self enterState:ParsingIgnoringWhitespace];
                 }
                 break;
                 
             case ParsingInvocationSelector:
                 if (current == ']') {
-                    [self.trackingValue appendFormat:@"%c", current];
-                } else if (![self charIsWhitespace:current]) {
                     [self leaveCurrentState];
+                    [self definingInvocationSelector:self.trackingValue];
+                    [self closeNode];
+                } else {
+                    [self.trackingValue appendFormat:@"%c", current];
                 }
                 break;
                 
@@ -267,6 +272,7 @@ typedef enum {
                 
                 if (self.openBracketCount == 0) {
                     [self leaveCurrentState];
+                    [self closeNode];
                 }
                 
             default:
@@ -300,10 +306,12 @@ typedef enum {
     return exists;
 }
 
-- (void)addCodeNode:(NSString*)code
+- (NSString*)trimWhiteSpaceFrom:(NSString*)string
 {
-    [self.nodes addObject:[[CMCodeNode alloc] initWithCode:code]];
+    return [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
+
+#pragma mark - Node Management
 
 - (void)addStringNode:(NSString*)string
 {
@@ -322,23 +330,48 @@ typedef enum {
     [self.nodes addObject:[[CMImportNode alloc] initWithCode:fileName]];
 }
 
-- (void)openMethodNode:(NSString*)signature
+- (void)definingMethodWithSignature:(NSString*)signature
 {
-    self.openMethodNode = [[CMMethodNode alloc] initWithCode:[self trimWhiteSpaceFrom:signature]];
-    [self.nodes addObject:self.openMethodNode];
+    CMMethodNode* methodNode = [[CMMethodNode alloc] initWithCode:[self trimWhiteSpaceFrom:signature]];
+    [self.nodes addObject:methodNode];
+    [self enterNode:methodNode];
 }
 
-- (NSString*)trimWhiteSpaceFrom:(NSString*)string
+- (void)definingInvocationFor:(NSString*)target
 {
-    return [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    CMInvocationNode* invocationNode = [[CMInvocationNode alloc] init];
+    invocationNode.target = target;
+    
+    CMNode* parentNode = [self getCurrentNode];
+    [parentNode.childNodes addObject:invocationNode];
+    
+    [self enterNode:invocationNode];
 }
 
-- (void)removeFirstCharacter:(NSMutableString*)string
+- (void)definingInvocationSelector:(NSString*)selector
 {
-    [string replaceCharactersInRange:NSMakeRange(0, 1) withString:@""];
+    CMInvocationNode* invocationNode = (CMInvocationNode*)[self getCurrentNode];
+    invocationNode.value = selector;
 }
 
 #pragma mark - Stack Handling
+
+#pragma mark Nodes
+
+- (CMNode*)getCurrentNode
+{
+    return [self.nodeStack peek];
+}
+
+- (void)enterNode:(CMNode*)node
+{
+    [self.nodeStack push:node];
+}
+
+- (void)closeNode
+{
+    [self.nodeStack pop];
+}
 
 #pragma mark Parser State
 
