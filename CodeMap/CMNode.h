@@ -14,6 +14,7 @@
 @property (nonatomic,strong) NSMutableArray* childNodes;
 
 - (id)initWithCode:(NSString*)code;
-- (NSString*)description;
+
+- (NSString*)myDescription;
 
 @end

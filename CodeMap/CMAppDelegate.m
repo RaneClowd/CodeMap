@@ -7,7 +7,6 @@
 //
 
 #import "CMAppDelegate.h"
-#import "CMCodeNode.h"
 #import "CMStringNode.h"
 #import "CMCommentNode.h"
 
@@ -44,7 +43,7 @@
     }
     
     for (CMNode* node in parser.nodes) {
-        NSLog(@"%@", [node description]);
+        NSLog(@"%@", [node myDescription]);
     }
 }
 

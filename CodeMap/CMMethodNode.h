@@ -12,6 +12,4 @@
 
 @interface CMMethodNode : CMNode
 
-- (void)addInvocationNode:(CMInvocationNode*)invocation;
-
 @end

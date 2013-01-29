@@ -9,7 +9,6 @@
 #import "CMObjectiveCParser.h"
 #import <ParseKit/ParseKit.h>
 
-#import "CMCodeNode.h"
 #import "CMCommentNode.h"
 #import "CMStringNode.h"
 #import "CMMethodNode.h"
@@ -121,7 +120,7 @@ typedef enum {
 
 - (void)parseLineOfCode:(NSMutableString*)lineOfCode
 {
-    NSLog(@"%@", lineOfCode);
+    //NSLog(@"%@", lineOfCode);
     
     //does the machine handle wrenches? }
     

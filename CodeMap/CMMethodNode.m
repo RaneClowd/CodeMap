@@ -10,9 +10,9 @@
 
 @implementation CMMethodNode
 
-- (NSString *)description
+- (NSString *)myDescription
 {
-    return [NSString stringWithFormat:@"Method: %@", self.value];
+    return [NSString stringWithFormat:@"Method: %@", [super myDescription]];
 }
 
 @end

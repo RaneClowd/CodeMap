@@ -10,7 +10,7 @@
 
 @implementation CMStringNode
 
-- (NSString *)description
+- (NSString *)myDescription
 {
     return [NSString stringWithFormat:@"String: %@", self.value];
 }

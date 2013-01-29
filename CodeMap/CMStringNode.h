@@ -11,4 +11,6 @@
 
 @interface CMStringNode : CMNode
 
+- (NSString*)myDescription;
+
 @end

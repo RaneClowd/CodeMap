@@ -10,7 +10,7 @@
 
 @implementation CMCommentNode
 
-- (NSString *)description
+- (NSString *)myDescription
 {
     return [NSString stringWithFormat:@"Comment: %@", self.value];
 }

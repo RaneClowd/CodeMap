@@ -10,9 +10,9 @@
 
 @implementation CMImportNode
 
-- (NSString *)description
+- (NSString *)myDescription
 {
-    return [NSString stringWithFormat:@"Import: %@", self.value];
+    return [NSString stringWithFormat:@"Import: %@", [super myDescription]];
 }
 
 @end

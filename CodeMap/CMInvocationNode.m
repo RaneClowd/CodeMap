@@ -10,9 +10,9 @@
 
 @implementation CMInvocationNode
 
-- (NSString *)description
+- (NSString *)myDescription
 {
-    return [NSString stringWithFormat:@" [ %@  %@ ]", [self.target description], [self.selector description]];
+    return [NSString stringWithFormat:@"Invoke: [ %@ <> %@ ]", [self.target myDescription], [self.selector myDescription]];
 }
 
 @end
