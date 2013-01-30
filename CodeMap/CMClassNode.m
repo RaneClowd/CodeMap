@@ -10,4 +10,10 @@
 
 @implementation CMClassNode
 
+- (CMNode *)nodeForName:(NSString *)name
+{
+    if ([name isEqualToString:@"self"]) return self;
+    else return [super nodeForName:name];
+}
+
 @end

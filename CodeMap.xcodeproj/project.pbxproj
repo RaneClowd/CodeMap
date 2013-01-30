@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		911D70E016B844AF0055DED1 /* CMValueNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 911D70DF16B844AF0055DED1 /* CMValueNode.m */; };
 		9129537216B48D9300A5DBE7 /* CMObjectiveCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */; };
+		9138E6DC16B8B11300C0AE53 /* CMContainerNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9138E6DB16B8B11300C0AE53 /* CMContainerNode.m */; };
 		9174B73E16B49B0E009ABA46 /* CMMethodNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9174B73D16B49B0E009ABA46 /* CMMethodNode.m */; };
 		917D039716B755990017CEFE /* CMStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 917D039616B755990017CEFE /* CMStack.m */; };
 		918FFD2B16B4310300A98890 /* CMStringNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2A16B4310300A98890 /* CMStringNode.m */; };
@@ -95,6 +96,8 @@
 		911D70DF16B844AF0055DED1 /* CMValueNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMValueNode.m; sourceTree = "<group>"; };
 		9129537016B48D9300A5DBE7 /* CMObjectiveCParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMObjectiveCParser.h; sourceTree = "<group>"; };
 		9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMObjectiveCParser.m; sourceTree = "<group>"; };
+		9138E6DA16B8B11300C0AE53 /* CMContainerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMContainerNode.h; sourceTree = "<group>"; };
+		9138E6DB16B8B11300C0AE53 /* CMContainerNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMContainerNode.m; sourceTree = "<group>"; };
 		9174B73C16B49B0E009ABA46 /* CMMethodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMMethodNode.h; sourceTree = "<group>"; };
 		9174B73D16B49B0E009ABA46 /* CMMethodNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMMethodNode.m; sourceTree = "<group>"; };
 		917D039516B755990017CEFE /* CMStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMStack.h; sourceTree = "<group>"; };
@@ -156,6 +159,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9138E6D716B8B0AD00C0AE53 /* Containers */ = {
+			isa = PBXGroup;
+			children = (
+				9138E6D916B8B0FB00C0AE53 /* Method */,
+				9138E6D816B8B0EE00C0AE53 /* Class */,
+				9138E6DA16B8B11300C0AE53 /* CMContainerNode.h */,
+				9138E6DB16B8B11300C0AE53 /* CMContainerNode.m */,
+			);
+			name = Containers;
+			sourceTree = "<group>";
+		};
+		9138E6D816B8B0EE00C0AE53 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				91EFC07216B6FD2000850F6A /* CMClassNode.h */,
+				91EFC07316B6FD2000850F6A /* CMClassNode.m */,
+			);
+			name = Class;
+			sourceTree = "<group>";
+		};
+		9138E6D916B8B0FB00C0AE53 /* Method */ = {
+			isa = PBXGroup;
+			children = (
+				9174B73C16B49B0E009ABA46 /* CMMethodNode.h */,
+				9174B73D16B49B0E009ABA46 /* CMMethodNode.m */,
+			);
+			name = Method;
+			sourceTree = "<group>";
+		};
 		917D039416B755630017CEFE /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -168,18 +200,15 @@
 		918FFD2116B4307C00A98890 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				9138E6D716B8B0AD00C0AE53 /* Containers */,
 				918FFD2916B4310300A98890 /* CMStringNode.h */,
 				918FFD2A16B4310300A98890 /* CMStringNode.m */,
 				918FFD2C16B433D700A98890 /* CMCommentNode.h */,
 				918FFD2D16B433D700A98890 /* CMCommentNode.m */,
 				918FFD2F16B4368E00A98890 /* CMNode.h */,
 				918FFD3016B4368E00A98890 /* CMNode.m */,
-				9174B73C16B49B0E009ABA46 /* CMMethodNode.h */,
-				9174B73D16B49B0E009ABA46 /* CMMethodNode.m */,
 				9199F9EF16B58E8700315044 /* CMImportNode.h */,
 				9199F9F016B58E8700315044 /* CMImportNode.m */,
-				91EFC07216B6FD2000850F6A /* CMClassNode.h */,
-				91EFC07316B6FD2000850F6A /* CMClassNode.m */,
 				91EFC07516B6FF5700850F6A /* CMInvocationNode.h */,
 				91EFC07616B6FF5700850F6A /* CMInvocationNode.m */,
 				911D70DE16B844AF0055DED1 /* CMValueNode.h */,
@@ -469,6 +498,7 @@
 				91EFC07716B6FF5700850F6A /* CMInvocationNode.m in Sources */,
 				917D039716B755990017CEFE /* CMStack.m in Sources */,
 				911D70E016B844AF0055DED1 /* CMValueNode.m in Sources */,
+				9138E6DC16B8B11300C0AE53 /* CMContainerNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

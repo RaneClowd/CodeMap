@@ -6,10 +6,8 @@
 //  Copyright (c) 2013 Solstice Mobile. All rights reserved.
 //
 
-#import "CMNode.h"
+#import "CMContainerNode.h"
 
-@interface CMClassNode : CMNode
-
-- (void)addMethod;
+@interface CMClassNode : CMContainerNode
 
 @end

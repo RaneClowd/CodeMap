@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CMNode.h"
+#import "CMContainerNode.h"
 #import "CMInvocationNode.h"
 
-@interface CMMethodNode : CMNode
+@interface CMMethodNode : CMContainerNode
 
 @end

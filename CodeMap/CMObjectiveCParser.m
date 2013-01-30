@@ -14,6 +14,7 @@
 #import "CMMethodNode.h"
 #import "CMImportNode.h"
 #import "CMValueNode.h"
+#import "CMClassNode.h"
 
 #import "CMStack.h"
 
@@ -55,6 +56,8 @@ typedef enum {
     [self enterState:ParsingNothingSpecial];
     
     self.nodeStack = [[CMStack alloc] init];
+    CMClassNode* class = [[CMClassNode alloc] init];
+    
     
     return self;
 }
