@@ -56,8 +56,6 @@ typedef enum {
     [self enterState:ParsingNothingSpecial];
     
     self.nodeStack = [[CMStack alloc] init];
-    CMClassNode* class = [[CMClassNode alloc] init];
-    
     
     return self;
 }
