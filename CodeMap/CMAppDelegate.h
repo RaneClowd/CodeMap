@@ -11,6 +11,5 @@
 @interface CMAppDelegate : NSObject <NSApplicationDelegate>
 
 @property (assign) IBOutlet NSWindow *window;
-- (IBAction)mapClicked:(id)sender;
 
 @end

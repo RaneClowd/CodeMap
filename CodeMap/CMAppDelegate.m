@@ -7,14 +7,12 @@
 //
 
 #import "CMAppDelegate.h"
-#import "CMStringNode.h"
-#import "CMCommentNode.h"
 
-#import "CMObjectiveCParser.h"
+#import "CMMapViewController.h"
 
 @interface CMAppDelegate ()
 
-@property (nonatomic,strong) NSMutableArray* nodes;
+@property (nonatomic,strong) NSViewController* mapViewController;
 
 @end
 
@@ -22,29 +20,10 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    NSString* test = @"// this is no comment";
-    // Insert code here to initialize your application
+    self.mapViewController = [[CMMapViewController alloc] initWithNibName:@"CMMapViewController" bundle:nil];
     
-    self.nodes = [[NSMutableArray alloc] init];
-}
-
-- (IBAction)mapClicked:(id)sender
-{
-    CMObjectiveCParser* parser = [[CMObjectiveCParser alloc] init];
-    
-    NSString * path = @"/Users/kennyskaggs/Projects/Utilities/CodeMap/CodeMap/CMObjectiveCParser.m";
-    NSFileHandle * fileHandle = [NSFileHandle fileHandleForReadingAtPath:path];
-    
-    NSData * buffer = [fileHandle readDataOfLength:1024];
-    while ([buffer length] > 0) { // this is cool
-        [parser parseCodePart:[[NSMutableString alloc] initWithData:buffer encoding:NSUTF8StringEncoding]];
-        
-        buffer = [fileHandle readDataOfLength:1024];
-    }
-    
-    for (CMNode* node in parser.nodes) {
-        NSLog(@"%@", [node myDescription]);
-    }
+    [self.window.contentView addSubview:self.mapViewController.view];
+    self.mapViewController.view.frame = ((NSView*)self.window.contentView).bounds;
 }
 
 @end
