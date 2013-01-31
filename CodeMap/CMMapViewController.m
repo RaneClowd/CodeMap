@@ -10,6 +10,7 @@
 
 #import "CMObjectiveCParser.h"
 #import "CMNode.h"
+#import "CMNodeView.h"
 
 @interface CMMapViewController ()
 
@@ -44,48 +45,35 @@
         buffer = [fileHandle readDataOfLength:1024];
     }
     
-    CGFloat topY = 0;
+    CGFloat topY = 800;
+    CGFloat x = 100;
     
-    CGFloat x = 0;
+    [self.scrollView.documentView setAutoresizesSubviews:NO];
+    
     for (CMNode* node in parser.nodes) {
-        CGFloat y = 0;
+        CGFloat y = 100;
+        
+        CMNodeView* nodeLabel = [self createLabelWithFrame:CGRectMake(x, y, 100, 30)];
+        [nodeLabel setString:[node myDescription]];
+        [self.scrollView.documentView addSubview:nodeLabel];
         
         for (CMNode* childNode in [node childNodes]) {
-            y += 100;
-            if (topY < y) topY = y;
+            CMNodeView* nodeLabel = [self createLabelWithFrame:CGRectMake(x, y, 100, 30)];
+            [nodeLabel setString:[childNode myDescription]];
+            [self.scrollView.documentView addSubview:nodeLabel];
+            
+            y += 50;
         }
         
-        x += 150;
-    }
+        x += 110;
+     }
     
     [self.scrollView.documentView setFrame:CGRectMake(0, 0, x+150, topY+100)];
-    
-    x = 0;
-    for (CMNode* node in parser.nodes) {
-        CGFloat y = 0;
-        
-        NSTextView* nodeLabel = [self createLabelWithFrame:CGRectMake(x, y, 100, 30)];
-        [nodeLabel setString:[node myDescription]];
-        [self.scrollView addSubview:nodeLabel];
-        
-        for (CMNode* childNode in [node childNodes]) {
-            NSTextView* nodeLabel = [self createLabelWithFrame:CGRectMake(x, y, 100, 30)];
-            [nodeLabel setString:[node myDescription]];
-            [self.scrollView addSubview:nodeLabel];
-            
-            y += 100;
-        }
-        
-        x += 150;
-    }
 }
 
-- (NSTextView*)createLabelWithFrame:(CGRect)frame
+- (CMNodeView*)createLabelWithFrame:(CGRect)frame
 {
-    NSTextView* label = [[NSTextView alloc] initWithFrame:frame];
-    [label setEditable:NO];
-    [label setSelectable:NO];
-    [label setAutoresizesSubviews:NO];
+    CMNodeView* label = [[CMNodeView alloc] initWithFrame:frame];
     return label;
 }
 

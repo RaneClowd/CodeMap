@@ -12,6 +12,7 @@
 		9138E6DC16B8B11300C0AE53 /* CMContainerNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9138E6DB16B8B11300C0AE53 /* CMContainerNode.m */; };
 		913F8F4416B99C2B0052A164 /* CMMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 913F8F4216B99C2B0052A164 /* CMMapViewController.m */; };
 		913F8F4516B99C2B0052A164 /* CMMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 913F8F4316B99C2B0052A164 /* CMMapViewController.xib */; };
+		915A190A16B9FF6F00DFD0CD /* CMNodeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 915A190916B9FF6F00DFD0CD /* CMNodeView.m */; };
 		9174B73E16B49B0E009ABA46 /* CMMethodNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9174B73D16B49B0E009ABA46 /* CMMethodNode.m */; };
 		917D039716B755990017CEFE /* CMStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 917D039616B755990017CEFE /* CMStack.m */; };
 		918FFD2B16B4310300A98890 /* CMStringNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2A16B4310300A98890 /* CMStringNode.m */; };
@@ -103,6 +104,8 @@
 		913F8F4116B99C2B0052A164 /* CMMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMMapViewController.h; sourceTree = "<group>"; };
 		913F8F4216B99C2B0052A164 /* CMMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMMapViewController.m; sourceTree = "<group>"; };
 		913F8F4316B99C2B0052A164 /* CMMapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CMMapViewController.xib; sourceTree = "<group>"; };
+		915A190816B9FF6F00DFD0CD /* CMNodeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMNodeView.h; sourceTree = "<group>"; };
+		915A190916B9FF6F00DFD0CD /* CMNodeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMNodeView.m; sourceTree = "<group>"; };
 		9174B73C16B49B0E009ABA46 /* CMMethodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMMethodNode.h; sourceTree = "<group>"; };
 		9174B73D16B49B0E009ABA46 /* CMMethodNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMMethodNode.m; sourceTree = "<group>"; };
 		917D039516B755990017CEFE /* CMStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMStack.h; sourceTree = "<group>"; };
@@ -199,6 +202,8 @@
 				913F8F4116B99C2B0052A164 /* CMMapViewController.h */,
 				913F8F4216B99C2B0052A164 /* CMMapViewController.m */,
 				913F8F4316B99C2B0052A164 /* CMMapViewController.xib */,
+				915A190816B9FF6F00DFD0CD /* CMNodeView.h */,
+				915A190916B9FF6F00DFD0CD /* CMNodeView.m */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -517,6 +522,7 @@
 				911D70E016B844AF0055DED1 /* CMValueNode.m in Sources */,
 				9138E6DC16B8B11300C0AE53 /* CMContainerNode.m in Sources */,
 				913F8F4416B99C2B0052A164 /* CMMapViewController.m in Sources */,
+				915A190A16B9FF6F00DFD0CD /* CMNodeView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

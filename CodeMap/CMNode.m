@@ -26,13 +26,7 @@
 
 - (NSString *)myDescription
 {
-    NSMutableString* childrenString = [[NSMutableString alloc] initWithString:@"\n"];
-    for (CMNode* node in self.childNodes) {
-        [childrenString appendString:[node myDescription]];
-        [childrenString appendString:@"\n"];
-    }
-    
-    return [NSString stringWithFormat:@"%@ {%@}", self.value, [self.childNodes count] > 0 ? childrenString : @""];
+    return [NSString stringWithFormat:@"%@", self.value];
 }
 
 @end
