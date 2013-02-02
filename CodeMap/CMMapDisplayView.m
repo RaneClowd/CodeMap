@@ -55,28 +55,27 @@
 {
     if (*maxY < y) *maxY = y;
     
-    CMNodeView* nodeLabel = [self createNodeViewWithFrame:CGRectMake(x, y, 100, 30)];
+    CMNodeView* nodeLabel = [self createNodeViewWithFrame:CGRectMake(x, y, 100, 30) andNode:node];
     [nodeLabel setString:[node myDescription]];
-    node.nodeView = nodeLabel;
     
     [self addSubview:nodeLabel];
     
     if ([node class] == [CMInvocationNode class]) {
         CMInvocationNode* invocationNode = (CMInvocationNode*)node;
         [self addNewViewFor:invocationNode.target atX:x andY:y trackingMaxY:maxY];
-        
         [self addNewViewFor:invocationNode.selector atX:x andY:y trackingMaxY:maxY];
     }
     
     for (CMNode* childNode in [node childNodes]) {
-        [self addNewViewFor:childNode atX:x andY:y+50 trackingMaxY:maxY];
+        [self addNewViewFor:childNode atX:x andY:y+200 trackingMaxY:maxY];
     }
 }
 
-- (CMNodeView*)createNodeViewWithFrame:(CGRect)frame
+- (CMNodeView*)createNodeViewWithFrame:(CGRect)frame andNode:(CMNode*)node
 {
     CMNodeView* label = [[CMNodeView alloc] initWithFrame:frame];
     label.displayDelegate = self;
+    node.nodeView = label;
     return label;
 }
 
@@ -91,17 +90,21 @@
 
 - (void)connectNodeFamilyTree:(CMNode*)parentNode
 {
-    for (CMNode* childNode in parentNode.childNodes) {
-        [self drawLineFrom:[parentNode.nodeView getCenter] to:[childNode.nodeView getCenter]];
-        
-        if ([parentNode class] == [CMInvocationNode class]) {
-            CMInvocationNode* invocationNode = (CMInvocationNode*)parentNode;
-            [self drawLineFrom:[parentNode.nodeView getCenter] to:[invocationNode.target.nodeView getCenter]];
-            [self drawLineFrom:[parentNode.nodeView getCenter] to:[invocationNode.selector.nodeView getCenter]];
-        }
-        
-        [self connectNodeFamilyTree:childNode];
+    if ([parentNode class] == [CMInvocationNode class]) {
+        CMInvocationNode* invocationNode = (CMInvocationNode*)parentNode;
+        [self connectNode:invocationNode toNode:invocationNode.target];
+        [self connectNode:invocationNode toNode:invocationNode.selector];
     }
+    
+    for (CMNode* childNode in parentNode.childNodes) {
+        [self connectNode:parentNode toNode:childNode];
+    }
+}
+
+- (void)connectNode:(CMNode*)parentNode toNode:(CMNode*)childNode
+{
+    [self drawLineFrom:[parentNode.nodeView getCenter] to:[childNode.nodeView getCenter]];
+    [self connectNodeFamilyTree:childNode];
 }
 
 - (void)redraw
