@@ -12,6 +12,8 @@
 @interface CMNode : NSObject
 
 @property (nonatomic,strong) NSString* value;
+
+@property (nonatomic,weak) CMNode* parentNode;
 @property (nonatomic,strong) NSMutableArray* childNodes;
 
 @property (nonatomic,strong) CMNodeView* nodeView;

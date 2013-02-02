@@ -55,10 +55,7 @@
 {
     if (*maxY < y) *maxY = y;
     
-    CMNodeView* nodeLabel = [self createNodeViewWithFrame:CGRectMake(x, y, 100, 30) andNode:node];
-    [nodeLabel setString:[node myDescription]];
-    
-    [self addSubview:nodeLabel];
+    [self createAndAddViewFor:node atX:x andY:y];
     
     if ([node class] == [CMInvocationNode class]) {
         CMInvocationNode* invocationNode = (CMInvocationNode*)node;
@@ -69,6 +66,13 @@
     for (CMNode* childNode in [node childNodes]) {
         [self addNewViewFor:childNode atX:x andY:y+200 trackingMaxY:maxY];
     }
+}
+
+- (void)createAndAddViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y
+{
+    CMNodeView* nodeLabel = [self createNodeViewWithFrame:CGRectMake(x, y, 100, 30) andNode:node];
+    [nodeLabel setString:[node myDescription]];
+    [self addSubview:nodeLabel];
 }
 
 - (CMNodeView*)createNodeViewWithFrame:(CGRect)frame andNode:(CMNode*)node

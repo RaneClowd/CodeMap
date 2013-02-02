@@ -347,16 +347,38 @@ typedef enum {
     CMValueNode* selectorNode = [[CMValueNode alloc] init];
     
     invocationNode.target = targetNode;
+    targetNode.parentNode = invocationNode;
     invocationNode.selector = selectorNode;
+    selectorNode.parentNode = invocationNode;
     
     CMNode* parentNode = [self getCurrentNode];
-    [parentNode.childNodes addObject:invocationNode];
+    [self addInvocationNode:invocationNode toParent:parentNode];
     
     [self enterNode:selectorNode];
     [self enterNode:targetNode];
     
     [self enterState:ParsingInvocationTarget];
     [self enterState:ParsingIgnoringWhitespace];
+}
+
+- (void)addInvocationNode:(CMInvocationNode*)invocationNode toParent:(CMNode*)parentNode
+{
+    BOOL parentNodeIsValueNode = [parentNode class] == [CMValueNode class];
+    BOOL parentOfParentExists = parentNode.parentNode != nil; //TODO: don't need this when class node is in place
+    BOOL parentOfParentIsInvocation = parentOfParentExists && [parentNode.parentNode class] == [CMInvocationNode class];
+    
+    if (parentNodeIsValueNode && parentOfParentIsInvocation) {
+        CMInvocationNode* parentInvocation = (CMInvocationNode*)parentNode.parentNode;
+        parentInvocation.target = invocationNode;
+    } else {
+        [self putNode:invocationNode insideNode:parentNode];
+    }
+}
+
+- (void)putNode:(CMNode*)childNode insideNode:(CMNode*)parentNode
+{
+    [parentNode.childNodes addObject:childNode];
+    childNode.parentNode = parentNode;
 }
 
 - (void)setValueForOpenNode:(NSString*)value
