@@ -6,8 +6,11 @@
 //  Copyright (c) 2013 Solstice Mobile. All rights reserved.
 //
 
-#import "CMContainerNode.h"
+#import "CMNode.h"
+#import "CMMethodNode.h"
 
-@interface CMClassNode : CMContainerNode
+@interface CMClassNode : CMNode
+
+- (CMMethodNode*)methodForSignature:(NSString*)signature;
 
 @end

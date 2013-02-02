@@ -14,19 +14,22 @@
 #import "CMMethodNode.h"
 #import "CMImportNode.h"
 #import "CMValueNode.h"
-#import "CMClassNode.h"
 
 #import "CMStack.h"
 
 typedef enum {
     ParsingCommentLine,
     ParsingImport,
+    ParsingMethodType,
     ParsingMethodSignature,
     ParsingMethodBody,
+    ParsingMethodParamName,
+    ParsingMethodParamType,
     ParsingString,
     ParsingChar,
     ParsingInvocationTarget,
     ParsingInvocationSelector,
+    ParsingInvocationParam,
     ParsingIgnoringWhitespace,
     ParsingNothingSpecial
 } ParsingState;
@@ -56,6 +59,9 @@ typedef enum {
     [self enterState:ParsingNothingSpecial];
     
     self.nodeStack = [[CMStack alloc] init];
+    self.openClass = [[CMClassNode alloc] init];
+    self.openClass.value = @"Parser";
+    [self enterNode:self.openClass];
     
     return self;
 }
@@ -156,7 +162,8 @@ typedef enum {
                         break;
                         
                     case '-':
-                        [self enterState:ParsingMethodSignature];
+                        [self enterState:ParsingMethodType];
+                        [self enterState:ParsingIgnoringWhitespace];
                         self.trackingValue = [[NSMutableString alloc] init];
                         break;
                         
@@ -186,14 +193,43 @@ typedef enum {
                 }
                 break;
                 
-            case ParsingMethodSignature:
-                if (current != '{') {
-                    [self.trackingValue appendFormat:@"%c", current];
-                } else {
-                    [self definingMethodWithSignature:self.trackingValue];
+            case ParsingMethodType:
+                if (current == ')') {
                     [self leaveCurrentState];
-                    [self enterState:ParsingMethodBody];
-                    self.openBracketCount = 1;
+                    [self enterState:ParsingMethodSignature];
+                    [self enterState:ParsingIgnoringWhitespace];
+                }
+                break;
+                
+            case ParsingMethodParamType:
+                if (current == ')') {
+                    [self leaveCurrentState];
+                }
+                break;
+                
+            case ParsingMethodParamName:
+                if ([self charIsWhitespace:current]) {
+                    [self leaveCurrentState];
+                }
+                break;
+                
+            case ParsingMethodSignature:
+                if (![self charIsWhitespace:current]) {
+                    if (current == ':') {
+                        [self.trackingValue appendFormat:@"%c", current];
+                        [self enterState:ParsingIgnoringWhitespace];
+                        [self enterState:ParsingMethodParamName];
+                        [self enterState:ParsingIgnoringWhitespace];
+                        [self enterState:ParsingMethodParamType];
+                        [self enterState:ParsingIgnoringWhitespace];
+                    } else if (current != '{') {
+                        [self.trackingValue appendFormat:@"%c", current];
+                    } else {
+                        [self definingMethodWithSignature:self.trackingValue];
+                        [self leaveCurrentState];
+                        [self enterState:ParsingMethodBody];
+                        self.openBracketCount = 1;
+                    }
                 }
                 break;
                 
@@ -229,13 +265,30 @@ typedef enum {
                 }
                 break;
                 
-            case ParsingInvocationSelector:
-                if (current == ']') {
+            case ParsingInvocationParam:
+                if ([self charIsWhitespace:current]) {
                     [self leaveCurrentState];
-                    [self setValueForOpenNode:self.trackingValue];
-                    [self closeNode];
-                } else {
-                    [self.trackingValue appendFormat:@"%c", current];
+                } else if (current == ']') {
+                    [self leaveCurrentState];
+                    [self leaveCurrentState];
+                    [self leaveCurrentState];
+                    [self closeInvocation];
+                }
+                break;
+                
+            case ParsingInvocationSelector:
+                if (![self charIsWhitespace:current]) {
+                    if (current == ']') {
+                        [self leaveCurrentState];
+                        [self closeInvocation];
+                    } else if (current == ':') {
+                        [self.trackingValue appendFormat:@"%c", current];
+                        [self enterState:ParsingIgnoringWhitespace];
+                        [self enterState:ParsingInvocationParam];
+                        [self enterState:ParsingIgnoringWhitespace];
+                    } else {
+                        [self.trackingValue appendFormat:@"%c", current];
+                    }
                 }
                 break;
                 
@@ -335,8 +388,7 @@ typedef enum {
 
 - (void)definingMethodWithSignature:(NSString*)signature
 {
-    CMMethodNode* methodNode = [[CMMethodNode alloc] initWithCode:[self trimWhiteSpaceFrom:signature]];
-    [self.nodes addObject:methodNode];
+    CMMethodNode* methodNode = [self.openClass methodForSignature:signature];
     [self enterNode:methodNode];
 }
 
@@ -410,6 +462,19 @@ typedef enum {
 - (void)closeNode
 {
     [self.nodeStack pop];
+}
+
+- (void)closeInvocation
+{
+    CMInvocationNode* invocation = (CMInvocationNode*)[self getCurrentNode].parentNode;
+    
+    if ([invocation.target.value isEqualToString:@"self"]) {
+        invocation.target = [self.openClass methodForSignature:self.trackingValue];
+        invocation.selector = nil;
+    } else {
+        [self setValueForOpenNode:self.trackingValue];
+        [self closeNode];
+    }
 }
 
 #pragma mark Parser State

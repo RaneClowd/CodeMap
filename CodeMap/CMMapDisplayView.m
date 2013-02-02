@@ -59,8 +59,11 @@
     
     if ([node class] == [CMInvocationNode class]) {
         CMInvocationNode* invocationNode = (CMInvocationNode*)node;
-        [self addNewViewFor:invocationNode.target atX:x andY:y trackingMaxY:maxY];
-        [self addNewViewFor:invocationNode.selector atX:x andY:y trackingMaxY:maxY];
+        
+        if (invocationNode.selector) {
+            [self addNewViewFor:invocationNode.target atX:x andY:y trackingMaxY:maxY];
+            [self addNewViewFor:invocationNode.selector atX:x andY:y trackingMaxY:maxY];
+        }
     }
     
     for (CMNode* childNode in [node childNodes]) {
@@ -96,8 +99,13 @@
 {
     if ([parentNode class] == [CMInvocationNode class]) {
         CMInvocationNode* invocationNode = (CMInvocationNode*)parentNode;
-        [self connectNode:invocationNode toNode:invocationNode.target];
-        [self connectNode:invocationNode toNode:invocationNode.selector];
+        
+        if (invocationNode.selector) {
+            [self connectNode:invocationNode toNode:invocationNode.target];
+            [self connectNode:invocationNode toNode:invocationNode.selector];
+        } else {
+            [self drawLineFrom:invocationNode to:invocationNode.target];
+        }
     }
     
     for (CMNode* childNode in parentNode.childNodes) {
@@ -107,7 +115,7 @@
 
 - (void)connectNode:(CMNode*)parentNode toNode:(CMNode*)childNode
 {
-    [self drawLineFrom:[parentNode.nodeView getCenter] to:[childNode.nodeView getCenter]];
+    [self drawLineFrom:parentNode to:childNode];
     [self connectNodeFamilyTree:childNode];
 }
 
@@ -116,12 +124,12 @@
     [self setNeedsDisplay:YES];
 }
 
-- (void)drawLineFrom:(CGPoint)pointA to:(CGPoint)pointB
+- (void)drawLineFrom:(CMNode*)nodeA to:(CMNode*)nodeB
 {
     NSBezierPath* line = [[NSBezierPath alloc] init];
     [line setLineWidth:3];
-    [line moveToPoint:pointA];
-    [line lineToPoint:pointB];
+    [line moveToPoint:[nodeA.nodeView getCenter]];
+    [line lineToPoint:[nodeB.nodeView getCenter]];
     [line closePath];
     
     [line stroke];

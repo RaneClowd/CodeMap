@@ -7,10 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CMClassNode.h"
 
 @interface CMObjectiveCParser : NSObject
 
 @property (nonatomic,strong) NSMutableArray* nodes;
+@property (nonatomic,strong) CMClassNode* openClass;
 
 - (void)appendPartOfCode:(NSString*)codePart;
 - (void)parseCode;

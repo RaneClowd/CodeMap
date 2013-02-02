@@ -8,12 +8,27 @@
 
 #import "CMClassNode.h"
 
+@interface CMClassNode ()
+
+@property (nonatomic,strong) NSMutableDictionary* methods;
+
+@end
+
 @implementation CMClassNode
 
-- (CMNode *)nodeForName:(NSString *)name
+- (CMMethodNode *)methodForSignature:(NSString *)signature
 {
-    if ([name isEqualToString:@"self"]) return self;
-    else return [super nodeForName:name];
+    CMMethodNode* method = [self.methods objectForKey:signature];
+    
+    if (!method) {
+        method = [[CMMethodNode alloc] initWithCode:signature];
+        [self.methods setObject:method forKey:signature];
+        
+        [self.childNodes addObject:method];
+        method.parentNode = self;
+    }
+    
+    return method;
 }
 
 @end
