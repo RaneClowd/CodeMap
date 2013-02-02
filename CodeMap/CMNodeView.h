@@ -8,6 +8,16 @@
 
 #import <Cocoa/Cocoa.h>
 
+@protocol DisplayDelegate <NSObject>
+
+- (void)redraw;
+
+@end
+
 @interface CMNodeView : NSTextView
+
+@property (nonatomic,weak) id<DisplayDelegate> displayDelegate;
+
+- (CGPoint)getCenter;
 
 @end

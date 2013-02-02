@@ -7,11 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CMNodeView.h"
 
 @interface CMNode : NSObject
 
 @property (nonatomic,strong) NSString* value;
 @property (nonatomic,strong) NSMutableArray* childNodes;
+
+@property (nonatomic,strong) CMNodeView* nodeView;
 
 - (id)initWithCode:(NSString*)code;
 

@@ -25,6 +25,13 @@
     frame.origin.x += [theEvent deltaX];
     frame.origin.y -= [theEvent deltaY];
     self.frame = frame;
+    
+    [self.displayDelegate redraw];
+}
+
+- (CGPoint)getCenter
+{
+    return CGPointMake(self.frame.origin.x + self.frame.size.width/2, self.frame.origin.y + self.frame.size.height/2);
 }
 
 @end

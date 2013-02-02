@@ -9,8 +9,8 @@
 #import "CMMapViewController.h"
 
 #import "CMObjectiveCParser.h"
-#import "CMNode.h"
-#import "CMNodeView.h"
+
+#import "CMMapDisplayView.h"
 
 @interface CMMapViewController ()
 
@@ -20,16 +20,6 @@
 @end
 
 @implementation CMMapViewController
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Initialization code here.
-    }
-    
-    return self;
-}
 
 - (IBAction)mapClicked:(id)sender
 {
@@ -45,36 +35,10 @@
         buffer = [fileHandle readDataOfLength:1024];
     }
     
-    CGFloat topY = 800;
-    CGFloat x = 100;
-    
-    [self.scrollView.documentView setAutoresizesSubviews:NO];
-    
-    for (CMNode* node in parser.nodes) {
-        CGFloat y = 100;
-        
-        CMNodeView* nodeLabel = [self createLabelWithFrame:CGRectMake(x, y, 100, 30)];
-        [nodeLabel setString:[node myDescription]];
-        [self.scrollView.documentView addSubview:nodeLabel];
-        
-        for (CMNode* childNode in [node childNodes]) {
-            CMNodeView* nodeLabel = [self createLabelWithFrame:CGRectMake(x, y, 100, 30)];
-            [nodeLabel setString:[childNode myDescription]];
-            [self.scrollView.documentView addSubview:nodeLabel];
-            
-            y += 50;
-        }
-        
-        x += 110;
-     }
-    
-    [self.scrollView.documentView setFrame:CGRectMake(0, 0, x+150, topY+100)];
-}
-
-- (CMNodeView*)createLabelWithFrame:(CGRect)frame
-{
-    CMNodeView* label = [[CMNodeView alloc] initWithFrame:frame];
-    return label;
+    CMMapDisplayView* displayView = [[CMMapDisplayView alloc] initWithFrame:CGRectMake(0, 0, 100, 100) andNodes:parser.nodes];
+    CGRect displayFrame = displayView.frame;
+    [self.scrollView.documentView setFrame:CGRectMake(0, 0, displayFrame.size.width, displayFrame.size.height)];
+    [self.scrollView.documentView addSubview:displayView];
 }
 
 @end
