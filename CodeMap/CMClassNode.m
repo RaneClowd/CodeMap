@@ -16,6 +16,13 @@
 
 @implementation CMClassNode
 
+- (id)init
+{
+    self = [super init];
+    self.methods = [[NSMutableDictionary alloc] init];
+    return self;
+}
+
 - (CMMethodNode *)methodForSignature:(NSString *)signature
 {
     CMMethodNode* method = [self.methods objectForKey:signature];

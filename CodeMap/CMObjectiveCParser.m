@@ -473,8 +473,8 @@ typedef enum {
         invocation.selector = nil;
     } else {
         [self setValueForOpenNode:self.trackingValue];
-        [self closeNode];
     }
+    [self closeNode];
 }
 
 #pragma mark Parser State

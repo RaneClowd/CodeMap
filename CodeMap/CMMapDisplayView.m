@@ -27,18 +27,18 @@
         self.rootNodes = [[NSMutableArray alloc] init];
         
         CGFloat maxY = 800;
-        CGFloat x = 100;
+        CGFloat x = 200;
         
         [self setAutoresizesSubviews:NO];
         
         for (CMNode* node in nodes) {
-            CGFloat y = 100;
+            CGFloat y = 150;
             
             [self.rootNodes addObject:node];
             
             [self addNewViewFor:node atX:x andY:y trackingMaxY:&maxY];
             
-            x += 110;
+            x += 300;
         }
         
         CGRect newFrame = frame;
@@ -68,6 +68,7 @@
     
     for (CMNode* childNode in [node childNodes]) {
         [self addNewViewFor:childNode atX:x andY:y+200 trackingMaxY:maxY];
+        x += 20;
     }
 }
 

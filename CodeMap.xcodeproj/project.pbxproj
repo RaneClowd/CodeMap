@@ -23,6 +23,7 @@
 		9199F9F116B58E8700315044 /* CMImportNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199F9F016B58E8700315044 /* CMImportNode.m */; };
 		91EFC07416B6FD2000850F6A /* CMClassNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 91EFC07316B6FD2000850F6A /* CMClassNode.m */; };
 		91EFC07716B6FF5700850F6A /* CMInvocationNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 91EFC07616B6FF5700850F6A /* CMInvocationNode.m */; };
+		91F8F0F916BE1339002FC408 /* CMMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = 91F8F0F816BE1339002FC408 /* CMMethod.m */; };
 		91FB020316B37C0900760CEB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91FB020216B37C0800760CEB /* Cocoa.framework */; };
 		91FB020D16B37C0900760CEB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 91FB020B16B37C0900760CEB /* InfoPlist.strings */; };
 		91FB020F16B37C0900760CEB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 91FB020E16B37C0900760CEB /* main.m */; };
@@ -124,6 +125,8 @@
 		91EFC07316B6FD2000850F6A /* CMClassNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMClassNode.m; sourceTree = "<group>"; };
 		91EFC07516B6FF5700850F6A /* CMInvocationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMInvocationNode.h; sourceTree = "<group>"; };
 		91EFC07616B6FF5700850F6A /* CMInvocationNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMInvocationNode.m; sourceTree = "<group>"; };
+		91F8F0F716BE1339002FC408 /* CMMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMMethod.h; sourceTree = "<group>"; };
+		91F8F0F816BE1339002FC408 /* CMMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMMethod.m; sourceTree = "<group>"; };
 		91FB01FE16B37C0800760CEB /* CodeMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91FB020216B37C0800760CEB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		91FB020516B37C0900760CEB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -197,6 +200,7 @@
 		913F8F4016B99C040052A164 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				91F8F0F616BE1318002FC408 /* MethodView */,
 				913F8F4116B99C2B0052A164 /* CMMapViewController.h */,
 				913F8F4216B99C2B0052A164 /* CMMapViewController.m */,
 				913F8F4316B99C2B0052A164 /* CMMapViewController.xib */,
@@ -249,6 +253,15 @@
 				9199F9CB16B5732D00315044 /* JSDemoApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		91F8F0F616BE1318002FC408 /* MethodView */ = {
+			isa = PBXGroup;
+			children = (
+				91F8F0F716BE1339002FC408 /* CMMethod.h */,
+				91F8F0F816BE1339002FC408 /* CMMethod.m */,
+			);
+			name = MethodView;
 			sourceTree = "<group>";
 		};
 		91FB01F316B37C0800760CEB = {
@@ -523,6 +536,7 @@
 				913F8F4416B99C2B0052A164 /* CMMapViewController.m in Sources */,
 				915A190A16B9FF6F00DFD0CD /* CMNodeView.m in Sources */,
 				915913D216BCB76B00463B11 /* CMMapDisplayView.m in Sources */,
+				91F8F0F916BE1339002FC408 /* CMMethod.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
