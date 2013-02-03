@@ -11,4 +11,9 @@
 
 @interface CMMethodNode : CMNode
 
+@property (nonatomic,strong) CMNode* firstExecutionNode;
+@property (nonatomic,strong) CMNode* lastExecutionNode;
+
+- (void)addNodeOfExecution:(CMNode*)node;
+
 @end

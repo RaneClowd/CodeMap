@@ -429,8 +429,12 @@ typedef enum {
 
 - (void)putNode:(CMNode*)childNode insideNode:(CMNode*)parentNode
 {
-    [parentNode.childNodes addObject:childNode];
-    childNode.parentNode = parentNode;
+    if ([parentNode class] == [CMMethodNode class]) {
+        [(CMMethodNode*)parentNode addNodeOfExecution:childNode];
+    } else {
+        [parentNode.childNodes addObject:childNode];
+        childNode.parentNode = parentNode;
+    }
 }
 
 - (void)setValueForOpenNode:(NSString*)value

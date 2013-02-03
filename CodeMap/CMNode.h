@@ -16,6 +16,8 @@
 @property (nonatomic,weak) CMNode* parentNode;
 @property (nonatomic,strong) NSMutableArray* childNodes;
 
+@property (nonatomic,strong) CMNode* nextInLine;
+
 @property (nonatomic,strong) CMNodeView* nodeView;
 
 - (id)initWithCode:(NSString*)code;

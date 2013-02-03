@@ -11,6 +11,7 @@
 #import "CMNode.h"
 #import "CMNodeView.h"
 #import "CMInvocationNode.h"
+#import "CMMethodNode.h"
 
 @interface CMMapDisplayView () <DisplayDelegate>
 
@@ -36,7 +37,8 @@
             
             [self.rootNodes addObject:node];
             
-            [self addNewViewFor:node atX:x andY:y trackingMaxY:&maxY];
+            [self addNewViewFor:node atX:x andY:y];
+            [self addViewForExecutionNode:((CMMethodNode*)node).firstExecutionNode atX:x andY:y+200 trackingMaxY:&maxY];
             
             x += 300;
         }
@@ -51,24 +53,28 @@
     return self;
 }
 
-- (void)addNewViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y trackingMaxY:(CGFloat*)maxY
+- (void)addViewForExecutionNode:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y trackingMaxY:(CGFloat*)maxY
 {
     if (*maxY < y) *maxY = y;
-    
+    [self addNewViewFor:node atX:x andY:y];
+    if (node.nextInLine) [self addViewForExecutionNode:node.nextInLine atX:x andY:y+200 trackingMaxY:maxY];
+}
+
+- (void)addNewViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y
+{
     [self createAndAddViewFor:node atX:x andY:y];
     
     if ([node class] == [CMInvocationNode class]) {
         CMInvocationNode* invocationNode = (CMInvocationNode*)node;
         
         if (invocationNode.selector) {
-            [self addNewViewFor:invocationNode.target atX:x andY:y trackingMaxY:maxY];
-            [self addNewViewFor:invocationNode.selector atX:x andY:y trackingMaxY:maxY];
+            [self addNewViewFor:invocationNode.target atX:x andY:y];
+            [self addNewViewFor:invocationNode.selector atX:x andY:y];
         }
     }
     
     for (CMNode* childNode in [node childNodes]) {
-        [self addNewViewFor:childNode atX:x andY:y+200 trackingMaxY:maxY];
-        x += 20;
+        [self addNewViewFor:childNode atX:x andY:y];
     }
 }
 
@@ -93,7 +99,14 @@
     
     for (CMNode* rootNode in self.rootNodes) {
         [self connectNodeFamilyTree:rootNode];
+        [self connectLevelsOfExecution:((CMMethodNode*)rootNode).firstExecutionNode];
     }
+}
+
+- (void)connectLevelsOfExecution:(CMNode*)executionNode
+{
+    [self connectNodeFamilyTree:executionNode];
+    if (executionNode.nextInLine) [self connectLevelsOfExecution:executionNode.nextInLine];
 }
 
 - (void)connectNodeFamilyTree:(CMNode*)parentNode

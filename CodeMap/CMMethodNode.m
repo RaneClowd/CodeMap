@@ -15,4 +15,17 @@
     return [NSString stringWithFormat:@"Method: %@", [super myDescription]];
 }
 
+- (void)addNodeOfExecution:(CMNode *)node
+{
+    if (self.lastExecutionNode) {
+        self.lastExecutionNode.nextInLine = node;
+        self.lastExecutionNode = node;
+    } else {
+        /*
+         check that this works
+         */
+        self.firstExecutionNode = self.lastExecutionNode = node;
+    }
+}
+
 @end
