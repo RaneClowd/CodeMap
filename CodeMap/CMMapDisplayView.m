@@ -110,9 +110,13 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
+    [super drawRect:dirtyRect];
+    
     [[NSColor blackColor] set];
     
     for (CMNode* rootNode in self.rootNodes) {
+        [rootNode.nodeView drawRect:rootNode.nodeView.frame];
+        
         [self connectNodeFamilyTree:rootNode];
         [self connectLevelsOfExecution:((CMMethodNode*)rootNode).firstExecutionNode];
     }

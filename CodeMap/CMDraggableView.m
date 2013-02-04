@@ -20,4 +20,9 @@
     [self.displayDelegate redraw];
 }
 
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [super drawRect:dirtyRect];
+}
+
 @end

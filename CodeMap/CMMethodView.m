@@ -29,10 +29,10 @@
     return self;
 }
 
-- (void)drawRect:(NSRect)dirtyRect
+- (void)drawRect:(NSRect)rect
 {
-    //[[NSColor blackColor] setFill];
-    //NSRectFill(dirtyRect);
+    [[NSColor cyanColor] set];
+    NSRectFill(self.bounds);
     
     //[self.signatureView setNeedsDisplay:YES];
 }
