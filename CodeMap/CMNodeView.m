@@ -8,25 +8,29 @@
 
 #import "CMNodeView.h"
 
+@interface CMNodeView ()
+
+@property (nonatomic, strong) NSTextView* textView;
+
+@end
+
 @implementation CMNodeView
 
 - (id)initWithFrame:(NSRect)frame
 {
     self = [super initWithFrame:frame];
-    [self setEditable:NO];
-    [self setSelectable:NO];
+    
+    self.textView = [[NSTextView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+    [self.textView setEditable:NO];
+    [self.textView setSelectable:NO];
+    [self addSubview:self.textView];
     
     return self;
 }
 
-- (void)mouseDragged:(NSEvent *)theEvent
+- (void)setString:(NSString *)text
 {
-    CGRect frame = self.frame;
-    frame.origin.x += [theEvent deltaX];
-    frame.origin.y -= [theEvent deltaY];
-    self.frame = frame;
-    
-    [self.displayDelegate redraw];
+    [self.textView setString:text];
 }
 
 - (CGPoint)getCenter

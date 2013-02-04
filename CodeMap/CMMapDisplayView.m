@@ -12,6 +12,7 @@
 #import "CMNodeView.h"
 #import "CMInvocationNode.h"
 #import "CMMethodNode.h"
+#import "CMMethodView.h"
 
 @interface CMMapDisplayView () <DisplayDelegate>
 
@@ -80,14 +81,28 @@
 
 - (void)createAndAddViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y
 {
-    CMNodeView* nodeLabel = [self createNodeViewWithFrame:CGRectMake(x, y, 100, 30) andNode:node];
-    [nodeLabel setString:[node myDescription]];
+    CMNodeView* nodeLabel;
+    if ([node class] == [CMMethodNode class]) {
+        nodeLabel = [self createMethodNodeViewWithFrame:CGRectMake(x, y, 400, 400) andNode:(CMMethodNode*)node];
+    } else {
+        nodeLabel = [self createNodeViewWithFrame:CGRectMake(x, y, 100, 30) andNode:node];
+    }
+    
     [self addSubview:nodeLabel];
 }
 
 - (CMNodeView*)createNodeViewWithFrame:(CGRect)frame andNode:(CMNode*)node
 {
     CMNodeView* label = [[CMNodeView alloc] initWithFrame:frame];
+    [label setString:[node myDescription]];
+    label.displayDelegate = self;
+    node.nodeView = label;
+    return label;
+}
+
+- (CMNodeView*)createMethodNodeViewWithFrame:(CGRect)frame andNode:(CMMethodNode*)node
+{
+    CMMethodView* label = [[CMMethodView alloc] initWithFrame:frame andSignature:node.value];
     label.displayDelegate = self;
     node.nodeView = label;
     return label;

@@ -7,7 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "CMNodeView.h"
 
-@interface CMMethod : NSView
+@interface CMMethodView : CMNodeView
+
+- (id)initWithFrame:(NSRect)frameRect andSignature:(NSString*)signature;
 
 @end

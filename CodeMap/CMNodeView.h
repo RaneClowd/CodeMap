@@ -7,17 +7,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "CMDraggableView.h"
 
-@protocol DisplayDelegate <NSObject>
-
-- (void)redraw;
-
-@end
-
-@interface CMNodeView : NSTextView
-
-@property (nonatomic,weak) id<DisplayDelegate> displayDelegate;
+@interface CMNodeView : CMDraggableView
 
 - (CGPoint)getCenter;
+- (void)setString:(NSString*)text;
 
 @end

@@ -21,9 +21,6 @@
         self.lastExecutionNode.nextInLine = node;
         self.lastExecutionNode = node;
     } else {
-        /*
-         check that this works
-         */
         self.firstExecutionNode = self.lastExecutionNode = node;
     }
 }
