@@ -25,4 +25,9 @@
     [super drawRect:dirtyRect];
 }
 
+- (void)redraw
+{
+    [self setNeedsDisplay:YES];
+}
+
 @end

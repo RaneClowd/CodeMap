@@ -14,7 +14,7 @@
 
 @end
 
-@interface CMDraggableView : NSView
+@interface CMDraggableView : NSView <DisplayDelegate>
 
 @property (nonatomic,weak) id<DisplayDelegate> displayDelegate;
 

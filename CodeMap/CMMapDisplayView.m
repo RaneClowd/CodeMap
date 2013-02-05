@@ -9,7 +9,7 @@
 #import "CMMapDisplayView.h"
 
 #import "CMNode.h"
-#import "CMNodeView.h"
+#import "CMValueView.h"
 #import "CMInvocationNode.h"
 #import "CMMethodNode.h"
 #import "CMMethodView.h"
@@ -31,7 +31,7 @@
         CGFloat maxY = 800;
         CGFloat x = 200;
         
-        [self setAutoresizesSubviews:NO];
+        //[self setAutoresizesSubviews:NO];
         
         for (CMNode* node in nodes) {
             CGFloat y = 150;
@@ -39,7 +39,6 @@
             [self.rootNodes addObject:node];
             
             [self addNewViewFor:node atX:x andY:y];
-            [self addViewForExecutionNode:((CMMethodNode*)node).firstExecutionNode atX:x andY:y+200 trackingMaxY:&maxY];
             
             x += 300;
         }
@@ -49,16 +48,10 @@
         newFrame.size.height = maxY;
         
         self.frame = newFrame;
+        self.bounds = CGRectMake(0, 0, x, maxY);
     }
 
     return self;
-}
-
-- (void)addViewForExecutionNode:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y trackingMaxY:(CGFloat*)maxY
-{
-    if (*maxY < y) *maxY = y;
-    [self addNewViewFor:node atX:x andY:y];
-    if (node.nextInLine) [self addViewForExecutionNode:node.nextInLine atX:x andY:y+200 trackingMaxY:maxY];
 }
 
 - (void)addNewViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y
@@ -91,9 +84,9 @@
     [self addSubview:nodeLabel];
 }
 
-- (CMNodeView*)createNodeViewWithFrame:(CGRect)frame andNode:(CMNode*)node
+- (CMValueView*)createNodeViewWithFrame:(CGRect)frame andNode:(CMNode*)node
 {
-    CMNodeView* label = [[CMNodeView alloc] initWithFrame:frame];
+    CMValueView* label = [[CMValueView alloc] initWithFrame:frame];
     [label setString:[node myDescription]];
     label.displayDelegate = self;
     node.nodeView = label;
@@ -102,7 +95,7 @@
 
 - (CMNodeView*)createMethodNodeViewWithFrame:(CGRect)frame andNode:(CMMethodNode*)node
 {
-    CMMethodView* label = [[CMMethodView alloc] initWithFrame:frame andSignature:node.value];
+    CMMethodView* label = [[CMMethodView alloc] initWithFrame:frame andSignature:node.value andExecutionNode:node.firstExecutionNode];
     label.displayDelegate = self;
     node.nodeView = label;
     return label;
@@ -115,7 +108,7 @@
     [[NSColor blackColor] set];
     
     for (CMNode* rootNode in self.rootNodes) {
-        [rootNode.nodeView drawRect:rootNode.nodeView.frame];
+        [rootNode.nodeView setNeedsDisplay:YES];
         
         [self connectNodeFamilyTree:rootNode];
         [self connectLevelsOfExecution:((CMMethodNode*)rootNode).firstExecutionNode];

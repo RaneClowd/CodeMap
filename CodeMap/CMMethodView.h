@@ -11,6 +11,6 @@
 
 @interface CMMethodView : CMNodeView
 
-- (id)initWithFrame:(NSRect)frameRect andSignature:(NSString*)signature;
+- (id)initWithFrame:(NSRect)frameRect andSignature:(NSString*)signature andExecutionNode:(CMNodeView*)node;
 
 @end

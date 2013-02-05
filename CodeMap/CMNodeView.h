@@ -12,6 +12,5 @@
 @interface CMNodeView : CMDraggableView
 
 - (CGPoint)getCenter;
-- (void)setString:(NSString*)text;
 
 @end
