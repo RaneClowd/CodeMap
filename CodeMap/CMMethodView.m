@@ -10,12 +10,16 @@
 #import "CMInvocationNode.h"
 #import "CMValueView.h"
 
+#define kDotDiameter 14
+#define kDotRadius 7
+
 #define kSignatureHeight 50
 #define kValueHeight 30
 
 @interface CMMethodView ()
 
 @property (nonatomic, strong) NSTextView* signatureView;
+@property (nonatomic) NSRect dotRect;
 
 @end
 
@@ -65,6 +69,13 @@
 {
     [super setFrame:frameRect];
     [self positionSignature];
+    
+    self.dotRect = NSMakeRect(self.frame.size.width - kDotDiameter - kDotRadius, self.frame.size.height - kDotDiameter - kDotRadius, kDotDiameter, kDotDiameter);
+}
+
+- (NSPoint)connectorPoint
+{
+    return NSMakePoint(self.frame.origin.x+self.dotRect.origin.x+kDotRadius, self.frame.origin.y+self.dotRect.origin.y+kDotRadius);
 }
 
 - (void)positionSignature
@@ -79,9 +90,10 @@
     
     [super drawRect:rect];
     
-    //[self.signatureView setNeedsDisplay:YES];
+    [[NSColor blackColor] set];
+    NSBezierPath* circle = [NSBezierPath bezierPathWithOvalInRect:self.dotRect];
+    [circle fill];
 }
-
 
 - (void)addViewForExecutionNode:(CMNode*)node trackingCount:(int*)count trackingWidth:(CGFloat*)width
 {
