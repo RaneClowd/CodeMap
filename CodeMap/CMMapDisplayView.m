@@ -13,10 +13,12 @@
 #import "CMInvocationNode.h"
 #import "CMMethodNode.h"
 #import "CMMethodView.h"
+#import "CMConnectorView.h"
 
 @interface CMMapDisplayView () <DisplayDelegate>
 
 @property (nonatomic,strong) NSMutableArray* rootNodes;
+@property (nonatomic,strong) CMConnectorView* connectionView;
 
 @end
 
@@ -48,6 +50,11 @@
         newFrame.size.height = maxY;
         
         self.frame = newFrame;
+        
+        self.connectionView = [[CMConnectorView alloc] initWithFrame:newFrame];
+        self.connectionView.nodes = self.rootNodes;
+        [self addSubview:self.connectionView];
+        
         self.bounds = CGRectMake(0, 0, x, maxY);
     }
 
@@ -86,8 +93,7 @@
 
 - (CMValueView*)createNodeViewWithFrame:(CGRect)frame andNode:(CMNode*)node
 {
-    CMValueView* label = [[CMValueView alloc] initWithFrame:frame];
-    [label setString:[node myDescription]];
+    CMValueView* label = [[CMValueView alloc] initWithFrame:frame andNode:node];
     label.displayDelegate = self;
     node.nodeView = label;
     return label;
@@ -104,61 +110,13 @@
 - (void)drawRect:(NSRect)dirtyRect
 {
     [super drawRect:dirtyRect];
-    
-    [[NSColor blackColor] set];
-    
-    for (CMNode* rootNode in self.rootNodes) {
-        [rootNode.nodeView setNeedsDisplay:YES];
-        
-        [self connectNodeFamilyTree:rootNode];
-        [self connectLevelsOfExecution:((CMMethodNode*)rootNode).firstExecutionNode];
-    }
-}
 
-- (void)connectLevelsOfExecution:(CMNode*)executionNode
-{
-    [self connectNodeFamilyTree:executionNode];
-    if (executionNode.nextInLine) [self connectLevelsOfExecution:executionNode.nextInLine];
-}
-
-- (void)connectNodeFamilyTree:(CMNode*)parentNode
-{
-    if ([parentNode class] == [CMInvocationNode class]) {
-        CMInvocationNode* invocationNode = (CMInvocationNode*)parentNode;
-        
-        if (invocationNode.selector) {
-            [self connectNode:invocationNode toNode:invocationNode.target];
-            [self connectNode:invocationNode toNode:invocationNode.selector];
-        } else {
-            [self drawLineFrom:invocationNode to:invocationNode.target];
-        }
-    }
-    
-    for (CMNode* childNode in parentNode.childNodes) {
-        [self connectNode:parentNode toNode:childNode];
-    }
-}
-
-- (void)connectNode:(CMNode*)parentNode toNode:(CMNode*)childNode
-{
-    [self drawLineFrom:parentNode to:childNode];
-    [self connectNodeFamilyTree:childNode];
+    [self.connectionView setNeedsDisplay:YES];
 }
 
 - (void)redraw
 {
     [self setNeedsDisplay:YES];
-}
-
-- (void)drawLineFrom:(CMNode*)nodeA to:(CMNode*)nodeB
-{
-    NSBezierPath* line = [[NSBezierPath alloc] init];
-    [line setLineWidth:3];
-    [line moveToPoint:[nodeA.nodeView getCenter]];
-    [line lineToPoint:[nodeB.nodeView getCenter]];
-    [line closePath];
-    
-    [line stroke];
 }
 
 @end

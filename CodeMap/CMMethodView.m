@@ -7,9 +7,11 @@
 //
 
 #import "CMMethodView.h"
-#import "CMNode.h"
 #import "CMInvocationNode.h"
 #import "CMValueView.h"
+
+#define kSignatureHeight 50
+#define kValueHeight 30
 
 @interface CMMethodView ()
 
@@ -19,11 +21,11 @@
 
 @implementation CMMethodView
 
-- (id)initWithFrame:(NSRect)frame andSignature:(NSString *)signature andExecutionNode:(CMNodeView *)node
+- (id)initWithFrame:(NSRect)frame andSignature:(NSString *)signature andExecutionNode:(CMNode *)node
 {
     self = [super initWithFrame:frame];
     
-    self.signatureView = [[NSTextView alloc] initWithFrame:CGRectMake(0, 0, 200, 50)];
+    self.signatureView = [[NSTextView alloc] initWithFrame:CGRectMake(0, 0, 200, kSignatureHeight)];
     [self.signatureView setFont:[NSFont systemFontOfSize:20]];
     [self.signatureView setEditable:NO];
     [self.signatureView setSelectable:NO];
@@ -31,12 +33,32 @@
     [self.signatureView setDrawsBackground:NO];
     [self addSubview:self.signatureView];
     
-    CGFloat max = 0;
-    [self addViewForExecutionNode:node atX:0 andY:0 trackingMaxY:&max];
+    int count = 0;
+    CGFloat widthNeeded = 0;
+    [self addViewForExecutionNode:node trackingCount:&count trackingWidth:&widthNeeded];
     
     [self positionSignature];
     
+    CGRect newFrame = self.frame;
+    newFrame.size.height = count*kValueHeight + kSignatureHeight;
+    newFrame.size.width = widthNeeded;
+    self.frame = newFrame;
+    
+    [self positionExecutionViewForNode:node withCount:count-1 andWidth:widthNeeded];
+    
     return self;
+}
+
+- (void)positionExecutionViewForNode:(CMNode*)node withCount:(int)count andWidth:(CGFloat)width
+{
+    CGRect frame = node.nodeView.frame;
+    frame.origin.y = count * kValueHeight;
+    frame.size.width = width;
+    node.nodeView.frame = frame;
+    
+    if (node.nextInLine) {
+        [self positionExecutionViewForNode:node.nextInLine withCount:count-1 andWidth:width];
+    }
 }
 
 - (void)setFrame:(NSRect)frameRect
@@ -61,45 +83,44 @@
 }
 
 
-- (void)addViewForExecutionNode:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y trackingMaxY:(CGFloat*)maxY
+- (void)addViewForExecutionNode:(CMNode*)node trackingCount:(int*)count trackingWidth:(CGFloat*)width
 {
-    if (*maxY < y) *maxY = y;
-    [self addNewViewFor:node atX:x andY:y];
-    if (node.nextInLine) [self addViewForExecutionNode:node.nextInLine atX:x andY:y+60 trackingMaxY:maxY];
+    *count += 1;
+    [self addNewViewFor:node trackingWidth:width];
+    if (node.nextInLine) [self addViewForExecutionNode:node.nextInLine trackingCount:count trackingWidth:width];
 }
 
-
-
-- (void)addNewViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y
+- (void)addNewViewFor:(CMNode*)node trackingWidth:(CGFloat*)width
 {
-    [self createAndAddViewFor:node atX:x andY:y];
+    [self createAndAddViewFor:node trackingWidth:(CGFloat*)width];
     
-    if ([node class] == [CMInvocationNode class]) {
+    /*if ([node class] == [CMInvocationNode class]) {
         CMInvocationNode* invocationNode = (CMInvocationNode*)node;
         
         if (invocationNode.selector) {
-            [self addNewViewFor:invocationNode.target atX:x andY:y];
-            [self addNewViewFor:invocationNode.selector atX:x andY:y];
+            [self addNewViewFor:invocationNode.target];
+            [self addNewViewFor:invocationNode.selector];
         }
     }
     
     for (CMNode* childNode in [node childNodes]) {
-        [self addNewViewFor:childNode atX:x andY:y];
-    }
+        [self addNewViewFor:childNode];
+    }*/
 }
 
-- (void)createAndAddViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y
+- (void)createAndAddViewFor:(CMNode*)node trackingWidth:(CGFloat*)width
 {
-    CMNodeView* nodeLabel;
-    nodeLabel = [self createNodeViewWithFrame:CGRectMake(x, y, 100, 30) andNode:node];
+    CMValueView* nodeLabel;
+    nodeLabel = [self createNodeViewWithFrame:CGRectMake(0, 0, self.frame.size.width, kValueHeight) andNode:node];
+    
+    if (*width < [nodeLabel widthNeeded]) *width = [nodeLabel widthNeeded];
     
     [self addSubview:nodeLabel];
 }
 
 - (CMValueView*)createNodeViewWithFrame:(CGRect)frame andNode:(CMNode*)node
 {
-    CMValueView* label = [[CMValueView alloc] initWithFrame:frame];
-    [label setString:[node myDescription]];
+    CMValueView* label = [[CMValueView alloc] initWithFrame:frame andNode:node];
     label.displayDelegate = self;
     node.nodeView = label;
     return label;

@@ -11,6 +11,6 @@
 
 @interface CMNodeView : CMDraggableView
 
-- (CGPoint)getCenter;
+- (NSPoint)connectorPoint;
 
 @end

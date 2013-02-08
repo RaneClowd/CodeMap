@@ -7,9 +7,11 @@
 //
 
 #import "CMNodeView.h"
+#import "CMNode.h"
 
 @interface CMValueView : CMNodeView
 
-- (void)setString:(NSString*)text;
+- (id)initWithFrame:(NSRect)frame andNode:(CMNode*)node;
+- (CGFloat)widthNeeded;
 
 @end

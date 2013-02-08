@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		910C942216C03782003B2F6D /* CMDraggableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 910C942116C03782003B2F6D /* CMDraggableView.m */; };
+		911C9F2716C5BE890049759F /* CMConnectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 911C9F2616C5BE890049759F /* CMConnectorView.m */; };
 		911D70E016B844AF0055DED1 /* CMValueNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 911D70DF16B844AF0055DED1 /* CMValueNode.m */; };
 		9129537216B48D9300A5DBE7 /* CMObjectiveCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */; };
 		913F8F4416B99C2B0052A164 /* CMMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 913F8F4216B99C2B0052A164 /* CMMapViewController.m */; };
@@ -20,7 +21,6 @@
 		918FFD2B16B4310300A98890 /* CMStringNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2A16B4310300A98890 /* CMStringNode.m */; };
 		918FFD2E16B433D700A98890 /* CMCommentNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2D16B433D700A98890 /* CMCommentNode.m */; };
 		918FFD3116B4368E00A98890 /* CMNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD3016B4368E00A98890 /* CMNode.m */; };
-		9199F9EC16B5761700315044 /* ParseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9199F9BF16B5732D00315044 /* ParseKit.framework */; };
 		9199F9EE16B576FB00315044 /* ObjectiveCGrammar.h in Resources */ = {isa = PBXBuildFile; fileRef = 9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */; };
 		9199F9F116B58E8700315044 /* CMImportNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199F9F016B58E8700315044 /* CMImportNode.m */; };
 		91EFC07416B6FD2000850F6A /* CMClassNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 91EFC07316B6FD2000850F6A /* CMClassNode.m */; };
@@ -39,55 +39,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		9199F9BE16B5732D00315044 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
-			remoteInfo = ParseKit;
-		};
-		9199F9C016B5732D00315044 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D389F1CE0F1965E600558235;
-			remoteInfo = JSParseKit;
-		};
-		9199F9C216B5732D00315044 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D3FDC5830FFC4BFC00F1F797;
-			remoteInfo = ParseKitMobile;
-		};
-		9199F9C416B5732D00315044 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D3C7D87A0A411FBF005DD154;
-			remoteInfo = Tests;
-		};
-		9199F9C616B5732D00315044 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D33494100E2963FD00406085;
-			remoteInfo = DemoApp;
-		};
-		9199F9C816B5732D00315044 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D34185040E520D3F0081B0DC;
-			remoteInfo = DebugApp;
-		};
-		9199F9CA16B5732D00315044 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D389F2030F196A7500558235;
-			remoteInfo = JSDemoApp;
-		};
 		91FB022316B37C0900760CEB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 91FB01F516B37C0800760CEB /* Project object */;
@@ -100,6 +51,8 @@
 /* Begin PBXFileReference section */
 		910C942016C03782003B2F6D /* CMDraggableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMDraggableView.h; sourceTree = "<group>"; };
 		910C942116C03782003B2F6D /* CMDraggableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMDraggableView.m; sourceTree = "<group>"; };
+		911C9F2516C5BE890049759F /* CMConnectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMConnectorView.h; sourceTree = "<group>"; };
+		911C9F2616C5BE890049759F /* CMConnectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMConnectorView.m; sourceTree = "<group>"; };
 		911D70DE16B844AF0055DED1 /* CMValueNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMValueNode.h; sourceTree = "<group>"; };
 		911D70DF16B844AF0055DED1 /* CMValueNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMValueNode.m; sourceTree = "<group>"; };
 		9129537016B48D9300A5DBE7 /* CMObjectiveCParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMObjectiveCParser.h; sourceTree = "<group>"; };
@@ -123,7 +76,6 @@
 		918FFD2D16B433D700A98890 /* CMCommentNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMCommentNode.m; sourceTree = "<group>"; };
 		918FFD2F16B4368E00A98890 /* CMNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMNode.h; sourceTree = "<group>"; };
 		918FFD3016B4368E00A98890 /* CMNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMNode.m; sourceTree = "<group>"; };
-		9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParseKit.xcodeproj; path = "../ParseKit/todparsekit-read-only/ParseKit.xcodeproj"; sourceTree = "<group>"; };
 		9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectiveCGrammar.h; sourceTree = "<group>"; };
 		9199F9EF16B58E8700315044 /* CMImportNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMImportNode.h; sourceTree = "<group>"; };
 		9199F9F016B58E8700315044 /* CMImportNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMImportNode.m; sourceTree = "<group>"; };
@@ -159,7 +111,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9199F9EC16B5761700315044 /* ParseKit.framework in Frameworks */,
 				91FB020316B37C0900760CEB /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -234,6 +185,8 @@
 				915A190916B9FF6F00DFD0CD /* CMNodeView.m */,
 				915913D016BCB76B00463B11 /* CMMapDisplayView.h */,
 				915913D116BCB76B00463B11 /* CMMapDisplayView.m */,
+				911C9F2516C5BE890049759F /* CMConnectorView.h */,
+				911C9F2616C5BE890049759F /* CMConnectorView.m */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -267,20 +220,6 @@
 			name = Models;
 			sourceTree = "<group>";
 		};
-		9199F9AF16B5732D00315044 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				9199F9BF16B5732D00315044 /* ParseKit.framework */,
-				9199F9C116B5732D00315044 /* JSParseKit.framework */,
-				9199F9C316B5732D00315044 /* libparsekit.a */,
-				9199F9C516B5732D00315044 /* Tests.octest */,
-				9199F9C716B5732D00315044 /* DemoApp.app */,
-				9199F9C916B5732D00315044 /* DebugApp.app */,
-				9199F9CB16B5732D00315044 /* JSDemoApp.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		91F8F0F616BE1318002FC408 /* MethodView */ = {
 			isa = PBXGroup;
 			children = (
@@ -312,7 +251,6 @@
 		91FB020116B37C0800760CEB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */,
 				91FB020216B37C0800760CEB /* Cocoa.framework */,
 				91FB022016B37C0900760CEB /* SenTestingKit.framework */,
 				91FB020416B37C0900760CEB /* Other Frameworks */,
@@ -437,12 +375,6 @@
 			mainGroup = 91FB01F316B37C0800760CEB;
 			productRefGroup = 91FB01FF16B37C0800760CEB /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 9199F9AF16B5732D00315044 /* Products */;
-					ProjectRef = 9199F9AE16B5732D00315044 /* ParseKit.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				91FB01FD16B37C0800760CEB /* CodeMap */,
@@ -450,58 +382,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		9199F9BF16B5732D00315044 /* ParseKit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = ParseKit.framework;
-			remoteRef = 9199F9BE16B5732D00315044 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		9199F9C116B5732D00315044 /* JSParseKit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = JSParseKit.framework;
-			remoteRef = 9199F9C016B5732D00315044 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		9199F9C316B5732D00315044 /* libparsekit.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libparsekit.a;
-			remoteRef = 9199F9C216B5732D00315044 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		9199F9C516B5732D00315044 /* Tests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = Tests.octest;
-			remoteRef = 9199F9C416B5732D00315044 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		9199F9C716B5732D00315044 /* DemoApp.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = DemoApp.app;
-			remoteRef = 9199F9C616B5732D00315044 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		9199F9C916B5732D00315044 /* DebugApp.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = DebugApp.app;
-			remoteRef = 9199F9C816B5732D00315044 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		9199F9CB16B5732D00315044 /* JSDemoApp.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = JSDemoApp.app;
-			remoteRef = 9199F9CA16B5732D00315044 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		91FB01FC16B37C0800760CEB /* Resources */ = {
@@ -565,6 +445,7 @@
 				91F8F0F916BE1339002FC408 /* CMMethodView.m in Sources */,
 				910C942216C03782003B2F6D /* CMDraggableView.m in Sources */,
 				9157055616C1C69900D4CDFD /* CMValueView.m in Sources */,
+				911C9F2716C5BE890049759F /* CMConnectorView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,4 +18,6 @@
 
 @property (nonatomic,weak) id<DisplayDelegate> displayDelegate;
 
+- (BOOL)isDraggable;
+
 @end

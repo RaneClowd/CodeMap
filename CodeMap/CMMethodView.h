@@ -8,9 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 #import "CMNodeView.h"
+#import "CMNode.h"
 
 @interface CMMethodView : CMNodeView
 
-- (id)initWithFrame:(NSRect)frameRect andSignature:(NSString*)signature andExecutionNode:(CMNodeView*)node;
+- (id)initWithFrame:(NSRect)frameRect andSignature:(NSString*)signature andExecutionNode:(CMNode*)node;
 
 @end
