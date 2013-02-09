@@ -27,6 +27,7 @@ typedef enum {
     ParsingMethodParamType,
     ParsingString,
     ParsingChar,
+    ParsingClassName,
     ParsingInvocationTarget,
     ParsingInvocationSelector,
     ParsingInvocationParam,
@@ -59,9 +60,6 @@ typedef enum {
     [self enterState:ParsingNothingSpecial];
     
     self.nodeStack = [[CMStack alloc] init];
-    self.openClass = [[CMClassNode alloc] init];
-    self.openClass.value = @"Parser";
-    [self enterNode:self.openClass];
     
     return self;
 }
@@ -149,6 +147,13 @@ typedef enum {
                         self.trackingValue = [[NSMutableString alloc] init];
                         break;
                         
+                    case '@':
+                        if ([self scanString:lineOfCode forWord:@"implementation" startingAtIndex:&index]) {
+                            [self enterState:ParsingIgnoringWhitespace];
+                            [self enterState:ParsingClassName];
+                            [self enterState:ParsingIgnoringWhitespace];
+                        }
+                        
                     default:
                         break;
                 }
@@ -174,6 +179,13 @@ typedef enum {
                     [self leaveCurrentState];
                 }
                 break;
+                
+            case ParsingClassName:
+                if ([self charIsWhitespace:current]) {
+                    [self beginDefiningClass];
+                } else {
+                    [self.trackingValue appendFormat:@"%c", current];
+                }
                 
             case ParsingMethodType:
                 if (current == ')') {
@@ -248,7 +260,9 @@ typedef enum {
                 break;
                 
             case ParsingInvocationParam:
-                if ([self charIsWhitespace:current]) {
+                if (current == '"') {
+                    [self enterState:ParsingString];
+                } if ([self charIsWhitespace:current]) {
                     [self leaveCurrentState];
                 } else if (current == ']') {
                     [self leaveCurrentState];
@@ -338,9 +352,10 @@ typedef enum {
 
 - (BOOL)scanString:(NSString*)string forWord:(NSString*)word startingAtIndex:(int*)index
 {
-    long len = [word length];
-    BOOL exists = [[[string substringFromIndex:*index] substringToIndex:len] isEqualToString:word];
-    if (exists) *index += len;
+    long wordLen = [word length];
+    if (wordLen > [string length]) return NO;
+    BOOL exists = [[[string substringFromIndex:*index] substringToIndex:wordLen] isEqualToString:word];
+    if (exists) *index += wordLen;
     return exists;
 }
 
@@ -385,11 +400,17 @@ typedef enum {
     [self enterState:ParsingIgnoringWhitespace];
 }
 
+- (void)beginDefiningClass
+{
+    self.openClass = [[CMClassNode alloc] init];
+    self.openClass.value = self.trackingValue;
+    [self enterNode:self.openClass];
+}
+
 - (void)addInvocationNode:(CMInvocationNode*)invocationNode toParent:(CMNode*)parentNode
 {
     BOOL parentNodeIsValueNode = [parentNode class] == [CMValueNode class];
-    BOOL parentOfParentExists = parentNode.parentNode != nil; //TODO: don't need this when class node is in place
-    BOOL parentOfParentIsInvocation = parentOfParentExists && [parentNode.parentNode class] == [CMInvocationNode class];
+    BOOL parentOfParentIsInvocation = [parentNode.parentNode class] == [CMInvocationNode class];
     
     if (parentNodeIsValueNode && parentOfParentIsInvocation) {
         CMInvocationNode* parentInvocation = (CMInvocationNode*)parentNode.parentNode;

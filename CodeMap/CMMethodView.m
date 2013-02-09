@@ -80,7 +80,7 @@
 
 - (void)positionSignature
 {
-    self.signatureView.frame = CGRectMake(0, self.frame.size.height-50, 200, 50);
+    self.signatureView.frame = CGRectMake(0, self.frame.size.height-50, self.frame.size.width, 50);
 }
 
 - (void)drawRect:(NSRect)rect

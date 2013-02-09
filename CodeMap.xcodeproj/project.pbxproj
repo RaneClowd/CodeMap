@@ -21,6 +21,7 @@
 		918FFD2B16B4310300A98890 /* CMStringNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2A16B4310300A98890 /* CMStringNode.m */; };
 		918FFD2E16B433D700A98890 /* CMCommentNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD2D16B433D700A98890 /* CMCommentNode.m */; };
 		918FFD3116B4368E00A98890 /* CMNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 918FFD3016B4368E00A98890 /* CMNode.m */; };
+		919435D516C675E500A7AF3B /* CMClassView.m in Sources */ = {isa = PBXBuildFile; fileRef = 919435D416C675E500A7AF3B /* CMClassView.m */; };
 		9199F9EE16B576FB00315044 /* ObjectiveCGrammar.h in Resources */ = {isa = PBXBuildFile; fileRef = 9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */; };
 		9199F9F116B58E8700315044 /* CMImportNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199F9F016B58E8700315044 /* CMImportNode.m */; };
 		91EFC07416B6FD2000850F6A /* CMClassNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 91EFC07316B6FD2000850F6A /* CMClassNode.m */; };
@@ -75,6 +76,8 @@
 		918FFD2D16B433D700A98890 /* CMCommentNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMCommentNode.m; sourceTree = "<group>"; };
 		918FFD2F16B4368E00A98890 /* CMNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMNode.h; sourceTree = "<group>"; };
 		918FFD3016B4368E00A98890 /* CMNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMNode.m; sourceTree = "<group>"; };
+		919435D316C675E500A7AF3B /* CMClassView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMClassView.h; sourceTree = "<group>"; };
+		919435D416C675E500A7AF3B /* CMClassView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMClassView.m; sourceTree = "<group>"; };
 		9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectiveCGrammar.h; sourceTree = "<group>"; };
 		9199F9EF16B58E8700315044 /* CMImportNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMImportNode.h; sourceTree = "<group>"; };
 		9199F9F016B58E8700315044 /* CMImportNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMImportNode.m; sourceTree = "<group>"; };
@@ -132,6 +135,8 @@
 				91F8F0F616BE1318002FC408 /* MethodView */,
 				9157055416C1C69900D4CDFD /* CMValueView.h */,
 				9157055516C1C69900D4CDFD /* CMValueView.m */,
+				919435D316C675E500A7AF3B /* CMClassView.h */,
+				919435D416C675E500A7AF3B /* CMClassView.m */,
 			);
 			name = NodeViews;
 			sourceTree = "<group>";
@@ -442,6 +447,7 @@
 				910C942216C03782003B2F6D /* CMDraggableView.m in Sources */,
 				9157055616C1C69900D4CDFD /* CMValueView.m in Sources */,
 				911C9F2716C5BE890049759F /* CMConnectorView.m in Sources */,
+				919435D516C675E500A7AF3B /* CMClassView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

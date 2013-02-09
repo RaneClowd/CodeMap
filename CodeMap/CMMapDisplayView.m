@@ -14,35 +14,31 @@
 #import "CMMethodNode.h"
 #import "CMMethodView.h"
 #import "CMConnectorView.h"
+#import "CMClassNode.h"
+#import "CMClassView.h"
 
 @interface CMMapDisplayView () <DisplayDelegate>
 
-@property (nonatomic,strong) NSMutableArray* rootNodes;
 @property (nonatomic,strong) CMConnectorView* connectionView;
 
 @end
 
 @implementation CMMapDisplayView
 
-- (id)initWithFrame:(NSRect)frame andNodes:(NSArray *)nodes
+- (id)initWithFrame:(NSRect)frame andClasses:(NSArray *)classes
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.rootNodes = [[NSMutableArray alloc] init];
         
         CGFloat maxY = 800;
         CGFloat x = 200;
         
-        //[self setAutoresizesSubviews:NO];
-        
-        for (CMNode* node in nodes) {
+        for (CMClassNode* node in classes) {
             CGFloat y = 150;
-            
-            [self.rootNodes addObject:node];
             
             [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
             
-            x += 500;
+            x += 8000;
         }
         
         maxY += 500;
@@ -53,32 +49,30 @@
         
         self.frame = newFrame;
         
-        self.connectionView = [[CMConnectorView alloc] initWithFrame:newFrame];
+        /*self.connectionView = [[CMConnectorView alloc] initWithFrame:newFrame];
         self.connectionView.nodes = self.rootNodes;
-        [self addSubview:self.connectionView];
-        
-        self.bounds = CGRectMake(0, 0, x, maxY);
+        [self addSubview:self.connectionView];*/
     }
 
     return self;
 }
 
-- (void)createAndAddViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
+- (void)createAndAddViewFor:(CMClassNode*)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
 {
-    CMNodeView* nodeLabel = [self createMethodNodeViewWithFrame:CGRectMake(x, y, 400, 400) andNode:(CMMethodNode*)node];
+    CMClassView* classView = [self createClassViewWithLocation:NSMakePoint(x, y) andNode:node];
     
-    CGFloat methodHeight = nodeLabel.frame.size.height;
+    CGFloat methodHeight = classView.frame.size.height;
     if (methodHeight > *maxY) *maxY = methodHeight;
         
-    [self addSubview:nodeLabel];
+    [self addSubview:classView];
 }
 
-- (CMNodeView*)createMethodNodeViewWithFrame:(CGRect)frame andNode:(CMMethodNode*)node
+- (CMClassView*)createClassViewWithLocation:(NSPoint)location andNode:(CMClassNode*)class
 {
-    CMMethodView* label = [[CMMethodView alloc] initWithFrame:frame andSignature:node.value andExecutionNode:node.firstExecutionNode];
-    label.displayDelegate = self;
-    node.nodeView = label;
-    return label;
+    CMClassView* classView = [[CMClassView alloc] initWithLocation:location Node:class];
+    classView.displayDelegate = self;
+    class.nodeView = classView;
+    return classView;
 }
 
 - (void)drawRect:(NSRect)dirtyRect

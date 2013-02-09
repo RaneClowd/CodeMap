@@ -10,6 +10,6 @@
 
 @interface CMMapDisplayView : NSView
 
-- (id)initWithFrame:(NSRect)frame andNodes:(NSArray*)nodes;
+- (id)initWithFrame:(NSRect)frame andClasses:(NSArray*)classes;
 
 @end

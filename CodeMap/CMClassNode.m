@@ -10,7 +10,7 @@
 
 @interface CMClassNode ()
 
-@property (nonatomic,strong) NSMutableDictionary* methods;
+@property (nonatomic,strong) NSMutableDictionary* methodNodes;
 
 @end
 
@@ -19,23 +19,27 @@
 - (id)init
 {
     self = [super init];
-    self.methods = [[NSMutableDictionary alloc] init];
+    self.methodNodes = [[NSMutableDictionary alloc] init];
     return self;
 }
 
 - (CMMethodNode *)methodForSignature:(NSString *)signature
 {
-    CMMethodNode* method = [self.methods objectForKey:signature];
+    CMMethodNode* method = [self.methodNodes objectForKey:signature];
     
     if (!method) {
         method = [[CMMethodNode alloc] initWithCode:signature];
-        [self.methods setObject:method forKey:signature];
+        [self.methodNodes setObject:method forKey:signature];
         
-        [self.childNodes addObject:method];
         method.parentNode = self;
     }
     
     return method;
+}
+
+- (NSArray *)methods
+{
+    return [self.methodNodes allValues];
 }
 
 @end

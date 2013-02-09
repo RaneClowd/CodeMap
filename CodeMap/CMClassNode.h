@@ -12,5 +12,6 @@
 @interface CMClassNode : CMNode
 
 - (CMMethodNode*)methodForSignature:(NSString*)signature;
+- (NSArray*)methods;
 
 @end

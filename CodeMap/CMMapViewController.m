@@ -68,7 +68,7 @@
     }
     
     
-    self.displayView = [[CMMapDisplayView alloc] initWithFrame:CGRectMake(0, 0, 100, 100) andNodes:parser.openClass.childNodes];
+    self.displayView = [[CMMapDisplayView alloc] initWithFrame:CGRectMake(0, 0, 100, 100) andClasses:@[parser.openClass]];
     CGRect displayFrame = self.displayView.frame;
     [self.scrollView.documentView setFrame:CGRectMake(0, 0, displayFrame.size.width, displayFrame.size.height)];
     [self.scrollView.documentView addSubview:self.displayView];
