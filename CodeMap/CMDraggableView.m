@@ -12,16 +12,6 @@
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
-    if ([self isDraggable]) {
-        CGRect frame = self.frame;
-        frame.origin.x += [theEvent deltaX];
-        frame.origin.y -= [theEvent deltaY];
-        self.frame = frame;
-        
-        [self.displayDelegate redraw];
-    } else {
-        [super mouseDragged:theEvent];
-    }
 }
 
 - (void)redraw

@@ -9,8 +9,56 @@
 #import "CMConnectorView.h"
 #import "CMNode.h"
 #import "CMMethodNode.h"
+#import "CMMethodView.h"
+
+@interface CMConnectorView ()
+
+@property (nonatomic) NSPoint oldLocation;
+@property (nonatomic,strong) CMNodeView* draggingView;
+
+@end
 
 @implementation CMConnectorView
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    self.oldLocation = [self relativeMouseLocationFromEvent:theEvent];
+}
+
+- (void)mouseDragged:(NSEvent *)theEvent
+{
+    NSPoint mouseLocation = [self relativeMouseLocationFromEvent:theEvent];
+    
+    if (self.draggingView == nil) {
+        for (CMMethodNode* node in self.nodes) {
+            if (NSPointInRect(mouseLocation, node.nodeView.frame)) {
+                self.draggingView = (CMMethodView*)node.nodeView;
+                break;
+            }
+        }
+    }
+    
+    if (self.draggingView != nil) {
+        CGRect frame = self.draggingView.frame;
+        frame.origin.x += mouseLocation.x - self.oldLocation.x;
+        frame.origin.y += mouseLocation.y - self.oldLocation.y;
+        self.draggingView.frame = frame;
+        
+        self.oldLocation = mouseLocation;
+        
+        [[self superview] setNeedsDisplay:YES];
+    }
+}
+
+- (void)mouseUp:(NSEvent *)theEvent
+{
+    self.draggingView = nil;
+}
+
+- (NSPoint)relativeMouseLocationFromEvent:(NSEvent*)event
+{
+    return [self convertPoint:event.locationInWindow fromView:nil];
+}
 
 - (void)drawRect:(NSRect)dirtyRect
 {
