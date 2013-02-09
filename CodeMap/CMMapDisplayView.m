@@ -40,10 +40,12 @@
             
             [self.rootNodes addObject:node];
             
-            [self addNewViewFor:node atX:x andY:y];
+            [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
             
-            x += 300;
+            x += 500;
         }
+        
+        maxY += 500;
         
         CGRect newFrame = frame;
         newFrame.size.width = x;
@@ -61,42 +63,14 @@
     return self;
 }
 
-- (void)addNewViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y
+- (void)createAndAddViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
 {
-    [self createAndAddViewFor:node atX:x andY:y];
+    CMNodeView* nodeLabel = [self createMethodNodeViewWithFrame:CGRectMake(x, y, 400, 400) andNode:(CMMethodNode*)node];
     
-    if ([node class] == [CMInvocationNode class]) {
-        CMInvocationNode* invocationNode = (CMInvocationNode*)node;
+    CGFloat methodHeight = nodeLabel.frame.size.height;
+    if (methodHeight > *maxY) *maxY = methodHeight;
         
-        if (invocationNode.selector) {
-            [self addNewViewFor:invocationNode.target atX:x andY:y];
-            [self addNewViewFor:invocationNode.selector atX:x andY:y];
-        }
-    }
-    
-    for (CMNode* childNode in [node childNodes]) {
-        [self addNewViewFor:childNode atX:x andY:y];
-    }
-}
-
-- (void)createAndAddViewFor:(CMNode*)node atX:(CGFloat)x andY:(CGFloat)y
-{
-    CMNodeView* nodeLabel;
-    if ([node class] == [CMMethodNode class]) {
-        nodeLabel = [self createMethodNodeViewWithFrame:CGRectMake(x, y, 400, 400) andNode:(CMMethodNode*)node];
-    } else {
-        nodeLabel = [self createNodeViewWithFrame:CGRectMake(x, y, 100, 30) andNode:node];
-    }
-    
     [self addSubview:nodeLabel];
-}
-
-- (CMValueView*)createNodeViewWithFrame:(CGRect)frame andNode:(CMNode*)node
-{
-    CMValueView* label = [[CMValueView alloc] initWithFrame:frame andNode:node];
-    label.displayDelegate = self;
-    node.nodeView = label;
-    return label;
 }
 
 - (CMNodeView*)createMethodNodeViewWithFrame:(CGRect)frame andNode:(CMMethodNode*)node
