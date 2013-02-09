@@ -66,16 +66,6 @@ typedef enum {
     return self;
 }
 
-- (void)appendPartOfCode:(NSString*)codePart
-{
-    [self.rawCode appendString:codePart];
-}
-
-- (void)parseCode
-{
-    [self.parser parse:@"freezing cold { beer."];
-}
-
 - (void)parseCodePart:(NSString *)codePart
 {
     [self.rawCode appendString:codePart];
@@ -115,14 +105,6 @@ typedef enum {
     NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
     
     return [regex matchesInString:code options:NSMatchingProgress range:NSMakeRange(0, [code length])];
-}
-
-- (NSTextCheckingResult*)findFirstLocationOfPattern:(NSString*)pattern inCode:(NSString*)code
-{
-    NSError* error = NULL;
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
-    
-    return [regex firstMatchInString:code options:NSMatchingProgress range:NSMakeRange(0, [code length])];
 }
 
 - (void)parseLineOfCode:(NSMutableString*)lineOfCode
@@ -362,17 +344,7 @@ typedef enum {
     return exists;
 }
 
-- (NSString*)trimWhiteSpaceFrom:(NSString*)string
-{
-    return [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-}
-
 #pragma mark - Node Management
-
-- (void)addStringNode:(NSString*)string
-{
-    [self.nodes addObject:[[CMStringNode alloc] initWithCode:string]];
-}
 
 - (void)addCommentNode:(NSString*)comment
 {
@@ -441,12 +413,6 @@ typedef enum {
 {
     CMNode* node = [self getCurrentNode];
     node.value = value;
-}
-
-- (void)definingInvocationSelector:(NSString*)selector
-{
-    CMInvocationNode* invocationNode = (CMInvocationNode*)[self getCurrentNode];
-    invocationNode.value = selector;
 }
 
 #pragma mark - Stack Handling

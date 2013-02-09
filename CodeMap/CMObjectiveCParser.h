@@ -14,8 +14,6 @@
 @property (nonatomic,strong) NSMutableArray* nodes;
 @property (nonatomic,strong) CMClassNode* openClass;
 
-- (void)appendPartOfCode:(NSString*)codePart;
-- (void)parseCode;
 - (void)parseCodePart:(NSString*)codePart;
 
 @end
