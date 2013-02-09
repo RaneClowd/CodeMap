@@ -31,7 +31,6 @@
 		91FB020F16B37C0900760CEB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 91FB020E16B37C0900760CEB /* main.m */; };
 		91FB021316B37C0900760CEB /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 91FB021116B37C0900760CEB /* Credits.rtf */; };
 		91FB021616B37C0900760CEB /* CMAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 91FB021516B37C0900760CEB /* CMAppDelegate.m */; };
-		91FB021916B37C0900760CEB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 91FB021716B37C0900760CEB /* MainMenu.xib */; };
 		91FB022116B37C0900760CEB /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91FB022016B37C0900760CEB /* SenTestingKit.framework */; };
 		91FB022216B37C0900760CEB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91FB020216B37C0800760CEB /* Cocoa.framework */; };
 		91FB022A16B37C0900760CEB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 91FB022816B37C0900760CEB /* InfoPlist.strings */; };
@@ -97,7 +96,6 @@
 		91FB021216B37C0900760CEB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
 		91FB021416B37C0900760CEB /* CMAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CMAppDelegate.h; sourceTree = "<group>"; };
 		91FB021516B37C0900760CEB /* CMAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CMAppDelegate.m; sourceTree = "<group>"; };
-		91FB021816B37C0900760CEB /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		91FB021F16B37C0900760CEB /* CodeMapTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CodeMapTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		91FB022016B37C0900760CEB /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		91FB022716B37C0900760CEB /* CodeMapTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CodeMapTests-Info.plist"; sourceTree = "<group>"; };
@@ -276,7 +274,6 @@
 				918FFD2116B4307C00A98890 /* Models */,
 				91FB021416B37C0900760CEB /* CMAppDelegate.h */,
 				91FB021516B37C0900760CEB /* CMAppDelegate.m */,
-				91FB021716B37C0900760CEB /* MainMenu.xib */,
 				91FB020916B37C0900760CEB /* Supporting Files */,
 				9129537016B48D9300A5DBE7 /* CMObjectiveCParser.h */,
 				9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */,
@@ -390,7 +387,6 @@
 			files = (
 				91FB020D16B37C0900760CEB /* InfoPlist.strings in Resources */,
 				91FB021316B37C0900760CEB /* Credits.rtf in Resources */,
-				91FB021916B37C0900760CEB /* MainMenu.xib in Resources */,
 				9199F9EE16B576FB00315044 /* ObjectiveCGrammar.h in Resources */,
 				913F8F4516B99C2B0052A164 /* CMMapViewController.xib in Resources */,
 			);
@@ -482,14 +478,6 @@
 				91FB021216B37C0900760CEB /* en */,
 			);
 			name = Credits.rtf;
-			sourceTree = "<group>";
-		};
-		91FB021716B37C0900760CEB /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				91FB021816B37C0900760CEB /* en */,
-			);
-			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
 		91FB022816B37C0900760CEB /* InfoPlist.strings */ = {

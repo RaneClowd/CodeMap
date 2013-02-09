@@ -10,10 +10,6 @@
 
 @implementation CMDraggableView
 
-- (void)mouseDragged:(NSEvent *)theEvent
-{
-}
-
 - (void)redraw
 {
     [self setNeedsDisplay:YES];
