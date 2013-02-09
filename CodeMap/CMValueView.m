@@ -56,7 +56,7 @@
 
 - (NSPoint)connectorPoint
 {
-    return NSMakePoint(self.superview.frame.origin.x+self.frame.origin.x+self.dotRect.origin.x+kDotRadius, self.superview.frame.origin.y+self.frame.origin.y+self.dotRect.origin.y+kDotRadius);
+    return NSMakePoint([self relativeX]+self.dotRect.origin.x+kDotRadius, [self relativeY]+self.dotRect.origin.y+kDotRadius);
 }
 
 - (void)drawRect:(NSRect)dirtyRect

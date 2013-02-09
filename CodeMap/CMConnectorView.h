@@ -10,6 +10,6 @@
 
 @interface CMConnectorView : NSView
 
-@property (nonatomic,strong) NSArray* nodes;
+@property (nonatomic,strong) NSArray* classNodes;
 
 @end

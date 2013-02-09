@@ -12,5 +12,7 @@
 @interface CMNodeView : CMDraggableView
 
 - (NSPoint)connectorPoint;
+- (CGFloat)relativeX;
+- (CGFloat)relativeY;
 
 @end

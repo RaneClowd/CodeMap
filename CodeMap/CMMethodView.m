@@ -35,6 +35,7 @@
     [self.signatureView setSelectable:NO];
     [self.signatureView setString:signature];
     [self.signatureView setDrawsBackground:NO];
+    [self.signatureView setAlignment:NSRightTextAlignment];
     [self addSubview:self.signatureView];
     
     int count = 0;
@@ -70,12 +71,12 @@
     [super setFrame:frameRect];
     [self positionSignature];
     
-    self.dotRect = NSMakeRect(self.frame.size.width - kDotDiameter - kDotRadius, self.frame.size.height - kDotDiameter - kDotRadius, kDotDiameter, kDotDiameter);
+    self.dotRect = NSMakeRect(kDotRadius, self.frame.size.height - kDotDiameter - kDotRadius, kDotDiameter, kDotDiameter);
 }
 
 - (NSPoint)connectorPoint
 {
-    return NSMakePoint(self.frame.origin.x+self.dotRect.origin.x+kDotRadius, self.frame.origin.y+self.dotRect.origin.y+kDotRadius);
+    return NSMakePoint([self relativeX]+self.dotRect.origin.x+kDotRadius, [self relativeY]+self.dotRect.origin.y+kDotRadius);
 }
 
 - (void)positionSignature

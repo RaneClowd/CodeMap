@@ -38,7 +38,7 @@
             
             [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
             
-            x += 8000;
+            x += node.nodeView.frame.size.width;
         }
         
         maxY += 500;
@@ -49,9 +49,9 @@
         
         self.frame = newFrame;
         
-        /*self.connectionView = [[CMConnectorView alloc] initWithFrame:newFrame];
-        self.connectionView.nodes = self.rootNodes;
-        [self addSubview:self.connectionView];*/
+        self.connectionView = [[CMConnectorView alloc] initWithFrame:newFrame];
+        self.connectionView.classNodes = classes;
+        [self addSubview:self.connectionView];
     }
 
     return self;

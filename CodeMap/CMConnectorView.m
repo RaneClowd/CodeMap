@@ -8,6 +8,7 @@
 
 #import "CMConnectorView.h"
 #import "CMNode.h"
+#import "CMClassNode.h"
 #import "CMMethodNode.h"
 #import "CMMethodView.h"
 
@@ -22,17 +23,25 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    self.oldLocation = [self relativeMouseLocationFromEvent:theEvent];
+    self.oldLocation = [self convertPoint:theEvent.locationInWindow fromView:nil];
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
-    NSPoint mouseLocation = [self relativeMouseLocationFromEvent:theEvent];
+    NSPoint mouseLocation = [self convertPoint:theEvent.locationInWindow fromView:nil];
     
     if (self.draggingView == nil) {
-        for (CMMethodNode* node in self.nodes) {
-            if (NSPointInRect(mouseLocation, node.nodeView.frame)) {
-                self.draggingView = (CMMethodView*)node.nodeView;
+        for (CMClassNode* class in self.classNodes) {
+            if (NSPointInRect(mouseLocation, class.nodeView.frame)) {
+                NSPoint relMouseLocation = [class.nodeView convertPoint:mouseLocation fromView:self];
+                for (CMNode* method in [class methods]) {
+                    if (NSPointInRect(relMouseLocation, method.nodeView.frame)) {
+                        self.draggingView = method.nodeView;
+                        break;
+                    }
+                }
+                
+                if (self.draggingView == nil) self.draggingView = class.nodeView;
                 break;
             }
         }
@@ -55,20 +64,16 @@
     self.draggingView = nil;
 }
 
-- (NSPoint)relativeMouseLocationFromEvent:(NSEvent*)event
-{
-    return [self convertPoint:event.locationInWindow fromView:nil];
-}
-
 - (void)drawRect:(NSRect)dirtyRect
 {
     [[NSColor blackColor] set];
     
-    for (CMNode* rootNode in self.nodes) {
+    for (CMClassNode* class in self.classNodes) {
         //[rootNode.nodeView setNeedsDisplay:YES];
-        
-        [self connectNodeFamilyTree:rootNode];
-        [self connectLevelsOfExecution:((CMMethodNode*)rootNode).firstExecutionNode];
+        for (CMMethodNode* methodNode in [class methods]) {
+            [self connectNodeFamilyTree:methodNode];
+            [self connectLevelsOfExecution:((CMMethodNode*)methodNode).firstExecutionNode];
+        }
     }
 }
 
