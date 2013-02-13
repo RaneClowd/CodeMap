@@ -45,4 +45,10 @@
     return YES;
 }
 
++ (NSSize)approximateSizeNeededForText:(NSString*)text atFont:(NSFont*)font
+{
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil];
+    return [text sizeWithAttributes:attributes];
+}
+
 @end

@@ -25,24 +25,13 @@
 
 @implementation CMMethodView
 
-- (id)initWithFrame:(NSRect)frame andSignature:(NSString *)signature andExecutionNode:(CMNode *)node
+- (id)initWithLocation:(NSPoint)location andSignature:(NSString *)signature andExecutionNode:(CMNode *)node
 {
-    self = [super initWithFrame:frame];
-    
-    self.signatureView = [[NSTextView alloc] initWithFrame:CGRectMake(0, 0, 200, kSignatureHeight)];
-    [self.signatureView setFont:[NSFont systemFontOfSize:20]];
-    [self.signatureView setEditable:NO];
-    [self.signatureView setSelectable:NO];
-    [self.signatureView setString:signature];
-    [self.signatureView setDrawsBackground:NO];
-    [self.signatureView setAlignment:NSRightTextAlignment];
-    [self addSubview:self.signatureView];
+    self = [super initWithLocation:location andTitle:signature];
     
     int count = 0;
     CGFloat widthNeeded = 0;
     [self addViewForExecutionNode:node trackingCount:&count trackingWidth:&widthNeeded];
-    
-    [self positionSignature];
     
     CGRect newFrame = self.frame;
     newFrame.size.height = count*kValueHeight + kSignatureHeight;
@@ -69,7 +58,6 @@
 - (void)setFrame:(NSRect)frameRect
 {
     [super setFrame:frameRect];
-    [self positionSignature];
     
     self.dotRect = NSMakeRect(kDotRadius, self.frame.size.height - kDotDiameter - kDotRadius, kDotDiameter, kDotDiameter);
 }
@@ -77,11 +65,6 @@
 - (NSPoint)connectorPoint
 {
     return NSMakePoint([self relativeX]+self.dotRect.origin.x+kDotRadius, [self relativeY]+self.dotRect.origin.y+kDotRadius);
-}
-
-- (void)positionSignature
-{
-    self.signatureView.frame = CGRectMake(0, self.frame.size.height-50, self.frame.size.width, 50);
 }
 
 - (void)drawRect:(NSRect)rect

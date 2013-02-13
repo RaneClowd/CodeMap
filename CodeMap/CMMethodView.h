@@ -7,11 +7,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "CMNodeView.h"
+#import "CMContainerView.h"
 #import "CMNode.h"
 
-@interface CMMethodView : CMNodeView
+@interface CMMethodView : CMContainerView
 
-- (id)initWithFrame:(NSRect)frameRect andSignature:(NSString*)signature andExecutionNode:(CMNode*)node;
+- (id)initWithLocation:(NSPoint)location andSignature:(NSString*)signature andExecutionNode:(CMNode*)node;
 
 @end

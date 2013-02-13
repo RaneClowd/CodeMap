@@ -37,7 +37,7 @@
 
 - (void)createAndAddViewFor:(CMMethodNode*)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
 {
-    CMNodeView* nodeLabel = [self createMethodNodeViewWithFrame:CGRectMake(x, y, 400, 400) andNode:(CMMethodNode*)node];
+    CMNodeView* nodeLabel = [self createMethodNodeViewWithFrame:NSMakePoint(x, y) andNode:(CMMethodNode*)node];
     
     CGFloat methodHeight = nodeLabel.frame.size.height;
     if (methodHeight > *maxY) *maxY = methodHeight;
@@ -45,9 +45,9 @@
     [self addSubview:nodeLabel];
 }
 
-- (CMNodeView*)createMethodNodeViewWithFrame:(CGRect)frame andNode:(CMMethodNode*)node
+- (CMNodeView*)createMethodNodeViewWithFrame:(NSPoint)location andNode:(CMMethodNode*)node
 {
-    CMMethodView* label = [[CMMethodView alloc] initWithFrame:frame andSignature:node.value andExecutionNode:node.firstExecutionNode];
+    CMMethodView* label = [[CMMethodView alloc] initWithLocation:location andSignature:node.value andExecutionNode:node.firstExecutionNode];
     label.displayDelegate = self;
     node.nodeView = label;
     return label;

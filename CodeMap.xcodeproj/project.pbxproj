@@ -24,6 +24,7 @@
 		919435D516C675E500A7AF3B /* CMClassView.m in Sources */ = {isa = PBXBuildFile; fileRef = 919435D416C675E500A7AF3B /* CMClassView.m */; };
 		9199F9EE16B576FB00315044 /* ObjectiveCGrammar.h in Resources */ = {isa = PBXBuildFile; fileRef = 9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */; };
 		9199F9F116B58E8700315044 /* CMImportNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199F9F016B58E8700315044 /* CMImportNode.m */; };
+		91DA3CB216CC0E570045093C /* CMContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 91DA3CB116CC0E570045093C /* CMContainerView.m */; };
 		91EFC07416B6FD2000850F6A /* CMClassNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 91EFC07316B6FD2000850F6A /* CMClassNode.m */; };
 		91EFC07716B6FF5700850F6A /* CMInvocationNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 91EFC07616B6FF5700850F6A /* CMInvocationNode.m */; };
 		91F8F0F916BE1339002FC408 /* CMMethodView.m in Sources */ = {isa = PBXBuildFile; fileRef = 91F8F0F816BE1339002FC408 /* CMMethodView.m */; };
@@ -81,6 +82,8 @@
 		9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectiveCGrammar.h; sourceTree = "<group>"; };
 		9199F9EF16B58E8700315044 /* CMImportNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMImportNode.h; sourceTree = "<group>"; };
 		9199F9F016B58E8700315044 /* CMImportNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMImportNode.m; sourceTree = "<group>"; };
+		91DA3CB016CC0E570045093C /* CMContainerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMContainerView.h; sourceTree = "<group>"; };
+		91DA3CB116CC0E570045093C /* CMContainerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMContainerView.m; sourceTree = "<group>"; };
 		91EFC07216B6FD2000850F6A /* CMClassNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMClassNode.h; sourceTree = "<group>"; };
 		91EFC07316B6FD2000850F6A /* CMClassNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMClassNode.m; sourceTree = "<group>"; };
 		91EFC07516B6FF5700850F6A /* CMInvocationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMInvocationNode.h; sourceTree = "<group>"; };
@@ -131,6 +134,7 @@
 		910C941E16C0372E003B2F6D /* NodeViews */ = {
 			isa = PBXGroup;
 			children = (
+				91DA3CAE16CC0D3C0045093C /* Container */,
 				910C941F16C03752003B2F6D /* Draggable */,
 				91F8F0F616BE1318002FC408 /* MethodView */,
 				9157055416C1C69900D4CDFD /* CMValueView.h */,
@@ -221,6 +225,15 @@
 				911D70DF16B844AF0055DED1 /* CMValueNode.m */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		91DA3CAE16CC0D3C0045093C /* Container */ = {
+			isa = PBXGroup;
+			children = (
+				91DA3CB016CC0E570045093C /* CMContainerView.h */,
+				91DA3CB116CC0E570045093C /* CMContainerView.m */,
+			);
+			name = Container;
 			sourceTree = "<group>";
 		};
 		91F8F0F616BE1318002FC408 /* MethodView */ = {
@@ -448,6 +461,7 @@
 				9157055616C1C69900D4CDFD /* CMValueView.m in Sources */,
 				911C9F2716C5BE890049759F /* CMConnectorView.m in Sources */,
 				919435D516C675E500A7AF3B /* CMClassView.m in Sources */,
+				91DA3CB216CC0E570045093C /* CMContainerView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

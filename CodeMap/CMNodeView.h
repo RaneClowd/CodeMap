@@ -15,4 +15,6 @@
 - (CGFloat)relativeX;
 - (CGFloat)relativeY;
 
++ (NSSize)approximateSizeNeededForText:(NSString*)text atFont:(NSFont*)font;
+
 @end
