@@ -57,11 +57,13 @@ class GraphNode(NSObject):
         self.hashVal = hash
         self.reference = None
         self.viewPlaceHolder = None
+        self.container = None
         self.itemLookupTable = {}
         return self
     
     def appendChild_(self, child):
         self.subNodes.append(child)
+        child.setParent_(self)
     
     def getChildren(self):
         return self.subNodes
@@ -92,6 +94,12 @@ class GraphNode(NSObject):
 
     def getTarget(self):
         return self.reference
+    
+    def setParent_(self, parent):
+        self.container = parent
+
+    def getParent(self):
+        return self.container
 
 class RootNode(GraphNode):
 

@@ -47,6 +47,7 @@
 - (CMNodeView*)createMethodNodeViewWithFrame:(NSPoint)location andNode:(id<CMPYGraphNode>)node
 {
     CMMethodView* label = [[CMMethodView alloc] initWithLocation:location andSignature:[node getText] andExecutionNodes:[node getChildren]];
+    [node setView:label];
     label.displayDelegate = self;
     return label;
 }

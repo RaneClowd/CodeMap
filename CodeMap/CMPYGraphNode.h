@@ -12,7 +12,14 @@
 @protocol CMPYGraphNode <NSObject>
 
 - (NSArray*)getChildren;
+- (id<CMPYGraphNode>)getParent;
+
+- (id<CMPYGraphNode>)getTarget;
+- (void)setTarget:(id<CMPYGraphNode>)target;
+
 - (long)getHash;
+- (id<CMPYGraphNode>)getObjectForKey:(long)key;
+
 - (int)getType;
 - (NSString*)getText;
 

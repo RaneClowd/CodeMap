@@ -39,6 +39,9 @@
     }
     
     for (id<CMPYGraphNode> node in nodes) {
+        id<CMPYGraphNode> referencedNode = [[[node getParent] getParent] getObjectForKey:[node getHash]];
+        [node setTarget:referencedNode];
+        
         CMNodeView* view = [node getView];
         CGRect frame = view.frame;
         frame.size.width = widthNeeded;
