@@ -12,6 +12,6 @@
 
 @interface CMMethodView : CMContainerView
 
-- (id)initWithLocation:(NSPoint)location andSignature:(NSString*)signature andExecutionNode:(CMNode*)node;
+- (id)initWithLocation:(NSPoint)location andSignature:(NSString*)signature andExecutionNodes:(NSArray*)nodes;
 
 @end

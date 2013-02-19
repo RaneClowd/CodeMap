@@ -15,6 +15,7 @@
 #import "CMImportNode.h"
 #import "CMValueNode.h"
 
+#import "CMClassManager.h"
 #import "CMStack.h"
 
 typedef enum {
@@ -28,6 +29,11 @@ typedef enum {
     ParsingString,
     ParsingChar,
     ParsingClassName,
+    
+    ParsingClassInterface,
+    ParsingProperty,
+    
+    ParsingClassImplementation,
     ParsingInvocationTarget,
     ParsingInvocationSelector,
     ParsingInvocationParam,
@@ -36,6 +42,8 @@ typedef enum {
 } ParsingState;
 
 @interface CMObjectiveCParser ()
+
+@property (nonatomic,strong) CMClassManager* classManager;
 
 @property (nonatomic,strong) NSMutableString* rawCode;
 @property (nonatomic,strong) PKParser* parser;
@@ -53,13 +61,14 @@ typedef enum {
 - (id)init
 {
     self = [super init];
-    self.rawCode = [[NSMutableString alloc] init];
-    self.nodes = [[NSMutableArray alloc] init];
     
-    self.stateStack = [[CMStack alloc] init];
-    [self enterState:ParsingNothingSpecial];
+    self.rawCode = [[NSMutableString alloc] init];
+    self.classManager = [[CMClassManager alloc] init];
     
     self.nodeStack = [[CMStack alloc] init];
+    self.stateStack = [[CMStack alloc] init];
+    
+    [self enterState:ParsingNothingSpecial];
     
     return self;
 }
@@ -125,6 +134,8 @@ typedef enum {
         }
         
         switch ([self getState]) {
+                
+            case ParsingClassImplementation:
             case ParsingNothingSpecial:
                 switch (current) {
                     case '/':
@@ -158,6 +169,9 @@ typedef enum {
                         break;
                 }
                 break;
+                
+            case ParsingClassInterface:
+                
                 
             case ParsingCommentLine:
                 if (current == '\n') {
@@ -364,19 +378,19 @@ typedef enum {
 - (void)addCommentNode:(NSString*)comment
 {
     if ([comment length] > 0) {
-        [self.nodes addObject:[[CMCommentNode alloc] initWithCode:comment]];
+        //[self.nodes addObject:[[CMCommentNode alloc] initWithCode:comment]];
     }
 }
 
 - (void)addImportNode:(NSString*)fileName
 {
-    [self.nodes addObject:[[CMImportNode alloc] initWithCode:fileName]];
+    //[self.nodes addObject:[[CMImportNode alloc] initWithCode:fileName]];
 }
 
 - (void)definingMethodWithSignature:(NSString*)signature
 {
-    CMMethodNode* methodNode = [self.openClass methodForSignature:signature];
-    [self enterNode:methodNode];
+    /*CMMethodNode* methodNode = [self.openClass methodForSignature:signature];
+    [self enterNode:methodNode];*/
 }
 
 - (void)beginDefiningInvocation
@@ -402,9 +416,9 @@ typedef enum {
 
 - (void)beginDefiningClass
 {
-    self.openClass = [[CMClassNode alloc] init];
+    /*self.openClass = [[CMClassNode alloc] init];
     self.openClass.value = self.trackingValue;
-    [self enterNode:self.openClass];
+    [self enterNode:self.openClass];*/
 }
 
 - (void)addInvocationNode:(CMInvocationNode*)invocationNode toParent:(CMNode*)parentNode
@@ -457,11 +471,11 @@ typedef enum {
 
 - (void)closeInvocation
 {
-    CMInvocationNode* invocation = (CMInvocationNode*)[self getCurrentNode].parentNode;
+    CMInvocationNode* invocation5 = (CMInvocationNode*)[self getCurrentNode].parentNode;
     
-    if ([invocation.target.value isEqualToString:@"self"]) {
-        invocation.target = [self.openClass methodForSignature:self.trackingValue];
-        invocation.selector = nil;
+    if ([invocation5.target.value isEqualToString:@"self"]) {
+        /*invocation.target = [self.openClass methodForSignature:self.trackingValue];
+        invocation.selector = nil;*/
     } else {
         [self setValueForOpenNode:self.trackingValue];
     }

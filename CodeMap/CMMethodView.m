@@ -7,8 +7,8 @@
 //
 
 #import "CMMethodView.h"
-#import "CMInvocationNode.h"
 #import "CMValueView.h"
+#import "CMPYGraphNode.h"
 
 #define kDotDiameter 14
 #define kDotRadius 7
@@ -25,34 +25,32 @@
 
 @implementation CMMethodView
 
-- (id)initWithLocation:(NSPoint)location andSignature:(NSString *)signature andExecutionNode:(CMNode *)node
+- (id)initWithLocation:(NSPoint)location andSignature:(NSString *)signature andExecutionNodes:(NSArray *)nodes
 {
+    NSUInteger numberOfCalls = [nodes count];
+    
     self = [super initWithLocation:location andTitle:signature];
     
-    int count = 0;
-    CGFloat widthNeeded = 0;
-    [self addViewForExecutionNode:node trackingCount:&count trackingWidth:&widthNeeded];
+    CGFloat widthNeeded = self.titleView.frame.size.width + kDotDiameter*2;
+    CGFloat posY = (numberOfCalls-1) * kValueHeight;
+    for (id<CMPYGraphNode> node in nodes) {
+        [self addViewForExecutionNode:node atY:posY trackingWidth:&widthNeeded];
+        posY -= kValueHeight;
+    }
+    
+    for (id<CMPYGraphNode> node in nodes) {
+        CMNodeView* view = [node getView];
+        CGRect frame = view.frame;
+        frame.size.width = widthNeeded;
+        view.frame = frame;
+    }
     
     CGRect newFrame = self.frame;
-    newFrame.size.height = count*kValueHeight + kSignatureHeight;
+    newFrame.size.height = numberOfCalls*kValueHeight + kSignatureHeight;
     newFrame.size.width = widthNeeded;
     self.frame = newFrame;
     
-    [self positionExecutionViewForNode:node withCount:count-1 andWidth:widthNeeded];
-    
     return self;
-}
-
-- (void)positionExecutionViewForNode:(CMNode*)node withCount:(int)count andWidth:(CGFloat)width
-{
-    CGRect frame = node.nodeView.frame;
-    frame.origin.y = count * kValueHeight;
-    frame.size.width = width;
-    node.nodeView.frame = frame;
-    
-    if (node.nextInLine) {
-        [self positionExecutionViewForNode:node.nextInLine withCount:count-1 andWidth:width];
-    }
 }
 
 - (void)setFrame:(NSRect)frameRect
@@ -79,16 +77,14 @@
     [circle fill];
 }
 
-- (void)addViewForExecutionNode:(CMNode*)node trackingCount:(int*)count trackingWidth:(CGFloat*)width
+- (void)addViewForExecutionNode:(id<CMPYGraphNode>)node atY:(CGFloat)posY trackingWidth:(CGFloat*)width
 {
-    *count += 1;
-    [self addNewViewFor:node trackingWidth:width];
-    if (node.nextInLine) [self addViewForExecutionNode:node.nextInLine trackingCount:count trackingWidth:width];
+    [self addNewViewFor:node atY:posY trackingWidth:width];
 }
 
-- (void)addNewViewFor:(CMNode*)node trackingWidth:(CGFloat*)width
+- (void)addNewViewFor:(id<CMPYGraphNode>)node atY:(CGFloat)posY trackingWidth:(CGFloat*)width
 {
-    [self createAndAddViewFor:node trackingWidth:(CGFloat*)width];
+    [self createAndAddViewFor:node atY:posY trackingWidth:(CGFloat*)width];
     
     /*if ([node class] == [CMInvocationNode class]) {
         CMInvocationNode* invocationNode = (CMInvocationNode*)node;
@@ -104,21 +100,22 @@
     }*/
 }
 
-- (void)createAndAddViewFor:(CMNode*)node trackingWidth:(CGFloat*)width
+- (void)createAndAddViewFor:(id<CMPYGraphNode>)node atY:(CGFloat)posY trackingWidth:(CGFloat*)width
 {
     CMValueView* nodeLabel;
-    nodeLabel = [self createNodeViewWithFrame:CGRectMake(0, 0, self.frame.size.width, kValueHeight) andNode:node];
+    nodeLabel = [self createNodeViewWithFrame:CGRectMake(0, posY, self.frame.size.width, kValueHeight) andNode:node];
+    
+    [node setView:nodeLabel];
     
     if (*width < [nodeLabel widthNeeded]) *width = [nodeLabel widthNeeded];
     
     [self addSubview:nodeLabel];
 }
 
-- (CMValueView*)createNodeViewWithFrame:(CGRect)frame andNode:(CMNode*)node
+- (CMValueView*)createNodeViewWithFrame:(CGRect)frame andNode:(id<CMPYGraphNode>)node
 {
     CMValueView* label = [[CMValueView alloc] initWithFrame:frame andNode:node];
     label.displayDelegate = self;
-    node.nodeView = label;
     return label;
 }
 

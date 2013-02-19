@@ -10,6 +10,8 @@
 
 @interface CMContainerView : CMNodeView
 
+@property (nonatomic,strong) NSTextView* titleView;
+
 - (id)initWithLocation:(NSPoint)location andTitle:(NSString *)title;
 
 @end

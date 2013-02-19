@@ -11,15 +11,14 @@
 
 @implementation CMClassView
 
-- (id)initWithLocation:(NSPoint)location Node:(CMClassNode*)class
+- (id)initWithLocation:(NSPoint)location Node:(id<CMPYGraphNode>)classNode
 {
     self = [super init];
-    class.nodeView = self;
     
     CGFloat maxY = 400;
     CGFloat x = 50;
         
-    for (CMMethodNode* node in [class methods]) {
+    for (id<CMPYGraphNode> node in [classNode getChildren]) {
         CGFloat y = 100;
             
         [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
@@ -35,9 +34,9 @@
     return self;
 }
 
-- (void)createAndAddViewFor:(CMMethodNode*)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
+- (void)createAndAddViewFor:(id<CMPYGraphNode>)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
 {
-    CMNodeView* nodeLabel = [self createMethodNodeViewWithFrame:NSMakePoint(x, y) andNode:(CMMethodNode*)node];
+    CMNodeView* nodeLabel = [self createMethodNodeViewWithFrame:NSMakePoint(x, y) andNode:node];
     
     CGFloat methodHeight = nodeLabel.frame.size.height;
     if (methodHeight > *maxY) *maxY = methodHeight;
@@ -45,11 +44,10 @@
     [self addSubview:nodeLabel];
 }
 
-- (CMNodeView*)createMethodNodeViewWithFrame:(NSPoint)location andNode:(CMMethodNode*)node
+- (CMNodeView*)createMethodNodeViewWithFrame:(NSPoint)location andNode:(id<CMPYGraphNode>)node
 {
-    CMMethodView* label = [[CMMethodView alloc] initWithLocation:location andSignature:node.value andExecutionNode:node.firstExecutionNode];
+    CMMethodView* label = [[CMMethodView alloc] initWithLocation:location andSignature:[node getText] andExecutionNodes:[node getChildren]];
     label.displayDelegate = self;
-    node.nodeView = label;
     return label;
 }
 

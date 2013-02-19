@@ -11,6 +11,7 @@
 @interface CMClassNode ()
 
 @property (nonatomic,strong) NSMutableDictionary* methodNodes;
+@property (nonatomic,strong) NSMutableDictionary* propertyNodes;
 
 @end
 
@@ -20,6 +21,7 @@
 {
     self = [super init];
     self.methodNodes = [[NSMutableDictionary alloc] init];
+    self.propertyNodes = [[NSMutableDictionary alloc] init];
     return self;
 }
 
@@ -35,6 +37,20 @@
     }
     
     return method;
+}
+
+- (CMInstanceNode *)propertyByName:(NSString *)propertyName
+{
+    CMInstanceNode* property = [self.propertyNodes objectForKey:propertyName];
+    
+    if (!property) {
+        property = [[CMInstanceNode alloc] initWithCode:propertyName];
+        [self.propertyNodes setObject:property forKey:propertyName];
+        
+        property.parentNode = self;
+    }
+    
+    return property;
 }
 
 - (NSArray *)methods

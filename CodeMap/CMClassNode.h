@@ -8,10 +8,13 @@
 
 #import "CMNode.h"
 #import "CMMethodNode.h"
+#import "CMInstanceNode.h"
 
 @interface CMClassNode : CMNode
 
 - (CMMethodNode*)methodForSignature:(NSString*)signature;
 - (NSArray*)methods;
+
+- (CMInstanceNode*)propertyByName:(NSString*)property;
 
 @end

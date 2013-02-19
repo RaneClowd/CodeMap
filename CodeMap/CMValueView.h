@@ -7,11 +7,11 @@
 //
 
 #import "CMNodeView.h"
-#import "CMNode.h"
+#import "CMPYGraphNode.h"
 
 @interface CMValueView : CMNodeView
 
-- (id)initWithFrame:(NSRect)frame andNode:(CMNode*)node;
+- (id)initWithFrame:(NSRect)frame andNode:(id<CMPYGraphNode>)node;
 - (CGFloat)widthNeeded;
 
 @end

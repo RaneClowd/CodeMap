@@ -7,10 +7,9 @@
 //
 
 #import "CMMapViewController.h"
-
-#import "CMObjectiveCParser.h"
-
+#import "CMPYObjCParser.h"
 #import "CMMapDisplayView.h"
+#import "CMPYGraphNode.h"
 
 @interface CMMapViewController ()
 - (IBAction)inClick:(id)sender;
@@ -55,23 +54,34 @@
 
 - (IBAction)mapClicked:(id)sender
 {
-    CMObjectiveCParser* parser = [[CMObjectiveCParser alloc] init];
+    Class parserClass = [self loadClassFromBundle];
     
-    NSString * path = @"/Users/kennyskaggs/Projects/Utilities/CodeMap/CodeMap/CMObjectiveCParser.m";
-    NSFileHandle * fileHandle = [NSFileHandle fileHandleForReadingAtPath:path];
+    NSString * filePath = @"/Users/kennyskaggs/Projects/Utilities/CodeMap/CodeMap/CMObjectiveCParser.m";
     
-    NSData * buffer = [fileHandle readDataOfLength:1024];
-    while ([buffer length] > 0) { // this is cool
-        [parser parseCodePart:[[NSMutableString alloc] initWithData:buffer encoding:NSUTF8StringEncoding]];
-        
-        buffer = [fileHandle readDataOfLength:1024];
-    }
+    id<CMPYObjCParser> parser = [[parserClass alloc] init];
+    id<CMPYGraphNode> rootNode = [parser parseFile:filePath];
     
-    
-    self.displayView = [[CMMapDisplayView alloc] initWithFrame:CGRectMake(0, 0, 100, 100) andClasses:@[parser.openClass]];
+    self.displayView = [[CMMapDisplayView alloc] initWithFrame:CGRectMake(0, 0, 100, 100) andClasses:[rootNode getChildren]];
     CGRect displayFrame = self.displayView.frame;
     [self.scrollView.documentView setFrame:CGRectMake(0, 0, displayFrame.size.width, displayFrame.size.height)];
     [self.scrollView.documentView addSubview:self.displayView];
+}
+
+- (Class)loadClassFromBundle
+{
+    Class parserClass;
+    
+    @autoreleasepool {
+        NSString *pluginPath = [[NSBundle mainBundle]
+                                pathForResource:@"ClangHandler"
+                                ofType:@"plugin"];
+        NSBundle *pluginBundle = [NSBundle bundleWithPath:pluginPath];
+        [pluginBundle load];
+        
+        parserClass = [pluginBundle classNamed:@"ClangHandler"];
+    }
+    
+    return parserClass;
 }
 
 @end

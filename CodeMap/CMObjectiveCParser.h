@@ -11,9 +11,6 @@
 
 @interface CMObjectiveCParser : NSObject
 
-@property (nonatomic,strong) NSMutableArray* nodes;
-@property (nonatomic,strong) CMClassNode* openClass;
-
 - (void)parseCodePart:(NSString*)codePart;
 
 @end

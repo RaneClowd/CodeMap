@@ -10,8 +10,6 @@
 
 @interface CMContainerView ()
 
-@property (nonatomic,strong) NSTextView* titleView;
-
 @end
 
 @implementation CMContainerView

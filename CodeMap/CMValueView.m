@@ -16,21 +16,25 @@
 @property (nonatomic, strong) NSTextView* textView;
 @property (nonatomic) NSRect dotRect;
 
+@property (nonatomic) CGFloat neededWidth;
+
 @end
 
 @implementation CMValueView
 
-- (id)initWithFrame:(NSRect)frame andNode:(CMNode*)node
+- (id)initWithFrame:(NSRect)frame andNode:(id<CMPYGraphNode>)node
 {
     self = [super initWithFrame:frame];
     
-    NSString* nodeDesc = [node myDescription];
+    NSString* nodeDesc = [node getText];
     NSFont* font = [NSFont systemFontOfSize:12];
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil];
     NSSize size = [nodeDesc sizeWithAttributes:attributes];
     size.width += 50;
     
-    self.textView = [[NSTextView alloc] initWithFrame:CGRectMake(0, 0, size.width, frame.size.height)];
+    self.neededWidth = size.width;
+    
+    self.textView = [[NSTextView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
     [self.textView setEditable:NO];
     [self.textView setDrawsBackground:NO];
     [self.textView setFont:font];
@@ -43,7 +47,7 @@
 
 - (CGFloat)widthNeeded
 {
-    return self.textView.frame.size.width;
+    return self.neededWidth;
 }
 
 - (void)setFrame:(NSRect)frameRect
@@ -52,6 +56,10 @@
     
     CGFloat heightPadding = self.frame.size.height/2 - kDotRadius;
     self.dotRect = NSMakeRect(self.frame.size.width - kDotDiameter - heightPadding, heightPadding, kDotDiameter, kDotDiameter);
+    
+    NSRect frame = self.textView.frame;
+    frame.size.width = frameRect.size.width;
+    self.textView.frame = frame;
 }
 
 - (NSPoint)connectorPoint

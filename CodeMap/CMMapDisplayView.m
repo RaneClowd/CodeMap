@@ -8,13 +8,11 @@
 
 #import "CMMapDisplayView.h"
 
-#import "CMNode.h"
+#import "CMPYGraphNode.h"
+
 #import "CMValueView.h"
-#import "CMInvocationNode.h"
-#import "CMMethodNode.h"
 #import "CMMethodView.h"
 #import "CMConnectorView.h"
-#import "CMClassNode.h"
 #import "CMClassView.h"
 
 @interface CMMapDisplayView () <DisplayDelegate>
@@ -33,12 +31,12 @@
         CGFloat maxY = 800;
         CGFloat x = 200;
         
-        for (CMClassNode* node in classes) {
+        for (id<CMPYGraphNode> node in classes) {
             CGFloat y = 150;
             
-            [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
+            NSView* classView = [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
             
-            x += node.nodeView.frame.size.width;
+            x += classView.frame.size.width;
         }
         
         maxY += 500;
@@ -49,15 +47,15 @@
         
         self.frame = newFrame;
         
-        self.connectionView = [[CMConnectorView alloc] initWithFrame:newFrame];
+        /*self.connectionView = [[CMConnectorView alloc] initWithFrame:newFrame];
         self.connectionView.classNodes = classes;
-        [self addSubview:self.connectionView];
+        [self addSubview:self.connectionView];*/
     }
 
     return self;
 }
 
-- (void)createAndAddViewFor:(CMClassNode*)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
+- (NSView*)createAndAddViewFor:(id<CMPYGraphNode>)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
 {
     CMClassView* classView = [self createClassViewWithLocation:NSMakePoint(x, y) andNode:node];
     
@@ -65,13 +63,13 @@
     if (methodHeight > *maxY) *maxY = methodHeight;
         
     [self addSubview:classView];
+    return classView;
 }
 
-- (CMClassView*)createClassViewWithLocation:(NSPoint)location andNode:(CMClassNode*)class
+- (CMClassView*)createClassViewWithLocation:(NSPoint)location andNode:(id<CMPYGraphNode>)class
 {
     CMClassView* classView = [[CMClassView alloc] initWithLocation:location Node:class];
     classView.displayDelegate = self;
-    class.nodeView = classView;
     return classView;
 }
 
