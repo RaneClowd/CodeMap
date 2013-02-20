@@ -29,7 +29,7 @@
 {
     NSUInteger numberOfCalls = [nodes count];
     
-    self = [super initWithLocation:location andTitle:signature];
+    self = [super initWithLocation:location size:20 andTitle:signature];
     
     CGFloat widthNeeded = self.titleView.frame.size.width + kDotDiameter*2;
     CGFloat posY = (numberOfCalls-1) * kValueHeight;
@@ -39,8 +39,12 @@
     }
     
     for (id<CMPYGraphNode> node in nodes) {
-        id<CMPYGraphNode> referencedNode = [[[node getParent] getParent] getObjectForKey:[node getHash]];
-        [node setTarget:referencedNode];
+        
+        id hash = [node getHash];
+        if (hash) {
+            id<CMPYGraphNode> referencedNode = [[[node getParent] getParent] getObjectForKey:[node getHash]];
+            [node setTarget:referencedNode];
+        }
         
         CMNodeView* view = [node getView];
         CGRect frame = view.frame;

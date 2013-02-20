@@ -70,7 +70,10 @@
         //[rootNode.nodeView setNeedsDisplay:YES];
         for (id<CMPYGraphNode> methodNode in [class getChildren]) {
             for (id<CMPYGraphNode> invocation in [methodNode getChildren]) {
-                [self drawLineFrom:invocation to:[invocation getTarget]];
+                id<CMPYGraphNode> target = [invocation getTarget];
+                if (target) {
+                    [self drawLineFrom:invocation to:[invocation getTarget]];
+                }
             }
         }
     }

@@ -25,6 +25,7 @@
 		919435D516C675E500A7AF3B /* CMClassView.m in Sources */ = {isa = PBXBuildFile; fileRef = 919435D416C675E500A7AF3B /* CMClassView.m */; };
 		9199F9EE16B576FB00315044 /* ObjectiveCGrammar.h in Resources */ = {isa = PBXBuildFile; fileRef = 9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */; };
 		9199F9F116B58E8700315044 /* CMImportNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199F9F016B58E8700315044 /* CMImportNode.m */; };
+		91BA85A916D42F7400FC9940 /* CMColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 91BA85A816D42F7400FC9940 /* CMColors.m */; };
 		91DA3CB216CC0E570045093C /* CMContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 91DA3CB116CC0E570045093C /* CMContainerView.m */; };
 		91DA3CBE16CC2AF60045093C /* CMInstanceNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 91DA3CBD16CC2AF60045093C /* CMInstanceNode.m */; };
 		91DA3CC716CC3D460045093C /* CMClassManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 91DA3CC616CC3D460045093C /* CMClassManager.m */; };
@@ -88,6 +89,8 @@
 		9199F9ED16B576FB00315044 /* ObjectiveCGrammar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectiveCGrammar.h; sourceTree = "<group>"; };
 		9199F9EF16B58E8700315044 /* CMImportNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMImportNode.h; sourceTree = "<group>"; };
 		9199F9F016B58E8700315044 /* CMImportNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMImportNode.m; sourceTree = "<group>"; };
+		91BA85A716D42F7400FC9940 /* CMColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMColors.h; sourceTree = "<group>"; };
+		91BA85A816D42F7400FC9940 /* CMColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMColors.m; sourceTree = "<group>"; };
 		91DA3CB016CC0E570045093C /* CMContainerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMContainerView.h; sourceTree = "<group>"; };
 		91DA3CB116CC0E570045093C /* CMContainerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMContainerView.m; sourceTree = "<group>"; };
 		91DA3CBC16CC2AF60045093C /* CMInstanceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMInstanceNode.h; sourceTree = "<group>"; };
@@ -213,6 +216,8 @@
 			children = (
 				917D039516B755990017CEFE /* CMStack.h */,
 				917D039616B755990017CEFE /* CMStack.m */,
+				91BA85A716D42F7400FC9940 /* CMColors.h */,
+				91BA85A816D42F7400FC9940 /* CMColors.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -490,6 +495,7 @@
 				91DA3CB216CC0E570045093C /* CMContainerView.m in Sources */,
 				91DA3CBE16CC2AF60045093C /* CMInstanceNode.m in Sources */,
 				91DA3CC716CC3D460045093C /* CMClassManager.m in Sources */,
+				91BA85A916D42F7400FC9940 /* CMColors.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

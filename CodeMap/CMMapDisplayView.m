@@ -36,7 +36,7 @@
             
             NSView* classView = [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
             
-            x += classView.frame.size.width;
+            x += classView.frame.size.width + 30;
         }
         
         maxY += 500;

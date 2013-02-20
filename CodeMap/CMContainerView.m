@@ -14,12 +14,12 @@
 
 @implementation CMContainerView
 
-- (id)initWithLocation:(NSPoint)location andTitle:(NSString *)title
+- (id)initWithLocation:(NSPoint)location size:(int)size andTitle:(NSString *)title
 {
-    NSFont* font = [NSFont systemFontOfSize:20];
+    NSFont* font = [NSFont systemFontOfSize:size];
     NSSize titleSize = [CMNodeView approximateSizeNeededForText:title atFont:font];
-    titleSize.height += 20;
-    titleSize.width += 20;
+    titleSize.height += size;
+    titleSize.width += size;
     
     self = [super initWithFrame:CGRectMake(location.x, location.y, titleSize.width, titleSize.height)];
     

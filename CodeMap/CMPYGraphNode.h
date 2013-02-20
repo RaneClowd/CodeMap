@@ -17,10 +17,10 @@
 - (id<CMPYGraphNode>)getTarget;
 - (void)setTarget:(id<CMPYGraphNode>)target;
 
-- (long)getHash;
-- (id<CMPYGraphNode>)getObjectForKey:(long)key;
+- (id)getHash;
+- (id<CMPYGraphNode>)getObjectForKey:(id)key;
 
-- (int)getType;
+- (NSString*)getType;
 - (NSString*)getText;
 
 - (CMNodeView*)getView;

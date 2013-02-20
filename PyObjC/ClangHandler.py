@@ -25,27 +25,51 @@ class ClangHandler(NSObject):
     
         return self.rootNode
 
-    def traverseNodeHelper_(self, cursor):
-        self.processNode_(cursor)
-        for c in cursor.get_children():
-            self.traverseNodeHelper_(c)
+    def traverseNodeHelper_withIndent_(self, cursor, indent):
+        self.processNode_withIndent_(cursor, indent)
 
     def traverseNode_(self, cursor):
         if (cursor.location.file is not None and cursor.location.file.name.startswith("/Users/kennyskaggs/Projects/Utilities/CodeMap")):
 
-            self.traverseNodeHelper_(cursor)
+            self.traverseNodeHelper_withIndent_(cursor, '\t')
             
 
-    def processNode_(self, cursor):
-        if (cursor.kind.value == 18):
-            openClass = GraphNode.alloc().initWithType_andText_andHash_(1, cursor.displayname, cursor.hash)
+    def processNode_withIndent_(self, cursor, indent):
+        if (cursor.kind.value == 11):
+            print '%sinterface: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
+            openInterface = GraphNode.alloc().initWithType_andText_andHash_('Interface', cursor.displayname, cursor.hash)
+            self.rootNode.addClass_(openInterface)
+        
+        elif (cursor.kind.value == 18):
+            print '%sclass imp: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
+            openClass = GraphNode.alloc().initWithType_andText_andHash_('Implementation', cursor.displayname, cursor.hash)
             self.rootNode.addClass_(openClass)
+    
         elif (cursor.kind.value == 16):
+            print '%smethod decl: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
             methodDecl = GraphNode.alloc().initWithType_andText_andHash_(2, cursor.displayname, cursor.hash)
             self.rootNode.addMethod_(methodDecl)
+                
         elif (cursor.kind.value == 104 and cursor.get_definition() is not None):
-            methodCall = GraphNode.alloc().initWithType_andText_andHash_(3, 'invoking: ' + cursor.displayname, cursor.get_definition().hash)
+            print '%smethod call (defined): %s hash=%d' % (indent, cursor.displayname, cursor.hash)
+            methodCall = GraphNode.alloc().initWithType_andText_andHash_('Invocation', 'invoking: ' + cursor.displayname, cursor.get_definition().hash)
             self.rootNode.addMethodCall_(methodCall)
+    
+        elif (cursor.kind.value == 104):
+            print '%smethod call to no def: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
+            methodCall = GraphNode.alloc().initWithType_andText_andHash_('Invocation', 'invoking: ' + cursor.displayname, None)
+            self.rootNode.addMethodCall_(methodCall)
+                
+        else:
+            if (cursor.get_definition() is not None):
+                print '%s%s %d decl=%d kind=%d' % (indent, cursor.displayname, cursor.hash, cursor.get_definition().hash, cursor.kind.value)
+            elif (cursor.referenced is not None):
+                print '%s%s %d ref=%d kind=%d refkind=%d' % (indent, cursor.displayname, cursor.hash, cursor.referenced.hash, cursor.kind.value, cursor.referenced.kind.value)
+            else:
+                print '%s%s %d kind=%d' % (indent, cursor.displayname, cursor.hash, cursor.kind.value)
+
+        for c in cursor.get_children():
+            self.traverseNodeHelper_withIndent_(c, indent+'\t')
 
 class GraphNode(NSObject):
     

@@ -8,12 +8,26 @@
 
 #import "CMClassView.h"
 #import "CMMethodView.h"
+#import "CMColors.h"
+
+@interface CMClassView ()
+
+@property (nonatomic,strong) NSColor* classColor;
+
+@end
 
 @implementation CMClassView
 
 - (id)initWithLocation:(NSPoint)location Node:(id<CMPYGraphNode>)classNode
 {
-    self = [super init];
+    self = [super initWithLocation:location size:80 andTitle:[classNode getText]];
+    
+    NSString* classType = (NSString*)[classNode getType];
+    if ([classType isEqualToString:@"Interface"]) {
+        self.classColor = [CMColors interfacedColor];
+    } else if ([classType isEqualToString:@"Implementation"]) {
+        self.classColor = [CMColors implementatedColor];
+    }
     
     CGFloat maxY = 400;
     CGFloat x = 50;
@@ -28,7 +42,7 @@
         
     maxY += 300;
         
-    CGRect newFrame = CGRectMake(location.x, location.y, x, maxY);
+    CGRect newFrame = CGRectMake(location.x, location.y, MAX(self.titleView.frame.size.width + 80, x), maxY);
     self.frame = newFrame;
     
     return self;
@@ -54,7 +68,7 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    [[NSColor colorWithCalibratedRed:0.3203 green:0.6023 blue:0.7773 alpha:1] set];
+    [self.classColor set];
     NSRectFill(dirtyRect);
     
     [super drawRect:dirtyRect];

@@ -7,10 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "CMNodeView.h"
+#import "CMContainerView.h"
 #import "CMPYGraphNode.h"
 
-@interface CMClassView : CMNodeView
+@interface CMClassView : CMContainerView
 
 - (id)initWithLocation:(NSPoint)location Node:(id<CMPYGraphNode>)class;
 

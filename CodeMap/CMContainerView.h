@@ -12,6 +12,6 @@
 
 @property (nonatomic,strong) NSTextView* titleView;
 
-- (id)initWithLocation:(NSPoint)location andTitle:(NSString *)title;
+- (id)initWithLocation:(NSPoint)location size:(int)size andTitle:(NSString *)title;
 
 @end

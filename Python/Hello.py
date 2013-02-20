@@ -17,9 +17,9 @@ def findforchildren(node, indent):
             print 'definition:'
         
         if (node.get_definition() is not None):
-            print '%s%s %d decl=%s' % (indent, node.displayname, node.hash, node.get_definition().hash)
+            print '%s%s %d decl=%s kind=%d' % (indent, node.displayname, node.hash, node.get_definition().hash, node.kind.value)
         else:
-            print '%s%s %d' % (indent, node.displayname, node.hash)
+            print '%s%s %d kind=%d' % (indent, node.displayname, node.hash, node.kind.value)
         
         for c in node.get_children():
             findforchildren(c, indent+"\t")
