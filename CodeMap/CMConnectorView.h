@@ -12,4 +12,6 @@
 
 @property (nonatomic,strong) NSArray* classNodes;
 
++ (CMConnectorView*) sharedInstance;
+
 @end

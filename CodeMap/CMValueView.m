@@ -7,6 +7,7 @@
 //
 
 #import "CMValueView.h"
+#import "CMContainerView.h"
 
 #define kDotDiameter 14
 #define kDotRadius 7
@@ -64,7 +65,12 @@
 
 - (NSPoint)connectorPoint
 {
-    return NSMakePoint([self relativeX]+self.dotRect.origin.x+kDotRadius, [self relativeY]+self.dotRect.origin.y+kDotRadius);
+    CMContainerView* containingView = (CMContainerView*)[self superview];
+    if (containingView.collapsed) {
+        return [containingView secondaryConnectorPoint];
+    } else {
+        return NSMakePoint([self relativeX]+self.dotRect.origin.x+kDotRadius, [self relativeY]+self.dotRect.origin.y+kDotRadius);
+    }
 }
 
 - (void)drawRect:(NSRect)dirtyRect

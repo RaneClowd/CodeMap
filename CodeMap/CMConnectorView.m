@@ -10,6 +10,8 @@
 #import "CMPYGraphNode.h"
 #import "CMMethodView.h"
 
+static CMConnectorView* shared;
+
 @interface CMConnectorView ()
 
 @property (nonatomic) NSPoint oldLocation;
@@ -18,6 +20,15 @@
 @end
 
 @implementation CMConnectorView
+
++ (CMConnectorView *)sharedInstance
+{
+    if (!shared) {
+        shared = [[CMConnectorView alloc] init];
+    }
+    
+    return shared;
+}
 
 - (void)mouseDown:(NSEvent *)theEvent
 {

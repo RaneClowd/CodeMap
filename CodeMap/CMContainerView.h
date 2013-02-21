@@ -12,10 +12,13 @@
 
 @property (nonatomic,strong) NSTextView* titleView;
 
+@property (nonatomic) NSRect secondaryDotRect;
+
 @property (nonatomic) BOOL collapsed;
 @property (nonatomic) NSSize sizeBeforeCollapse;
 
 - (id)initWithLocation:(NSPoint)location size:(int)size andTitle:(NSString *)title;
+- (NSPoint)secondaryConnectorPoint;
 - (void)toggleCollapsed;
 
 @end

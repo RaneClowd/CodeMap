@@ -7,6 +7,10 @@
 //
 
 #import "CMContainerView.h"
+#import "CMConnectorView.h"
+
+#define kDotDiameter 14
+#define kDotRadius 7
 
 @interface CMContainerView ()
 
@@ -36,10 +40,16 @@
     return self;
 }
 
+- (NSPoint)secondaryConnectorPoint
+{
+    return NSMakePoint([self relativeX]+self.secondaryDotRect.origin.x+kDotRadius, [self relativeY]+self.secondaryDotRect.origin.y+kDotRadius);
+}
+
 - (void)mouseDown:(NSEvent *)theEvent
 {
     if ([theEvent clickCount] == 2) {
         [self toggleCollapsed];
+        [[CMConnectorView sharedInstance] setNeedsDisplay:YES];
     }
 }
 
@@ -50,10 +60,12 @@
         [self showSubviews];
     } else {
         self.sizeBeforeCollapse = self.frame.size;
-        self.frame = (CGRect){self.frame.origin, self.titleView.frame.size};
+        self.frame = (CGRect){self.frame.origin, NSMakeSize(self.titleView.frame.size.width+kDotDiameter, self.titleView.frame.size.height)};
         [self hideSubviews];
     }
     self.collapsed = !self.collapsed;
+    
+    [self setNeedsDisplay:YES];
 }
 
 - (void)hideSubviews
@@ -93,7 +105,10 @@
     NSPoint titleLocation = [self locationForTitleViewBasedOn:frame.size];
     frame.origin = titleLocation;
     self.titleView.frame = frame;
+    
+    self.secondaryDotRect = NSMakeRect(self.frame.size.width-kDotDiameter-kDotRadius, kDotRadius, kDotDiameter, kDotDiameter);
 }
+
 
 - (void)drawRect:(NSRect)dirtyRect
 {
@@ -114,6 +129,12 @@
     [line closePath];
     
     [line stroke];
+    
+    if (self.collapsed) {
+        [[NSColor blackColor] set];
+        NSBezierPath* circle = [NSBezierPath bezierPathWithOvalInRect:self.secondaryDotRect];
+        [circle fill];
+    }
 }
 
 - (NSPoint)locationForTitleViewBasedOn:(NSSize)size

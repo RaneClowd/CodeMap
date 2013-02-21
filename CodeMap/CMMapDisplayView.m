@@ -47,7 +47,8 @@
         
         self.frame = newFrame;
         
-        self.connectionView = [[CMConnectorView alloc] initWithFrame:newFrame];
+        self.connectionView = [CMConnectorView sharedInstance];
+        [self.connectionView setFrame:newFrame];
         self.connectionView.classNodes = classes;
         [self addSubview:self.connectionView];
     }
