@@ -129,7 +129,7 @@ class GraphNode(NSObject):
 
     def getTarget(self):
         return self.reference
-    
+
     def setParent_(self, parent):
         self.container = parent
 
@@ -142,43 +142,12 @@ class GraphNode(NSObject):
     def setPublic_(self, public):
         self.accessible = public
 
-class InterfaceMerger(NSObject):
-
-    def init(self):
-        self.int = None
-        self.imp = None
-        return self
-
-    def getImplementation(self):
-        return self.imp
-
-    def setImplementation_(self, implementation):
-        self.imp = implementation
-        if (self.int is not None):
-            self.processSplitDefinition()
-
-    def getInterface(self):
-        return self.int
-
-    def setInterface_(self, interface):
-        self.int = interface
-        if (self.imp is not None):
-            self.processSplitDefinition()
-
-    def processSplitDefinition(self):
-        for methodNode in self.int.getChildren():
-            methodImp = self.imp.getObjectForKey_(methodNode.getText())
-            print 'int: %s:' % methodNode
-            if (methodImp):
-                methodImp.setPublic_('Yes')
-
 class RootNode(GraphNode):
 
     def init(self):
         self = super(RootNode, self).initWithType_andText_andHash_(0, 'root', 0)
         self.recentClass = None
         self.recentMethod = None
-        self.classHelpers = {}
         return self
 
     def lastClass(self):
@@ -187,22 +156,8 @@ class RootNode(GraphNode):
     def addClass_IsInterfaceDefinition_(self, classObj, isInterface):
         self.recentClass = classObj
         self.appendChild_(classObj)
-    
-        if (classObj.getText() in self.classHelpers):
-            classHelper = self.classHelpers[classObj.getText()]
-            self.setObject_OnClassHelper_IsInterface_(classObj, classHelper, isInterface)
-            self.subNodes.remove(classHelper.getInterface())
-        else:
-            helper = InterfaceMerger.alloc().init()
-            self.setObject_OnClassHelper_IsInterface_(classObj, helper, isInterface)
-            self.classHelpers[classObj.getText()] = helper
-    
-    def setObject_OnClassHelper_IsInterface_(self, object, helper, isInt):
-        print helper
-        if (isInt):
-            helper.setInterface_(object)
-        else:
-            helper.setImplementation_(object)
+        if (isInterface):
+            self.setObject_ForKey_(classObj, classObj.getText())
     
     def addProperty_(self, propertyNode):
         self.recentClass.appendDeclaration_(propertyNode)
@@ -214,6 +169,11 @@ class RootNode(GraphNode):
         if (self.recentClass is not None):
             self.recentMethod = methodObj
             self.recentClass.appendChild_(methodObj)
+            
+            classInterface = self.getObjectForKey_(self.recentClass.getText())
+            for methodInterface in classInterface.getChildren():
+                if (methodInterface.getText() == methodObj.getText()):
+                    methodObj.setPublic_('Yes');
 
             self.recentClass.setObject_ForKey_(methodObj, methodObj.getText())
 
