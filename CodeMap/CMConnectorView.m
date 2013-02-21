@@ -21,6 +21,7 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+    [super mouseDown:theEvent];
     self.oldLocation = [self convertPoint:theEvent.locationInWindow fromView:nil];
 }
 
@@ -59,6 +60,7 @@
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
+    [super mouseUp:theEvent];
     self.draggingView = nil;
 }
 

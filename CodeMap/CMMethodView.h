@@ -8,10 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 #import "CMContainerView.h"
-#import "CMNode.h"
+#import "CMPYGraphNode.h"
 
 @interface CMMethodView : CMContainerView
 
-- (id)initWithLocation:(NSPoint)location andSignature:(NSString*)signature andExecutionNodes:(NSArray*)nodes;
+- (id)initWithLocation:(NSPoint)location andNode:(id<CMPYGraphNode>)node;
 
 @end

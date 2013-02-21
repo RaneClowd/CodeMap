@@ -12,6 +12,10 @@
 
 @property (nonatomic,strong) NSTextView* titleView;
 
+@property (nonatomic) BOOL collapsed;
+@property (nonatomic) NSSize sizeBeforeCollapse;
+
 - (id)initWithLocation:(NSPoint)location size:(int)size andTitle:(NSString *)title;
+- (void)toggleCollapsed;
 
 @end

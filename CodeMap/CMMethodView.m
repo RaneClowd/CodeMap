@@ -8,7 +8,7 @@
 
 #import "CMMethodView.h"
 #import "CMValueView.h"
-#import "CMPYGraphNode.h"
+#import "CMColors.h"
 
 #define kDotDiameter 14
 #define kDotRadius 7
@@ -21,32 +21,38 @@
 @property (nonatomic, strong) NSTextView* signatureView;
 @property (nonatomic) NSRect dotRect;
 
+@property (nonatomic) NSColor* backColor;
+
 @end
 
 @implementation CMMethodView
 
-- (id)initWithLocation:(NSPoint)location andSignature:(NSString *)signature andExecutionNodes:(NSArray *)nodes
+- (id)initWithLocation:(NSPoint)location andNode:(id<CMPYGraphNode>)node
 {
-    NSUInteger numberOfCalls = [nodes count];
+    NSUInteger numberOfCalls = [[node getChildren] count];
     
-    self = [super initWithLocation:location size:20 andTitle:signature];
+    if ([[node getPubliclyAccessible] isEqualToString:@"Yes"]) self.backColor = [CMColors publicMethod];
+    else self.backColor = [CMColors privateMethod];
+    
+    self = [super initWithLocation:location size:20 andTitle:[node getText]];
     
     CGFloat widthNeeded = self.titleView.frame.size.width + kDotDiameter*2;
     CGFloat posY = (numberOfCalls-1) * kValueHeight;
-    for (id<CMPYGraphNode> node in nodes) {
-        [self addViewForExecutionNode:node atY:posY trackingWidth:&widthNeeded];
+    for (id<CMPYGraphNode> methodCall in [node getChildren]) {
+        [self addViewForExecutionNode:methodCall atY:posY trackingWidth:&widthNeeded];
         posY -= kValueHeight;
     }
     
-    for (id<CMPYGraphNode> node in nodes) {
+    for (id<CMPYGraphNode> methodCall in [node getChildren]) {
         
-        id hash = [node getHash];
-        if (hash) {
-            id<CMPYGraphNode> referencedNode = [[[node getParent] getParent] getObjectForKey:[node getHash]];
-            [node setTarget:referencedNode];
+        id name = [methodCall getText];
+        id hash = [methodCall getHash];
+        if (name && hash) {
+            id<CMPYGraphNode> referencedNode = [[[methodCall getParent] getParent] getObjectForKey:name];
+            if (referencedNode) [methodCall setTarget:referencedNode];
         }
         
-        CMNodeView* view = [node getView];
+        CMNodeView* view = [methodCall getView];
         CGRect frame = view.frame;
         frame.size.width = widthNeeded;
         view.frame = frame;
@@ -74,7 +80,7 @@
 
 - (void)drawRect:(NSRect)rect
 {
-    [[NSColor colorWithCalibratedRed:0.3203 green:0.4023 blue:0.7773 alpha:1] set];
+    [self.backColor set];
     NSRectFill(self.bounds);
     
     [super drawRect:rect];

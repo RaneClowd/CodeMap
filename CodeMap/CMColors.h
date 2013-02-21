@@ -13,4 +13,7 @@
 + (NSColor*)implementatedColor;
 + (NSColor*)interfacedColor;
 
++ (NSColor*)publicMethod;
++ (NSColor*)privateMethod;
+
 @end

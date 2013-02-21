@@ -26,4 +26,6 @@
 - (CMNodeView*)getView;
 - (void)setView:(CMNodeView*)view;
 
+- (NSString*)getPubliclyAccessible;
+
 @end
