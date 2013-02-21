@@ -25,30 +25,29 @@ class ClangHandler(NSObject):
     
         return self.rootNode
 
-    def traverseNodeHelper_withIndent_(self, cursor, indent):
-        self.processNode_withIndent_(cursor, indent)
-
     def traverseNode_(self, cursor):
         if (cursor.location.file is not None and cursor.location.file.name.startswith("/Users/kennyskaggs/Projects/Utilities/CodeMap")):
 
-            self.traverseNodeHelper_withIndent_(cursor, '\t')
+            self.processNode_withIndent_InsideContainer_(cursor, '\t', '')
             
-
-    def processNode_withIndent_(self, cursor, indent):
+    def processNode_withIndent_InsideContainer_(self, cursor, indent, container):
+        newContainer = container
+        
         if (cursor.kind.value == 11):
             print '%sinterface: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
+            newContainer = 'interface'
             openInterface = GraphNode.alloc().initWithType_andText_andHash_('Interface', cursor.displayname, cursor.hash)
-            self.rootNode.addClass_IsInterfaceDefinition_(openInterface, True)
+            self.rootNode.addClass_(openInterface)
         
         elif (cursor.kind.value == 18):
             print '%sclass imp: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
             openClass = GraphNode.alloc().initWithType_andText_andHash_('Implementation', cursor.displayname, cursor.hash)
-            self.rootNode.addClass_IsInterfaceDefinition_(openClass, False)
+            self.rootNode.addClass_(openClass)
     
         elif (cursor.kind.value == 16):
             print '%smethod decl: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
             methodDecl = GraphNode.alloc().initWithType_andText_andHash_(2, cursor.displayname, cursor.hash)
-            self.rootNode.addMethod_(methodDecl)
+            self.rootNode.addMethod_isPublic_(methodDecl, container == 'interface')
                 
         elif (cursor.kind.value == 104 and cursor.get_definition() is not None):
             print '%smethod call (defined): %s hash=%d' % (indent, cursor.displayname, cursor.hash)
@@ -69,7 +68,7 @@ class ClangHandler(NSObject):
                 print '%s%s %d kind=%d' % (indent, cursor.displayname, cursor.hash, cursor.kind.value)
 
         for c in cursor.get_children():
-            self.traverseNodeHelper_withIndent_(c, indent+'\t')
+            self.processNode_withIndent_InsideContainer_(c, indent+'\t', newContainer)
 
 class GraphNode(NSObject):
     
@@ -153,11 +152,13 @@ class RootNode(GraphNode):
     def lastClass(self):
         return self.recentClass
 
-    def addClass_IsInterfaceDefinition_(self, classObj, isInterface):
-        self.recentClass = classObj
-        self.appendChild_(classObj)
-        if (isInterface):
+    def addClass_(self, classObj):
+        self.recentClass = self.getObjectForKey_(classObj.getText())
+        
+        if (self.recentClass is None):
+            self.recentClass = classObj
             self.setObject_ForKey_(classObj, classObj.getText())
+            self.appendChild_(classObj)
     
     def addProperty_(self, propertyNode):
         self.recentClass.appendDeclaration_(propertyNode)
@@ -165,17 +166,18 @@ class RootNode(GraphNode):
     def lastMethod(self):
         return self.recentMethod
 
-    def addMethod_(self, methodObj):
+    def addMethod_isPublic_(self, methodObj, public):
         if (self.recentClass is not None):
-            self.recentMethod = methodObj
-            self.recentClass.appendChild_(methodObj)
+            self.recentMethod = self.recentClass.getObjectForKey_(methodObj.getText())
             
-            classInterface = self.getObjectForKey_(self.recentClass.getText())
-            for methodInterface in classInterface.getChildren():
-                if (methodInterface.getText() == methodObj.getText()):
-                    methodObj.setPublic_('Yes');
+            if (self.recentMethod is None):
+                self.recentClass.appendChild_(methodObj)
+                self.recentClass.setObject_ForKey_(methodObj, methodObj.getText())
+                self.recentMethod = methodObj
 
-            self.recentClass.setObject_ForKey_(methodObj, methodObj.getText())
+            if (public):
+                methodObj.setPublic_('Yes');
+
 
     def addMethodCall_(self, methodCallObj):
         if (self.recentMethod is not None):
