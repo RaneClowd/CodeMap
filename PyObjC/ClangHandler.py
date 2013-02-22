@@ -31,18 +31,26 @@ class ClangHandler(NSObject):
             self.processNode_withIndent_InsideContainer_(cursor, '\t', '')
             
     def processNode_withIndent_InsideContainer_(self, cursor, indent, container):
+        
         newContainer = container
+        nodeChildren = cursor.get_children()
         
         if (cursor.kind.value == 11):
             print '%sinterface: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
             newContainer = 'interface'
-            openInterface = GraphNode.alloc().initWithType_andText_andHash_('Interface', cursor.displayname, cursor.hash)
+            openInterface = GraphNode.alloc().initWithType_andText_andHash_('interface', cursor.displayname, cursor.hash)
             self.rootNode.addClass_(openInterface)
         
         elif (cursor.kind.value == 18):
             print '%sclass imp: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
-            openClass = GraphNode.alloc().initWithType_andText_andHash_('Implementation', cursor.displayname, cursor.hash)
+            openClass = GraphNode.alloc().initWithType_andText_andHash_('implementation', cursor.displayname, cursor.hash)
             self.rootNode.addClass_(openClass)
+                
+        elif (cursor.kind.value == 12): #category
+            classRef = nodeChildren.next()
+            print '%scategory named: %s of class: %s' % (indent, cursor.displayname, classRef.displayname)
+            categoryNode = GraphNode.alloc().initWithType_andText_andHash_('category', classRef.displayname, cursor.hash)
+            self.rootNode.addClass_(categoryNode)
     
         elif (cursor.kind.value == 16):
             print '%smethod decl: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
@@ -67,7 +75,7 @@ class ClangHandler(NSObject):
             else:
                 print '%s%s %d kind=%d' % (indent, cursor.displayname, cursor.hash, cursor.kind.value)
 
-        for c in cursor.get_children():
+        for c in nodeChildren:
             self.processNode_withIndent_InsideContainer_(c, indent+'\t', newContainer)
 
 class GraphNode(NSObject):
@@ -101,6 +109,9 @@ class GraphNode(NSObject):
 
     def getType(self):
         return self.value
+    
+    def setType_(self, type):
+        self.value = type
 
     def getText(self):
         return self.disp
@@ -159,7 +170,10 @@ class RootNode(GraphNode):
             self.recentClass = classObj
             self.setObject_ForKey_(classObj, classObj.getText())
             self.appendChild_(classObj)
-    
+        else:
+            if (classObj.getType() == 'implementation'):
+                self.recentClass.setType_(classObj.getType())
+
     def addProperty_(self, propertyNode):
         self.recentClass.appendDeclaration_(propertyNode)
 

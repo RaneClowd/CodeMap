@@ -23,9 +23,9 @@
     self = [super initWithLocation:location size:80 andTitle:[classNode getText]];
     
     NSString* classType = (NSString*)[classNode getType];
-    if ([classType isEqualToString:@"Interface"]) {
+    if ([classType isEqualToString:@"interface"]) {
         self.classColor = [CMColors interfacedColor];
-    } else if ([classType isEqualToString:@"Implementation"]) {
+    } else if ([classType isEqualToString:@"implementation"]) {
         self.classColor = [CMColors implementatedColor];
     }
     
