@@ -16,4 +16,7 @@
 + (NSColor*)publicMethod;
 + (NSColor*)privateMethod;
 
++ (NSColor*)publicProperty;
++ (NSColor*)privateProperty;
+
 @end

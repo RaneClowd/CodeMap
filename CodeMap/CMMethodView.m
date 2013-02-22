@@ -31,8 +31,13 @@
 {
     NSUInteger numberOfCalls = [[node getChildren] count];
     
-    if ([[node getPubliclyAccessible] isEqualToString:@"Yes"]) self.backColor = [CMColors publicMethod];
-    else self.backColor = [CMColors privateMethod];
+    if ([[node getType] isEqualToString:@"1method"]) {
+        if ([[node getPubliclyAccessible] isEqualToString:@"Yes"]) self.backColor = [CMColors publicMethod];
+        else self.backColor = [CMColors privateMethod];
+    } else {
+        if ([[node getPubliclyAccessible] isEqualToString:@"Yes"]) self.backColor = [CMColors publicProperty];
+        else self.backColor = [CMColors privateProperty];
+    }
     
     self = [super initWithLocation:location size:20 andTitle:[node getText]];
     
@@ -46,11 +51,8 @@
     for (id<CMPYGraphNode> methodCall in [node getChildren]) {
         
         id name = [methodCall getText];
-        id hash = [methodCall getHash];
-        if (name && hash) {
-            id<CMPYGraphNode> referencedNode = [[[methodCall getParent] getParent] getObjectForKey:name];
-            if (referencedNode) [methodCall setTarget:referencedNode];
-        }
+        id<CMPYGraphNode> referencedNode = [[[methodCall getParent] getParent] getObjectForKey:name];
+        if (referencedNode) [methodCall setTarget:referencedNode];
         
         CMNodeView* view = [methodCall getView];
         CGRect frame = view.frame;

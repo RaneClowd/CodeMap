@@ -30,4 +30,14 @@
     return [NSColor colorWithCalibratedRed:0.2203 green:0.6023 blue:0.4773 alpha:1];
 }
 
++ (NSColor *)publicProperty
+{
+    return [NSColor colorWithCalibratedRed:1 green:1 blue:0 alpha:1];
+}
+
++ (NSColor *)privateProperty
+{
+    return [NSColor colorWithCalibratedRed:0.6 green:0.6 blue:0 alpha:1];
+}
+
 @end

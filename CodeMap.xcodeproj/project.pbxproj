@@ -11,6 +11,7 @@
 		911C9F2716C5BE890049759F /* CMConnectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 911C9F2616C5BE890049759F /* CMConnectorView.m */; };
 		911D70E016B844AF0055DED1 /* CMValueNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 911D70DF16B844AF0055DED1 /* CMValueNode.m */; };
 		9129537216B48D9300A5DBE7 /* CMObjectiveCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */; };
+		913C9EC816D80DD900ABAC3D /* CMClassViewGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 913C9EC716D80DD900ABAC3D /* CMClassViewGenerator.m */; };
 		913F8F4416B99C2B0052A164 /* CMMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 913F8F4216B99C2B0052A164 /* CMMapViewController.m */; };
 		913F8F4516B99C2B0052A164 /* CMMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 913F8F4316B99C2B0052A164 /* CMMapViewController.xib */; };
 		9142DD4016D52364006811ED /* CMLabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9142DD3F16D52364006811ED /* CMLabelView.m */; };
@@ -63,6 +64,8 @@
 		911D70DF16B844AF0055DED1 /* CMValueNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMValueNode.m; sourceTree = "<group>"; };
 		9129537016B48D9300A5DBE7 /* CMObjectiveCParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMObjectiveCParser.h; sourceTree = "<group>"; };
 		9129537116B48D9300A5DBE7 /* CMObjectiveCParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMObjectiveCParser.m; sourceTree = "<group>"; };
+		913C9EC616D80DD900ABAC3D /* CMClassViewGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMClassViewGenerator.h; sourceTree = "<group>"; };
+		913C9EC716D80DD900ABAC3D /* CMClassViewGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMClassViewGenerator.m; sourceTree = "<group>"; };
 		913F8F4116B99C2B0052A164 /* CMMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMMapViewController.h; sourceTree = "<group>"; };
 		913F8F4216B99C2B0052A164 /* CMMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMMapViewController.m; sourceTree = "<group>"; };
 		913F8F4316B99C2B0052A164 /* CMMapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CMMapViewController.xib; sourceTree = "<group>"; };
@@ -223,6 +226,8 @@
 				917D039616B755990017CEFE /* CMStack.m */,
 				91BA85A716D42F7400FC9940 /* CMColors.h */,
 				91BA85A816D42F7400FC9940 /* CMColors.m */,
+				913C9EC616D80DD900ABAC3D /* CMClassViewGenerator.h */,
+				913C9EC716D80DD900ABAC3D /* CMClassViewGenerator.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -502,6 +507,7 @@
 				91DA3CC716CC3D460045093C /* CMClassManager.m in Sources */,
 				91BA85A916D42F7400FC9940 /* CMColors.m in Sources */,
 				9142DD4016D52364006811ED /* CMLabelView.m in Sources */,
+				913C9EC816D80DD900ABAC3D /* CMClassViewGenerator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

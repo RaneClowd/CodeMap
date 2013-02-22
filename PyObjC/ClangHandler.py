@@ -45,6 +45,14 @@ class ClangHandler(NSObject):
             print '%sclass imp: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
             openClass = GraphNode.alloc().initWithType_andText_andHash_('implementation', cursor.displayname, cursor.hash)
             self.rootNode.addClass_(openClass)
+    
+        elif (cursor.kind.value == 14):
+            classRef = nodeChildren.next()
+            print '%sproperty named: %s is of type: %s' % (indent, cursor.displayname, classRef.displayname)
+            propertyNode = GraphNode.alloc().initWithType_andText_andHash_(classRef.displayname, cursor.displayname, cursor.hash)
+            self.rootNode.addClassItemDecl_isPublic_(propertyNode, container == 'interface')
+            return
+            
                 
         elif (cursor.kind.value == 12): #category
             classRef = nodeChildren.next()
@@ -54,17 +62,17 @@ class ClangHandler(NSObject):
     
         elif (cursor.kind.value == 16):
             print '%smethod decl: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
-            methodDecl = GraphNode.alloc().initWithType_andText_andHash_(2, cursor.displayname, cursor.hash)
-            self.rootNode.addMethod_isPublic_(methodDecl, container == 'interface')
+            methodDecl = GraphNode.alloc().initWithType_andText_andHash_('1method', cursor.displayname, cursor.hash)
+            self.rootNode.addClassItemDecl_isPublic_(methodDecl, container == 'interface')
                 
         elif (cursor.kind.value == 104 and cursor.get_definition() is not None):
             print '%smethod call (defined): %s hash=%d' % (indent, cursor.displayname, cursor.hash)
-            methodCall = GraphNode.alloc().initWithType_andText_andHash_('Invocation', cursor.displayname, cursor.get_definition().hash)
+            methodCall = GraphNode.alloc().initWithType_andText_andHash_('methodcall', cursor.displayname, cursor.get_definition().hash)
             self.rootNode.addMethodCall_(methodCall)
     
         elif (cursor.kind.value == 104):
             print '%smethod call to no def: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
-            methodCall = GraphNode.alloc().initWithType_andText_andHash_('Invocation', cursor.displayname, None)
+            methodCall = GraphNode.alloc().initWithType_andText_andHash_('methodcall', cursor.displayname, None)
             self.rootNode.addMethodCall_(methodCall)
                 
         else:
@@ -180,7 +188,7 @@ class RootNode(GraphNode):
     def lastMethod(self):
         return self.recentMethod
 
-    def addMethod_isPublic_(self, methodObj, public):
+    def addClassItemDecl_isPublic_(self, methodObj, public):
         if (self.recentClass is not None):
             self.recentMethod = self.recentClass.getObjectForKey_(methodObj.getText())
             

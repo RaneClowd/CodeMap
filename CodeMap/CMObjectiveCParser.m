@@ -496,7 +496,7 @@ typedef enum {
 
 - (void)leaveCurrentState
 {
-    [[self stateStack] pop];
+    [self.stateStack pop];
 }
 
 @end
