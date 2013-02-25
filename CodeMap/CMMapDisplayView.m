@@ -14,6 +14,7 @@
 #import "CMMethodView.h"
 #import "CMConnectorView.h"
 #import "CMClassView.h"
+#import "CMClassViewGenerator.h"
 
 @interface CMMapDisplayView () <DisplayDelegate>
 
@@ -68,9 +69,10 @@
     return classView;
 }
 
-- (CMClassView*)createClassViewWithLocation:(NSPoint)location andNode:(id<CMPYGraphNode>)class
+- (CMClassView*)createClassViewWithLocation:(NSPoint)location andNode:(id<CMPYGraphNode>)classNode
 {
-    CMClassView* classView = [[CMClassView alloc] initWithLocation:location Node:class];
+    CMClassViewGenerator* generator = [CMClassViewGenerator generatorForClassNamed:[classNode getText]];
+    CMClassView* classView = (CMClassView*)[generator generateAtLocation:location];
     classView.displayDelegate = self;
     return classView;
 }

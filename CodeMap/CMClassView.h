@@ -12,6 +12,6 @@
 
 @interface CMClassView : CMContainerView
 
-- (id)initWithLocation:(NSPoint)location Node:(id<CMPYGraphNode>)class;
+- (id)initWithNode:(id<CMPYGraphNode>)classNode andLocation:(NSPoint)location;
 
 @end

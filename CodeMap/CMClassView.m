@@ -13,37 +13,27 @@
 @interface CMClassView ()
 
 @property (nonatomic,strong) NSColor* classColor;
+@property (nonatomic,weak) id<CMPYGraphNode> classNode;
+@property (nonatomic) BOOL hasBeenExpanded;
 
 @end
 
 @implementation CMClassView
 
-- (id)initWithLocation:(NSPoint)location Node:(id<CMPYGraphNode>)classNode
+- (id)initWithNode:(id<CMPYGraphNode>)classNode andLocation:(NSPoint)location
 {
     self = [super initWithLocation:location size:80 andTitle:[classNode getText]];
     
-    NSString* classType = (NSString*)[classNode getType];
+    self.classNode = classNode;
+    
+    NSString* classType = (NSString*)[self.classNode getType];
     if ([classType isEqualToString:@"interface"]) {
         self.classColor = [CMColors interfacedColor];
     } else if ([classType isEqualToString:@"implementation"]) {
         self.classColor = [CMColors implementatedColor];
     }
     
-    CGFloat maxY = 400;
-    CGFloat x = 50;
-        
-    for (id<CMPYGraphNode> node in [classNode getChildren]) {
-        CGFloat y = 100;
-            
-        [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
-            
-        x += 400;
-    }
-        
-    maxY += 300;
-        
-    CGRect newFrame = CGRectMake(location.x, location.y, MAX(self.titleView.frame.size.width + 80, x), maxY);
-    self.frame = newFrame;
+    [self toggleCollapsed];
     
     return self;
 }
@@ -56,6 +46,35 @@
     if (methodHeight > *maxY) *maxY = methodHeight;
     
     [self addSubview:nodeLabel];
+}
+
+- (void)toggleCollapsed
+{
+    if (self.collapsed && !self.hasBeenExpanded) {
+        self.hasBeenExpanded = YES;
+        [self firstExpand];
+    } else {
+        [super toggleCollapsed];
+    }
+}
+
+- (void)firstExpand
+{
+    CGFloat maxY = 400;
+    CGFloat x = 50;
+    
+    for (id<CMPYGraphNode> node in [self.classNode getChildren]) {
+        CGFloat y = 100;
+        
+        [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
+        
+        x += 400;
+    }
+    
+    maxY += 300;
+    
+    CGRect newFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, MAX(self.titleView.frame.size.width + 80, x), maxY);
+    self.frame = newFrame;
 }
 
 - (CMNodeView*)createMethodNodeViewWithFrame:(NSPoint)location andNode:(id<CMPYGraphNode>)node

@@ -10,6 +10,7 @@
 #import "CMPYObjCParser.h"
 #import "CMMapDisplayView.h"
 #import "CMPYGraphNode.h"
+#import "CMClassViewGenerator.h"
 
 @interface CMMapViewController ()
 - (IBAction)inClick:(id)sender;
@@ -61,7 +62,13 @@
     id<CMPYObjCParser> parser = [[parserClass alloc] init];
     id<CMPYGraphNode> rootNode = [parser parseFile:filePath];
     
-    self.displayView = [[CMMapDisplayView alloc] initWithFrame:CGRectMake(0, 0, 100, 100) andClasses:[rootNode getChildren]];
+    NSArray* classes = [rootNode getChildren];
+    for (id<CMPYGraphNode> node in classes) {
+        id generator = [[CMClassViewGenerator alloc] initWithClassNode:node];
+        NSLog(@"generator created: %@", generator);
+    }
+    
+    self.displayView = [[CMMapDisplayView alloc] initWithFrame:CGRectMake(0, 0, 100, 100) andClasses:classes];
     CGRect displayFrame = self.displayView.frame;
     [self.scrollView.documentView setFrame:CGRectMake(0, 0, displayFrame.size.width, displayFrame.size.height)];
     [self.scrollView.documentView addSubview:self.displayView];
