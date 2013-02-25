@@ -12,7 +12,9 @@
 #import "CMPYGraphNode.h"
 #import "CMClassViewGenerator.h"
 
-@interface CMMapViewController ()
+#import "CMSuperView.h"
+
+@interface CMMapViewController () <CMSuperView>
 - (IBAction)inClick:(id)sender;
 - (IBAction)outClick:(id)sender;
 
@@ -69,9 +71,15 @@
     }
     
     self.displayView = [[CMMapDisplayView alloc] initWithFrame:CGRectMake(0, 0, 100, 100) andClasses:classes];
+    self.displayView.myDisplayDel = self;
     CGRect displayFrame = self.displayView.frame;
     [self.scrollView.documentView setFrame:CGRectMake(0, 0, displayFrame.size.width, displayFrame.size.height)];
     [self.scrollView.documentView addSubview:self.displayView];
+}
+
+- (void)expandIfNeededToContainFrame:(CGRect)frame
+{
+    [self.scrollView.documentView setFrame:frame];
 }
 
 - (Class)loadClassFromBundle

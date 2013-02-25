@@ -58,6 +58,7 @@
 /* Begin PBXFileReference section */
 		910C942016C03782003B2F6D /* CMDraggableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMDraggableView.h; sourceTree = "<group>"; };
 		910C942116C03782003B2F6D /* CMDraggableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMDraggableView.m; sourceTree = "<group>"; };
+		9114626616DC193A00FC9FF1 /* CMSuperView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSuperView.h; sourceTree = "<group>"; };
 		911C9F2516C5BE890049759F /* CMConnectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMConnectorView.h; sourceTree = "<group>"; };
 		911C9F2616C5BE890049759F /* CMConnectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMConnectorView.m; sourceTree = "<group>"; };
 		911D70DE16B844AF0055DED1 /* CMValueNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMValueNode.h; sourceTree = "<group>"; };
@@ -215,6 +216,7 @@
 				911C9F2616C5BE890049759F /* CMConnectorView.m */,
 				9142DD3E16D52364006811ED /* CMLabelView.h */,
 				9142DD3F16D52364006811ED /* CMLabelView.m */,
+				9114626616DC193A00FC9FF1 /* CMSuperView.h */,
 			);
 			name = View;
 			sourceTree = "<group>";

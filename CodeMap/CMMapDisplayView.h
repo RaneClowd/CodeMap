@@ -7,8 +7,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "CMSuperView.h"
 
-@interface CMMapDisplayView : NSView
+@interface CMMapDisplayView : NSView <CMSuperView>
+
+@property (nonatomic,strong) id<CMSuperView> myDisplayDel;
 
 - (id)initWithFrame:(NSRect)frame andClasses:(NSArray*)classes;
 

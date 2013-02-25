@@ -53,6 +53,7 @@
     if (self.collapsed && !self.hasBeenExpanded) {
         self.hasBeenExpanded = YES;
         [self firstExpand];
+        [((id<CMSuperView>)self.superview) expandIfNeededToContainFrame:self.frame];
     } else {
         [super toggleCollapsed];
     }

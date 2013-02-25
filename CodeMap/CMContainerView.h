@@ -7,6 +7,7 @@
 //
 
 #import "CMNodeView.h"
+#import "CMSuperView.h"
 
 @interface CMContainerView : CMNodeView
 

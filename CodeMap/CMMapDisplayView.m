@@ -57,6 +57,27 @@
     return self;
 }
 
+- (void)expandIfNeededToContainFrame:(CGRect)frame
+{
+    CGFloat childRightBound = frame.origin.x + frame.size.width;
+    CGFloat selfRightBound = self.frame.origin.x + self.frame.size.width;
+    BOOL rightExceeded = selfRightBound < childRightBound;
+    
+    CGFloat childTopBound = frame.origin.y + frame.size.height;
+    CGFloat selfTopBound = self.frame.origin.y + self.frame.size.height;
+    BOOL topExceeded = selfTopBound < childTopBound;
+    
+    if (topExceeded || rightExceeded) {
+        CGRect newFrame = self.frame;
+        if (topExceeded) newFrame.size.height = childTopBound;
+        if (rightExceeded) newFrame.size.width = childRightBound;
+        [self setFrame:newFrame];
+    }
+    
+    [self.connectionView setFrame:self.frame];
+    [self.myDisplayDel expandIfNeededToContainFrame:self.frame];
+}
+
 - (NSView*)createAndAddViewFor:(id<CMPYGraphNode>)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
 {
     CMClassView* classView = [self createClassViewWithLocation:NSMakePoint(x, y) andNode:node];

@@ -58,6 +58,7 @@
     if (self.collapsed) {
         self.frame = (CGRect){self.frame.origin, self.sizeBeforeCollapse};
         [self showSubviews];
+        [((id<CMSuperView>)self.superview) expandIfNeededToContainFrame:self.frame];
     } else {
         self.sizeBeforeCollapse = self.frame.size;
         self.frame = (CGRect){self.frame.origin, NSMakeSize(self.titleView.frame.size.width+kDotDiameter, self.titleView.frame.size.height)};
