@@ -10,7 +10,7 @@
 #import "CMPYObjCParser.h"
 #import "CMMapDisplayView.h"
 #import "CMPYGraphNode.h"
-#import "CMClassViewGenerator.h"
+#import "CMClassNodeCollection.h"
 
 #import "CMSuperView.h"
 
@@ -66,8 +66,7 @@
     
     NSArray* classes = [rootNode getChildren];
     for (id<CMPYGraphNode> node in classes) {
-        id generator = [[CMClassViewGenerator alloc] initWithClassNode:node];
-        NSLog(@"generator created: %@", generator);
+        [CMClassNodeCollection setClassNode:node forName:[node getText]];
     }
     
     self.displayView = [[CMMapDisplayView alloc] initWithFrame:CGRectMake(0, 0, 100, 100) andClasses:classes];

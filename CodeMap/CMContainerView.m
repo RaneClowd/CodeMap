@@ -88,13 +88,11 @@
     for (NSView* subView in [self subviews]) {
         if ([[subView class] isSubclassOfClass:[CMContainerView class]]) {
             NSView* hitView = [subView hitTest:[self convertPoint:aPoint fromView:[self superview]]];
-            if (hitView)
-                return hitView;
+            if (hitView) return hitView;
         }
     }
     
-    if (![self isHidden] && NSPointInRect(aPoint, self.frame))
-        return self;
+    if (![self isHidden] && NSPointInRect(aPoint, self.frame)) return self;
     else return nil;
 }
 

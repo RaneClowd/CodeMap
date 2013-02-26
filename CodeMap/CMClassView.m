@@ -9,6 +9,7 @@
 #import "CMClassView.h"
 #import "CMMethodView.h"
 #import "CMColors.h"
+#import "CMClassNodeCollection.h"
 
 @interface CMClassView ()
 
@@ -20,17 +21,26 @@
 
 @implementation CMClassView
 
-- (id)initWithNode:(id<CMPYGraphNode>)classNode andLocation:(NSPoint)location
+- (id)initWithNode:(id<CMPYGraphNode>)node andLocation:(NSPoint)location
 {
-    self = [super initWithLocation:location size:80 andTitle:[classNode getText]];
+    BOOL isProperty = NO;
     
-    self.classNode = classNode;
-    
-    NSString* classType = (NSString*)[self.classNode getType];
-    if ([classType isEqualToString:@"interface"]) {
+    NSString* nodeType = (NSString*)[node getType];
+    if ([nodeType isEqualToString:@"2interface"]) {
         self.classColor = [CMColors interfacedColor];
-    } else if ([classType isEqualToString:@"implementation"]) {
+    } else if ([nodeType isEqualToString:@"2implementation"]) {
         self.classColor = [CMColors implementatedColor];
+    } else {
+        isProperty = YES;
+        self.classColor = ([[node getPubliclyAccessible] isEqualToString:@"Yes"] ? [CMColors publicProperty] : [CMColors privateProperty]);
+    }
+    
+    if (isProperty) {
+        self = [super initWithLocation:location size:20 andTitle:[node getText]];
+        self.classNode = [CMClassNodeCollection classNodeForClassName:[node getType]];
+    } else {
+        self = [super initWithLocation:location size:80 andTitle:[node getText]];
+        self.classNode = node;
     }
     
     [self toggleCollapsed];
@@ -38,14 +48,24 @@
     return self;
 }
 
-- (void)createAndAddViewFor:(id<CMPYGraphNode>)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
+- (void)expandIfNeededToContainFrame:(CGRect)frame
 {
-    CMNodeView* nodeLabel = [self createMethodNodeViewWithFrame:NSMakePoint(x, y) andNode:node];
+    CGFloat childRightBound = frame.origin.x + frame.size.width;
+    CGFloat selfRightBound = self.frame.origin.x + self.frame.size.width;
+    BOOL rightExceeded = selfRightBound < childRightBound;
     
-    CGFloat methodHeight = nodeLabel.frame.size.height;
-    if (methodHeight > *maxY) *maxY = methodHeight;
+    CGFloat childTopBound = frame.origin.y + frame.size.height;
+    CGFloat selfTopBound = self.frame.origin.y + self.frame.size.height;
+    BOOL topExceeded = selfTopBound < childTopBound;
     
-    [self addSubview:nodeLabel];
+    if (topExceeded || rightExceeded) {
+        CGRect newFrame = self.frame;
+        if (topExceeded) newFrame.size.height = childTopBound;
+        if (rightExceeded) newFrame.size.width = childRightBound;
+        [self setFrame:newFrame];
+    }
+    
+    //[self.myDisplayDel expandIfNeededToContainFrame:self.frame];
 }
 
 - (void)toggleCollapsed
@@ -76,6 +96,29 @@
     
     CGRect newFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, MAX(self.titleView.frame.size.width + 80, x), maxY);
     self.frame = newFrame;
+}
+
+- (void)createAndAddViewFor:(id<CMPYGraphNode>)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
+{
+    CMNodeView* nodeView;
+    
+    if ([[node getType] isEqualToString:@"1method"] || [[node getType] isEqualToString:@"?"]) {
+        nodeView = [self createMethodNodeViewWithFrame:NSMakePoint(x, y) andNode:node];
+    } else {
+        id<CMPYGraphNode> classNode = [CMClassNodeCollection classNodeForClassName:[node getType]];
+        if (classNode) {
+            nodeView = [[CMClassView alloc] initWithNode:node andLocation:NSMakePoint(x, y)];
+        } else {
+            nodeView = [self createMethodNodeViewWithFrame:NSMakePoint(x, y) andNode:node];
+        }
+    }
+    
+    [node setView:nodeView];
+    
+    CGFloat nodeHeight = nodeView.frame.size.height;
+    if (nodeHeight > *maxY) *maxY = nodeHeight;
+    
+    [self addSubview:nodeView];
 }
 
 - (CMNodeView*)createMethodNodeViewWithFrame:(NSPoint)location andNode:(id<CMPYGraphNode>)node

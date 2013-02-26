@@ -10,8 +10,8 @@
 #import "CMContainerView.h"
 #import "CMPYGraphNode.h"
 
-@interface CMClassView : CMContainerView
+@interface CMClassView : CMContainerView <CMSuperView>
 
-- (id)initWithNode:(id<CMPYGraphNode>)classNode andLocation:(NSPoint)location;
+- (id)initWithNode:(id<CMPYGraphNode>)node andLocation:(NSPoint)location;
 
 @end

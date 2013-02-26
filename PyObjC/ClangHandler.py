@@ -38,18 +38,20 @@ class ClangHandler(NSObject):
         if (cursor.kind.value == 11):
             print '%sinterface: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
             newContainer = 'interface'
-            openInterface = GraphNode.alloc().initWithType_andText_andHash_('interface', cursor.displayname, cursor.hash)
+            openInterface = GraphNode.alloc().initWithType_andText_andHash_('2interface', cursor.displayname, cursor.hash)
             self.rootNode.addClass_(openInterface)
         
         elif (cursor.kind.value == 18):
             print '%sclass imp: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
-            openClass = GraphNode.alloc().initWithType_andText_andHash_('implementation', cursor.displayname, cursor.hash)
+            openClass = GraphNode.alloc().initWithType_andText_andHash_('2implementation', cursor.displayname, cursor.hash)
             self.rootNode.addClass_(openClass)
     
         elif (cursor.kind.value == 14):
             classRef = nodeChildren.next()
-            print '%sproperty named: %s is of type: %s' % (indent, cursor.displayname, classRef.displayname)
-            propertyNode = GraphNode.alloc().initWithType_andText_andHash_(classRef.displayname, cursor.displayname, cursor.hash)
+            classTypeName = classRef.displayname if classRef.kind.value == 42 else '?'
+            
+            print '%sproperty named: %s is of type: %s' % (indent, cursor.displayname, classTypeName)
+            propertyNode = GraphNode.alloc().initWithType_andText_andHash_(classTypeName, cursor.displayname, cursor.hash)
             self.rootNode.addClassItemDecl_isPublic_(propertyNode, container == 'interface')
             return
             
@@ -179,7 +181,7 @@ class RootNode(GraphNode):
             self.setObject_ForKey_(classObj, classObj.getText())
             self.appendChild_(classObj)
         else:
-            if (classObj.getType() == 'implementation'):
+            if (classObj.getType() == '2implementation'):
                 self.recentClass.setType_(classObj.getType())
 
     def addProperty_(self, propertyNode):
