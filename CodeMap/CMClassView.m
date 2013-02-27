@@ -72,6 +72,7 @@
 {
     if (self.collapsed && !self.hasBeenExpanded) {
         self.hasBeenExpanded = YES;
+        self.collapsed = NO;
         [self firstExpand];
         [((id<CMSuperView>)self.superview) expandIfNeededToContainFrame:self.frame];
     } else {
