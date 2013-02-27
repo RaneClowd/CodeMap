@@ -54,7 +54,6 @@ class ClangHandler(NSObject):
             propertyNode = GraphNode.alloc().initWithType_andText_andHash_(classTypeName, cursor.displayname, cursor.hash)
             self.rootNode.addClassItemDecl_isPublic_(propertyNode, container == 'interface')
             return
-            
                 
         elif (cursor.kind.value == 12): #category
             classRef = nodeChildren.next()
@@ -77,13 +76,12 @@ class ClangHandler(NSObject):
             methodCall = GraphNode.alloc().initWithType_andText_andHash_('methodcall', cursor.displayname, None)
             self.rootNode.addMethodCall_(methodCall)
                 
+        if (cursor.get_definition() is not None):
+            print '%s%s %d decl=%d kind=%d' % (indent, cursor.displayname, cursor.hash, cursor.get_definition().hash, cursor.kind.value)
+        elif (cursor.referenced is not None):
+            print '%s%s %d ref=%d kind=%d refkind=%d' % (indent, cursor.displayname, cursor.hash, cursor.referenced.hash, cursor.kind.value, cursor.referenced.kind.value)
         else:
-            if (cursor.get_definition() is not None):
-                print '%s%s %d decl=%d kind=%d' % (indent, cursor.displayname, cursor.hash, cursor.get_definition().hash, cursor.kind.value)
-            elif (cursor.referenced is not None):
-                print '%s%s %d ref=%d kind=%d refkind=%d' % (indent, cursor.displayname, cursor.hash, cursor.referenced.hash, cursor.kind.value, cursor.referenced.kind.value)
-            else:
-                print '%s%s %d kind=%d' % (indent, cursor.displayname, cursor.hash, cursor.kind.value)
+            print '%s%s %d kind=%d' % (indent, cursor.displayname, cursor.hash, cursor.kind.value)
 
         for c in nodeChildren:
             self.processNode_withIndent_InsideContainer_(c, indent+'\t', newContainer)
