@@ -23,9 +23,6 @@
 - (NSString*)getType;
 - (NSString*)getText;
 
-- (CMNodeView*)getView;
-- (void)setView:(CMNodeView*)view;
-
 - (NSString*)getPubliclyAccessible;
 
 @end

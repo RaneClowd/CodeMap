@@ -29,6 +29,8 @@
     self = [super initWithFrame:frame];
     if (self) {
         
+        NSMutableArray* classViews = [[NSMutableArray alloc] init];
+        
         CGFloat maxY = 800;
         CGFloat x = 200;
         
@@ -36,6 +38,7 @@
             CGFloat y = 150;
             
             NSView* classView = [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
+            [classViews addObject:classView];
             
             x += classView.frame.size.width + 30;
         }
@@ -50,7 +53,7 @@
         
         self.connectionView = [CMConnectorView sharedInstance];
         [self.connectionView setFrame:newFrame];
-        self.connectionView.classNodes = classes;
+        self.connectionView.classViews = classViews;
         [self addSubview:self.connectionView];
     }
 
@@ -81,7 +84,7 @@
 - (NSView*)createAndAddViewFor:(id<CMPYGraphNode>)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
 {
     CMClassView* classView = [self createClassViewWithLocation:NSMakePoint(x, y) andNode:node];
-    [node setView:classView];
+    //[node setView:classView];
     
     CGFloat methodHeight = classView.frame.size.height;
     if (methodHeight > *maxY) *maxY = methodHeight;

@@ -48,17 +48,20 @@
         posY -= kValueHeight;
     }
     
-    for (id<CMPYGraphNode> methodCall in [node getChildren]) {
+    for (NSView* subView in self.subviews) {
+        if ([[subView class] isSubclassOfClass:[CMNodeView class]]) {
+            CGRect frame = subView.frame;
+            frame.size.width = widthNeeded;
+            subView.frame = frame;
+        }
+    }
+    
+    /*for (id<CMPYGraphNode> methodCall in [node getChildren]) {
         
         id name = [methodCall getText];
         id<CMPYGraphNode> referencedNode = [[[methodCall getParent] getParent] getObjectForKey:name];
         if (referencedNode) [methodCall setTarget:referencedNode];
-        
-        CMNodeView* view = [methodCall getView];
-        CGRect frame = view.frame;
-        frame.size.width = widthNeeded;
-        view.frame = frame;
-    }
+    }*/
     
     CGRect newFrame = self.frame;
     newFrame.size.height = numberOfCalls*kValueHeight + kSignatureHeight;
@@ -120,7 +123,7 @@
     CMValueView* nodeLabel;
     nodeLabel = [self createNodeViewWithFrame:CGRectMake(0, posY, self.frame.size.width, kValueHeight) andNode:node];
     
-    [node setView:nodeLabel];
+    //[node setView:nodeLabel];
     
     if (*width < [nodeLabel widthNeeded]) *width = [nodeLabel widthNeeded];
     

@@ -113,7 +113,7 @@
         }
     }
     
-    [node setView:nodeView];
+    //[node setView:nodeView];
     
     CGFloat nodeHeight = nodeView.frame.size.height;
     if (nodeHeight > *maxY) *maxY = nodeHeight;
@@ -124,7 +124,7 @@
 - (CMNodeView*)createMethodNodeViewWithFrame:(NSPoint)location andNode:(id<CMPYGraphNode>)node
 {
     CMMethodView* label = [[CMMethodView alloc] initWithLocation:location andNode:node];
-    [node setView:label];
+    //[node setView:label];
     label.displayDelegate = self;
     return label;
 }

@@ -41,19 +41,8 @@ static CMConnectorView* shared;
     NSPoint mouseLocation = [self convertPoint:theEvent.locationInWindow fromView:nil];
     
     if (self.draggingView == nil) {
-        for (id<CMPYGraphNode> classNode in self.classNodes) {
-            if (NSPointInRect(mouseLocation, [[classNode getView] frame])) {
-                NSPoint relMouseLocation = [[classNode getView] convertPoint:mouseLocation fromView:self];
-                for (id<CMPYGraphNode> method in [classNode getChildren]) {
-                    if (NSPointInRect(relMouseLocation, [[method getView] frame])) {
-                        self.draggingView = [method getView];
-                        break;
-                    }
-                }
-                
-                if (self.draggingView == nil) self.draggingView = [classNode getView];
-                break;
-            }
+        for (NSView* classView in self.classViews) {
+            [self checkView:classView forDraggingAt:mouseLocation];
         }
     }
     
@@ -69,6 +58,22 @@ static CMConnectorView* shared;
     }
 }
 
+- (void)checkView:(NSView*)view forDraggingAt:(NSPoint)location
+{
+    if (NSPointInRect(location, [view frame])) {
+        NSPoint locationRelToView = [view convertPoint:location fromView:[view superview]];
+        for (NSView* subView in [view subviews]) {
+            if ([[subView class] isSubclassOfClass:[CMContainerView class]]) {
+                [self checkView:subView forDraggingAt:locationRelToView];
+                if (self.draggingView) return;
+            }
+        }
+        self.draggingView = (CMNodeView*)view;
+    } else {
+        return;
+    }
+}
+
 - (void)mouseUp:(NSEvent *)theEvent
 {
     [super mouseUp:theEvent];
@@ -77,11 +82,11 @@ static CMConnectorView* shared;
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    [[NSColor blackColor] set];
+    /*[[NSColor blackColor] set];
     
-    for (id<CMPYGraphNode> class in self.classNodes) {
+    for (CMNodeView* classView in self.classViews) {
         //[rootNode.nodeView setNeedsDisplay:YES];
-        for (id<CMPYGraphNode> methodNode in [class getChildren]) {
+        for (NSView* subView in classView.subviews) {
             for (id<CMPYGraphNode> invocation in [methodNode getChildren]) {
                 id<CMPYGraphNode> target = [invocation getTarget];
                 if (target) {
@@ -89,7 +94,7 @@ static CMConnectorView* shared;
                 }
             }
         }
-    }
+    }*/
 }
 
 - (BOOL)isOpaque
@@ -97,12 +102,12 @@ static CMConnectorView* shared;
     return NO;
 }
 
-- (void)drawLineFrom:(id<CMPYGraphNode>)nodeA to:(id<CMPYGraphNode>)nodeB
+- (void)drawLineFrom:(CMNodeView*)nodeA to:(CMNodeView*)nodeB
 {
     NSBezierPath* line = [[NSBezierPath alloc] init];
     [line setLineWidth:3];
-    [line moveToPoint:[[nodeA getView] connectorPoint]];
-    [line lineToPoint:[[nodeB getView] connectorPoint]];
+    [line moveToPoint:[nodeA connectorPoint]];
+    [line lineToPoint:[nodeB connectorPoint]];
     [line closePath];
     
     [line stroke];
