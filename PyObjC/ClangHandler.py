@@ -91,7 +91,8 @@ class GraphNode(NSObject):
     def initWithType_andText_andHash_(self, value, disp, hash):
         self = super(GraphNode, self).init()
         self.subNodes = []
-        self.decls = []
+        self.decls = {}
+        self.declWaiters = {}
         self.value = value
         self.disp = disp
         self.hashVal = hash
@@ -109,8 +110,30 @@ class GraphNode(NSObject):
     def getChildren(self):
         return self.subNodes
     
-    def appendDeclaration_(self, declaration):
-        self.decls.append(declaration)
+    def addDeclaration_(self, declaration):
+        hash = declaration.getHash()
+        self.decls[hash] = declaration
+        if (hash in self.declWaiters):
+            for waiter in self.declWaiters[hash]:
+                waiter.setTarget_(declaration)
+    
+    def getDeclarationForHash_(self, hash):
+        if (hash in self.decls):
+            return self.decls[hash]
+        else:
+            return None
+    
+    def tieNodeToDecl_(self, node):
+        hash = node.getHash()
+        if (hash is not None):
+            decl = self.getDeclarationForHash_(hash)
+            if (decl is not None):
+                node.setTarget_(decl)
+            else:
+                if (hash in self.declWaiters):
+                    self.declWaiters[hash].append(node)
+                else:
+                    self.declWaiters[hash] = [node]
     
     def getDeclarations(self):
         return self.decls
@@ -181,9 +204,6 @@ class RootNode(GraphNode):
         else:
             if (classObj.getType() == '2implementation'):
                 self.recentClass.setType_(classObj.getType())
-
-    def addProperty_(self, propertyNode):
-        self.recentClass.appendDeclaration_(propertyNode)
 
     def lastMethod(self):
         return self.recentMethod
