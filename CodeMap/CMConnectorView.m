@@ -9,6 +9,7 @@
 #import "CMConnectorView.h"
 #import "CMPYGraphNode.h"
 #import "CMMethodView.h"
+#import "CMClassView.h"
 
 static CMConnectorView* shared;
 
@@ -82,19 +83,29 @@ static CMConnectorView* shared;
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    /*[[NSColor blackColor] set];
+    [[NSColor blackColor] set];
     
     for (CMNodeView* classView in self.classViews) {
-        //[rootNode.nodeView setNeedsDisplay:YES];
-        for (NSView* subView in classView.subviews) {
-            for (id<CMPYGraphNode> invocation in [methodNode getChildren]) {
-                id<CMPYGraphNode> target = [invocation getTarget];
-                if (target) {
-                    [self drawLineFrom:invocation to:[invocation getTarget]];
+        [self drawConnectorsOnClass:classView];
+    }
+}
+
+- (void)drawConnectorsOnClass:(CMNodeView*)classView
+{
+    for (NSView* subView in classView.subviews) {
+        if ([subView class] == [CMMethodView class]) {
+            for (NSView* subSubView in subView.subviews) {
+                if ([[subSubView class] isSubclassOfClass:[CMNodeView class]]) {
+                    CMNodeView* converted = (CMNodeView*)subSubView;
+                    if (converted.target) {
+                        [self drawLineFrom:converted to:converted.target];
+                    }
                 }
             }
+        } else if ([subView class] == [CMClassView class]) {
+            [self drawConnectorsOnClass:(CMNodeView*)subView];
         }
-    }*/
+    }
 }
 
 - (BOOL)isOpaque

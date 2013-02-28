@@ -14,6 +14,9 @@
 - (NSArray*)getChildren;
 - (id<CMPYGraphNode>)getParent;
 
+- (CMNodeView*)getView;
+- (void)setView:(CMNodeView*)view;
+
 - (id<CMPYGraphNode>)getTarget;
 - (void)setTarget:(id<CMPYGraphNode>)target;
 

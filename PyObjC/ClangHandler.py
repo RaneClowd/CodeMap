@@ -68,12 +68,12 @@ class ClangHandler(NSObject):
                 
         elif (cursor.kind.value == 104 and cursor.get_definition() is not None):
             print '%smethod call (defined): %s hash=%d' % (indent, cursor.displayname, cursor.hash)
-            methodCall = GraphNode.alloc().initWithType_andText_andHash_('methodcall', cursor.displayname, cursor.get_definition().hash)
+            methodCall = GraphNode.alloc().initWithType_andText_andHash_('2methodcall', cursor.displayname, cursor.get_definition().hash)
             self.rootNode.addMethodCall_(methodCall)
     
         elif (cursor.kind.value == 104):
             print '%smethod call to no def: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
-            methodCall = GraphNode.alloc().initWithType_andText_andHash_('methodcall', cursor.displayname, None)
+            methodCall = GraphNode.alloc().initWithType_andText_andHash_('2methodcall', cursor.displayname, None)
             self.rootNode.addMethodCall_(methodCall)
                 
         if (cursor.get_definition() is not None):
@@ -220,7 +220,11 @@ class RootNode(GraphNode):
             if (public):
                 methodObj.setPublic_('Yes');
 
+            if (methodObj.getType() == '1method'):
+                self.recentClass.addDeclaration_(methodObj)
+
 
     def addMethodCall_(self, methodCallObj):
         if (self.recentMethod is not None):
             self.recentMethod.appendChild_(methodCallObj)
+            self.recentClass.tieNodeToDecl_(methodCallObj)

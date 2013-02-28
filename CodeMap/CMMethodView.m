@@ -56,13 +56,6 @@
         }
     }
     
-    /*for (id<CMPYGraphNode> methodCall in [node getChildren]) {
-        
-        id name = [methodCall getText];
-        id<CMPYGraphNode> referencedNode = [[[methodCall getParent] getParent] getObjectForKey:name];
-        if (referencedNode) [methodCall setTarget:referencedNode];
-    }*/
-    
     CGRect newFrame = self.frame;
     newFrame.size.height = numberOfCalls*kValueHeight + kSignatureHeight;
     newFrame.size.width = widthNeeded;
@@ -123,7 +116,7 @@
     CMValueView* nodeLabel;
     nodeLabel = [self createNodeViewWithFrame:CGRectMake(0, posY, self.frame.size.width, kValueHeight) andNode:node];
     
-    //[node setView:nodeLabel];
+    [node setView:nodeLabel];
     
     if (*width < [nodeLabel widthNeeded]) *width = [nodeLabel widthNeeded];
     

@@ -93,6 +93,16 @@
         x += 400;
     }
     
+    for (id<CMPYGraphNode> classChild in [self.classNode getChildren]) {
+        if ([[classChild getType] isEqualToString:@"1method"]) {
+            for (id<CMPYGraphNode> methodChild in [classChild getChildren]) {
+                if ([[methodChild getType] isEqualToString:@"2methodcall"] && [methodChild getTarget]) {
+                    [[methodChild getView] setTarget:[[methodChild getTarget] getView]];
+                }
+            }
+        }
+    }
+    
     maxY += 300;
     
     CGRect newFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, MAX(self.titleView.frame.size.width + 80, x), maxY);
@@ -105,6 +115,7 @@
     
     if ([[node getType] isEqualToString:@"1method"] || [[node getType] isEqualToString:@"?"]) {
         nodeView = [self createMethodNodeViewWithFrame:NSMakePoint(x, y) andNode:node];
+        [node setView:nodeView];
     } else {
         id<CMPYGraphNode> classNode = [CMClassNodeCollection classNodeForClassName:[node getType]];
         if (classNode) {

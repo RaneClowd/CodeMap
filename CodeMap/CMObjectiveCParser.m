@@ -51,6 +51,8 @@ typedef enum {
 @property (nonatomic,strong) CMStack* stateStack;
 @property (nonatomic,strong) CMStack* nodeStack;
 
+@property CMObjectiveCParser* selfContainmentTest;
+
 @property (nonatomic) int openBracketCount;
 @property (nonatomic,strong) NSMutableString* trackingValue;
 

@@ -11,6 +11,8 @@
 
 @interface CMNodeView : CMDraggableView
 
+@property (nonatomic,weak) CMNodeView* target;
+
 - (NSPoint)connectorPoint;
 - (CGFloat)relativeX;
 - (CGFloat)relativeY;
