@@ -72,9 +72,7 @@ class ClangHandler(NSObject):
             self.rootNode.addMethodCall_(methodCall)
                 
             try:
-                child = nodeChildren.next()
-                if (self.childrenGiveSelfTarget_(child)):
-                    self.rootNode.targetCallWith_isOnSelf_(cursor.displayname+'method', True)
+                self.processCall_(cursor)
             except StopIteration:
                 print 'no children'
                 
@@ -87,6 +85,15 @@ class ClangHandler(NSObject):
 
         for c in nodeChildren:
             self.processNode_withIndent_InsideContainer_(c, indent+'\t', newContainer)
+
+    def processCall_(self, call):
+        if (call.referenced is not None):
+            grandChild = call.get_children().next()
+            childTargetsSelf = self.childrenGiveSelfTarget_(grandChild)
+        
+            targetKeySuffix = 'property' if call.referenced.kind.value == 14 else 'method'
+        
+            self.rootNode.targetCallWith_isOnSelf_(call.displayname+targetKeySuffix, childTargetsSelf)
 
     def childrenGiveSelfTarget_(self, child):
         return child.displayname == 'self' and child.kind.value == 100
@@ -233,8 +240,9 @@ class RootNode(GraphNode):
 
     def targetCallWith_isOnSelf_(self, targetKey, onSelf):
         print 'targetting call'
-        if (not onSelf):
-            self.recentMethodCall.appendTarget_(targetKey)
-        else:
+        print 'with key %s' % (targetKey)
+        if (onSelf): #'not' when taking out comments
+        #self.recentMethodCall.appendTarget_(targetKey)
+            #else:
             self.recentClass.tieNode_ToTarget_(self.recentMethodCall, targetKey)
 

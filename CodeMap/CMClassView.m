@@ -98,6 +98,9 @@
             for (id<CMPYGraphNode> methodChild in [classChild getChildren]) {
                 if ([[methodChild getType] isEqualToString:@"2methodcall"] && [[methodChild getTargets] count] > 0) {
                     [[methodChild getView] setTarget:[[methodChild getTargets][0] getView]];
+                    if ([[methodChild getTargets] count] > 1) {
+                        NSLog(@"extra targeting");
+                    }
                 }
             }
         }
