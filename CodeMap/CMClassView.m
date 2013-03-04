@@ -13,6 +13,7 @@
 
 @interface CMClassView ()
 
+@property NSColor* self;
 @property (nonatomic,strong) NSColor* classColor;
 @property (nonatomic,weak) id<CMPYGraphNode> classNode;
 @property (nonatomic) BOOL hasBeenExpanded;
@@ -24,7 +25,6 @@
 - (id)initWithNode:(id<CMPYGraphNode>)node andLocation:(NSPoint)location
 {
     BOOL isProperty = NO;
-    
     NSString* nodeType = (NSString*)[node getType];
     if ([nodeType isEqualToString:@"2interface"]) {
         self.classColor = [CMColors interfacedColor];
@@ -96,8 +96,8 @@
     for (id<CMPYGraphNode> classChild in [self.classNode getChildren]) {
         if ([[classChild getType] isEqualToString:@"1method"]) {
             for (id<CMPYGraphNode> methodChild in [classChild getChildren]) {
-                if ([[methodChild getType] isEqualToString:@"2methodcall"] && [methodChild getTarget]) {
-                    [[methodChild getView] setTarget:[[methodChild getTarget] getView]];
+                if ([[methodChild getType] isEqualToString:@"2methodcall"] && [[methodChild getTargets] count] > 0) {
+                    [[methodChild getView] setTarget:[[methodChild getTargets][0] getView]];
                 }
             }
         }

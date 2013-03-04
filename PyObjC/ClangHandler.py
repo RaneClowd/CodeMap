@@ -65,16 +65,18 @@ class ClangHandler(NSObject):
             print '%smethod decl: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
             methodDecl = GraphNode.alloc().initWithType_andText_andHash_('1method', cursor.displayname, cursor.hash)
             self.rootNode.addClassItemDecl_isPublic_(methodDecl, container == 'interface')
-                
-        elif (cursor.kind.value == 104 and cursor.get_definition() is not None):
-            print '%smethod call (defined): %s hash=%d' % (indent, cursor.displayname, cursor.hash)
-            methodCall = GraphNode.alloc().initWithType_andText_andHash_('2methodcall', cursor.displayname, cursor.get_definition().hash)
-            self.rootNode.addMethodCall_(methodCall)
     
         elif (cursor.kind.value == 104):
-            print '%smethod call to no def: %s hash=%d' % (indent, cursor.displayname, cursor.hash)
+            print '%smethod call %s' % (indent, cursor.displayname)
             methodCall = GraphNode.alloc().initWithType_andText_andHash_('2methodcall', cursor.displayname, None)
             self.rootNode.addMethodCall_(methodCall)
+                
+            try:
+                child = nodeChildren.next()
+                if (self.childrenGiveSelfTarget_(child)):
+                    self.rootNode.targetCallWith_isOnSelf_(cursor.displayname+'method', True)
+            except StopIteration:
+                print 'no children'
                 
         if (cursor.get_definition() is not None):
             print '%s%s %d decl=%d kind=%d' % (indent, cursor.displayname, cursor.hash, cursor.get_definition().hash, cursor.kind.value)
@@ -86,17 +88,19 @@ class ClangHandler(NSObject):
         for c in nodeChildren:
             self.processNode_withIndent_InsideContainer_(c, indent+'\t', newContainer)
 
+    def childrenGiveSelfTarget_(self, child):
+        return child.displayname == 'self' and child.kind.value == 100
+
 class GraphNode(NSObject):
     
     def initWithType_andText_andHash_(self, value, disp, hash):
         self = super(GraphNode, self).init()
         self.subNodes = []
-        self.decls = {}
         self.declWaiters = {}
         self.value = value
         self.disp = disp
         self.hashVal = hash
-        self.reference = None
+        self.referenceList = []
         self.viewPlaceHolder = None
         self.container = None
         self.itemLookupTable = {}
@@ -110,33 +114,22 @@ class GraphNode(NSObject):
     def getChildren(self):
         return self.subNodes
     
-    def addDeclaration_(self, declaration):
-        hash = declaration.getHash()
-        self.decls[hash] = declaration
-        if (hash in self.declWaiters):
-            for waiter in self.declWaiters[hash]:
-                waiter.setTarget_(declaration)
+    def processWaitersFor_(self, target):
+        targetKey = target.getTargetingKey()
+        if (targetKey in self.declWaiters):
+            for waiter in self.declWaiters[targetKey]:
+                waiter.setFirstTarget_(target)
+            self.declWaiters[targetKey] = None
     
-    def getDeclarationForHash_(self, hash):
-        if (hash in self.decls):
-            return self.decls[hash]
+    def tieNode_ToTarget_(self, node, targetKey):
+        decl = self.getObjectForKey_(targetKey)
+        if (decl is not None):
+            node.setFirstTarget_(decl)
         else:
-            return None
-    
-    def tieNodeToDecl_(self, node):
-        hash = node.getHash()
-        if (hash is not None):
-            decl = self.getDeclarationForHash_(hash)
-            if (decl is not None):
-                node.setTarget_(decl)
+            if (targetKey in self.declWaiters):
+                self.declWaiters[targetKey].append(node)
             else:
-                if (hash in self.declWaiters):
-                    self.declWaiters[hash].append(node)
-                else:
-                    self.declWaiters[hash] = [node]
-    
-    def getDeclarations(self):
-        return self.decls
+                self.declWaiters[targetKey] = [node]
 
     def getType(self):
         return self.value
@@ -165,11 +158,14 @@ class GraphNode(NSObject):
         else:
             return None
 
-    def setTarget_(self, target):
-        self.reference = target
+    def appendTarget_(self, target):
+        self.referenceList.append(target)
+    
+    def setFirstTarget_(self, firstTarget):
+        self.referenceList = [firstTarget] + self.referenceList
 
-    def getTarget(self):
-        return self.reference
+    def getTargets(self):
+        return self.referenceList
 
     def setParent_(self, parent):
         self.container = parent
@@ -183,12 +179,18 @@ class GraphNode(NSObject):
     def setPublic_(self, public):
         self.accessible = public
 
+    def getTargetingKey(self):
+        targetSuffix = 'method' if (self.getType() == '1method') else 'property'
+        
+        return self.getText() + targetSuffix
+
 class RootNode(GraphNode):
 
     def init(self):
         self = super(RootNode, self).initWithType_andText_andHash_(0, 'root', 0)
         self.recentClass = None
         self.recentMethod = None
+        self.recentMethodCall= None
         return self
 
     def lastClass(self):
@@ -210,21 +212,29 @@ class RootNode(GraphNode):
 
     def addClassItemDecl_isPublic_(self, methodObj, public):
         if (self.recentClass is not None):
-            self.recentMethod = self.recentClass.getObjectForKey_(methodObj.getText())
+            self.recentMethod = self.recentClass.getObjectForKey_(methodObj.getTargetingKey())
             
             if (self.recentMethod is None):
                 self.recentClass.appendChild_(methodObj)
-                self.recentClass.setObject_ForKey_(methodObj, methodObj.getText())
+                self.recentClass.setObject_ForKey_(methodObj, methodObj.getTargetingKey())
                 self.recentMethod = methodObj
 
             if (public):
                 methodObj.setPublic_('Yes');
 
             if (methodObj.getType() == '1method'):
-                self.recentClass.addDeclaration_(methodObj)
+                self.recentClass.processWaitersFor_(methodObj)
 
 
     def addMethodCall_(self, methodCallObj):
         if (self.recentMethod is not None):
+            self.recentMethodCall = methodCallObj
             self.recentMethod.appendChild_(methodCallObj)
-            self.recentClass.tieNodeToDecl_(methodCallObj)
+
+    def targetCallWith_isOnSelf_(self, targetKey, onSelf):
+        print 'targetting call'
+        if (not onSelf):
+            self.recentMethodCall.appendTarget_(targetKey)
+        else:
+            self.recentClass.tieNode_ToTarget_(self.recentMethodCall, targetKey)
+

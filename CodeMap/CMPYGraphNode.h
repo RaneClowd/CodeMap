@@ -17,8 +17,7 @@
 - (CMNodeView*)getView;
 - (void)setView:(CMNodeView*)view;
 
-- (id<CMPYGraphNode>)getTarget;
-- (void)setTarget:(id<CMPYGraphNode>)target;
+- (NSArray*)getTargets;
 
 - (id)getHash;
 - (id<CMPYGraphNode>)getObjectForKey:(id)key;
