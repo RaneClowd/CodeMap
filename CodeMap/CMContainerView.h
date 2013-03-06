@@ -9,10 +9,14 @@
 #import "CMNodeView.h"
 #import "CMSuperView.h"
 
+#define kDotDiameter 14
+#define kDotRadius 7
+
 @interface CMContainerView : CMNodeView
 
 @property (nonatomic,strong) NSTextView* titleView;
 
+@property (nonatomic) NSRect dotRect;
 @property (nonatomic) NSRect secondaryDotRect;
 
 @property (nonatomic) BOOL collapsed;

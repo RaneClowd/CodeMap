@@ -12,6 +12,9 @@
 @interface CMNodeView : CMDraggableView
 
 @property (nonatomic,weak) CMNodeView* target;
+@property (nonatomic,strong) NSMutableArray* subTargeting;
+
+@property (nonatomic,strong) NSMutableArray* listenerCollection;
 
 - (NSPoint)connectorPoint;
 - (CGFloat)relativeX;

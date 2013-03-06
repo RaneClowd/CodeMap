@@ -10,8 +10,6 @@
 #import "CMValueView.h"
 #import "CMColors.h"
 
-#define kDotDiameter 14
-#define kDotRadius 7
 
 #define kSignatureHeight 50
 #define kValueHeight 30
@@ -19,7 +17,6 @@
 @interface CMMethodView ()
 
 @property (nonatomic, strong) NSTextView* signatureView;
-@property (nonatomic) NSRect dotRect;
 
 @property (nonatomic) NSColor* backColor;
 
@@ -64,28 +61,12 @@
     return self;
 }
 
-- (void)setFrame:(NSRect)frameRect
-{
-    [super setFrame:frameRect];
-    
-    self.dotRect = NSMakeRect(kDotRadius, self.frame.size.height - kDotDiameter - kDotRadius, kDotDiameter, kDotDiameter);
-}
-
-- (NSPoint)connectorPoint
-{
-    return NSMakePoint([self relativeX]+self.dotRect.origin.x+kDotRadius, [self relativeY]+self.dotRect.origin.y+kDotRadius);
-}
-
 - (void)drawRect:(NSRect)rect
 {
     [self.backColor set];
     NSRectFill(self.bounds);
     
     [super drawRect:rect];
-    
-    [[NSColor blackColor] set];
-    NSBezierPath* circle = [NSBezierPath bezierPathWithOvalInRect:self.dotRect];
-    [circle fill];
 }
 
 - (void)addViewForExecutionNode:(id<CMPYGraphNode>)node atY:(CGFloat)posY trackingWidth:(CGFloat*)width

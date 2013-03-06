@@ -92,6 +92,9 @@ class ClangHandler(NSObject):
             childTargetsSelf = self.childrenGiveSelfTarget_(grandChild)
         
             targetKeySuffix = 'property' if call.referenced.kind.value == 14 else 'method'
+            
+            if (not childTargetsSelf):
+                self.processCall_(grandChild)
         
             self.rootNode.targetCallWith_isOnSelf_(call.displayname+targetKeySuffix, childTargetsSelf)
 
@@ -125,13 +128,13 @@ class GraphNode(NSObject):
         targetKey = target.getTargetingKey()
         if (targetKey in self.declWaiters):
             for waiter in self.declWaiters[targetKey]:
-                waiter.setFirstTarget_(target)
+                waiter.appendTarget_(target)
             self.declWaiters[targetKey] = None
     
     def tieNode_ToTarget_(self, node, targetKey):
         decl = self.getObjectForKey_(targetKey)
         if (decl is not None):
-            node.setFirstTarget_(decl)
+            node.appendTarget_(decl)
         else:
             if (targetKey in self.declWaiters):
                 self.declWaiters[targetKey].append(node)
@@ -167,9 +170,6 @@ class GraphNode(NSObject):
 
     def appendTarget_(self, target):
         self.referenceList.append(target)
-    
-    def setFirstTarget_(self, firstTarget):
-        self.referenceList = [firstTarget] + self.referenceList
 
     def getTargets(self):
         return self.referenceList
@@ -188,7 +188,6 @@ class GraphNode(NSObject):
 
     def getTargetingKey(self):
         targetSuffix = 'method' if (self.getType() == '1method') else 'property'
-        
         return self.getText() + targetSuffix
 
 class RootNode(GraphNode):
@@ -239,10 +238,8 @@ class RootNode(GraphNode):
             self.recentMethod.appendChild_(methodCallObj)
 
     def targetCallWith_isOnSelf_(self, targetKey, onSelf):
-        print 'targetting call'
-        print 'with key %s' % (targetKey)
-        if (onSelf): #'not' when taking out comments
-        #self.recentMethodCall.appendTarget_(targetKey)
-            #else:
+        if (not onSelf):
+            self.recentMethodCall.appendTarget_(targetKey)
+        else:
             self.recentClass.tieNode_ToTarget_(self.recentMethodCall, targetKey)
 

@@ -11,6 +11,32 @@
 
 @implementation CMNodeView
 
+- (id)init
+{
+    self = [super init];
+    [self initialize];
+    return self;
+}
+
+- (id)initWithFrame:(NSRect)frameRect
+{
+    self = [super initWithFrame:frameRect];
+    [self initialize];
+    return self;
+}
+
+- (void)initialize
+{
+    self.listenerCollection = [[NSMutableArray alloc] init];
+    self.subTargeting = [[NSMutableArray alloc] init];
+}
+
+- (void)setTarget:(CMNodeView *)target
+{
+    _target = target;
+    [target.listenerCollection addObject:self];
+}
+
 - (NSPoint)connectorPoint
 {
     return NSMakePoint(self.frame.origin.x + self.frame.size.width/2, self.frame.origin.y + self.frame.size.height/2);

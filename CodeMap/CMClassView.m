@@ -18,6 +18,8 @@
 @property (nonatomic,weak) id<CMPYGraphNode> classNode;
 @property (nonatomic) BOOL hasBeenExpanded;
 
+@property (nonatomic,strong) NSMutableDictionary* nullPropertyCatcher;
+
 @end
 
 @implementation CMClassView
@@ -42,6 +44,7 @@
         self = [super initWithLocation:location size:80 andTitle:[node getText]];
         self.classNode = node;
     }
+    self.nullPropertyCatcher = [[NSMutableDictionary alloc] init];
     
     [self toggleCollapsed];
     
@@ -85,21 +88,46 @@
     CGFloat maxY = 400;
     CGFloat x = 50;
     
+    NSMutableDictionary* subTargetingAssistant = [NSMutableDictionary new];
+    
     for (id<CMPYGraphNode> node in [self.classNode getChildren]) {
         CGFloat y = 100;
         
-        [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
+        [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY targetingAssistant:subTargetingAssistant];
         
         x += 400;
+    }
+    
+    for (CMNodeView* listenerView in self.listenerCollection) {
+        NSUInteger subTargetingCount = [listenerView.subTargeting count];
+        if (subTargetingCount > 0) {
+            NSString* subTargetKey = listenerView.subTargeting[0];
+            CMNodeView* newTarget = [subTargetingAssistant objectForKey:subTargetKey];
+            [listenerView setTarget:newTarget];
+            
+            NSMutableArray* newSubTargetting = [NSMutableArray arrayWithArray:[listenerView.subTargeting subarrayWithRange:NSMakeRange(1, subTargetingCount-1)]];
+            listenerView.subTargeting = newSubTargetting;
+        }
     }
     
     for (id<CMPYGraphNode> classChild in [self.classNode getChildren]) {
         if ([[classChild getType] isEqualToString:@"1method"]) {
             for (id<CMPYGraphNode> methodChild in [classChild getChildren]) {
-                if ([[methodChild getType] isEqualToString:@"2methodcall"] && [[methodChild getTargets] count] > 0) {
-                    [[methodChild getView] setTarget:[[methodChild getTargets][0] getView]];
-                    if ([[methodChild getTargets] count] > 1) {
-                        NSLog(@"extra targeting");
+                NSArray* targets = [methodChild getTargets];
+                if ([[methodChild getType] isEqualToString:@"2methodcall"] && [targets count] > 0) {
+                    id firstTarget = targets[0];
+                    if ([firstTarget respondsToSelector:@selector(getTargets)]) {
+                        CMNodeView* targetView = [firstTarget getView];
+                        if (!targetView) {
+                            targetView = [self.nullPropertyCatcher objectForKey:[firstTarget getHash]];
+                        }
+                        
+                        CMNodeView* methodChildView = [methodChild getView];
+                        [methodChildView setTarget:targetView];
+                        
+                        for (int i=1; i < [targets count]; i++) {
+                            [methodChildView.subTargeting addObject:targets[i]];
+                        }
                     }
                 }
             }
@@ -112,23 +140,27 @@
     self.frame = newFrame;
 }
 
-- (void)createAndAddViewFor:(id<CMPYGraphNode>)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY
+- (void)createAndAddViewFor:(id<CMPYGraphNode>)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY targetingAssistant:(NSMutableDictionary*)targetingAssistant
 {
     CMNodeView* nodeView;
     
     if ([[node getType] isEqualToString:@"1method"] || [[node getType] isEqualToString:@"?"]) {
         nodeView = [self createMethodNodeViewWithFrame:NSMakePoint(x, y) andNode:node];
-        [node setView:nodeView];
     } else {
         id<CMPYGraphNode> classNode = [CMClassNodeCollection classNodeForClassName:[node getType]];
         if (classNode) {
-            nodeView = [[CMClassView alloc] initWithNode:node andLocation:NSMakePoint(x, y)];
+            nodeView = [self createClassNodeViewWithFrame:NSMakePoint(x, y) andNode:node];
         } else {
             nodeView = [self createMethodNodeViewWithFrame:NSMakePoint(x, y) andNode:node];
         }
     }
     
-    //[node setView:nodeView];
+    [node setView:nodeView];
+    if (![node getView]) {
+        [self.nullPropertyCatcher setObject:nodeView forKey:[node getHash]];
+    }
+    
+    [targetingAssistant setObject:nodeView forKey:[node getTargetingKey]];
     
     CGFloat nodeHeight = nodeView.frame.size.height;
     if (nodeHeight > *maxY) *maxY = nodeHeight;
@@ -139,7 +171,13 @@
 - (CMNodeView*)createMethodNodeViewWithFrame:(NSPoint)location andNode:(id<CMPYGraphNode>)node
 {
     CMMethodView* label = [[CMMethodView alloc] initWithLocation:location andNode:node];
-    //[node setView:label];
+    label.displayDelegate = self;
+    return label;
+}
+
+- (CMNodeView*)createClassNodeViewWithFrame:(NSPoint)location andNode:(id<CMPYGraphNode>)node
+{
+    CMClassView* label = [[CMClassView alloc] initWithNode:node andLocation:location];
     label.displayDelegate = self;
     return label;
 }

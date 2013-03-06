@@ -40,6 +40,11 @@
     return self;
 }
 
+- (NSPoint)connectorPoint
+{
+    return NSMakePoint([self relativeX]+self.dotRect.origin.x+kDotRadius, [self relativeY]+self.dotRect.origin.y+kDotRadius);
+}
+
 - (NSPoint)secondaryConnectorPoint
 {
     return NSMakePoint([self relativeX]+self.secondaryDotRect.origin.x+kDotRadius, [self relativeY]+self.secondaryDotRect.origin.y+kDotRadius);
@@ -105,13 +110,17 @@
     frame.origin = titleLocation;
     self.titleView.frame = frame;
     
+    self.dotRect = NSMakeRect(kDotRadius, self.frame.size.height - kDotDiameter - kDotRadius, kDotDiameter, kDotDiameter);
     self.secondaryDotRect = NSMakeRect(self.frame.size.width-kDotDiameter-kDotRadius, kDotRadius, kDotDiameter, kDotDiameter);
 }
-
 
 - (void)drawRect:(NSRect)dirtyRect
 {
     [super drawRect:dirtyRect];
+    
+    [[NSColor blackColor] set];
+    NSBezierPath* circle = [NSBezierPath bezierPathWithOvalInRect:self.dotRect];
+    [circle fill];
     
     [[NSColor blackColor] set];
     NSBezierPath* line = [[NSBezierPath alloc] init];

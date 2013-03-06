@@ -21,6 +21,7 @@
 
 - (id)getHash;
 - (id<CMPYGraphNode>)getObjectForKey:(id)key;
+- (NSString*)getTargetingKey;
 
 - (NSString*)getType;
 - (NSString*)getText;
