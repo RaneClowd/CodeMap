@@ -16,7 +16,7 @@
 
 @property (nonatomic,strong) NSMutableArray* listenerCollection;
 
-- (NSPoint)connectorPoint;
+- (NSPoint)connectorPointIsTheTarget:(BOOL)isTarget;
 - (CGFloat)relativeX;
 - (CGFloat)relativeY;
 

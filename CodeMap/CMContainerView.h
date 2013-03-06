@@ -23,7 +23,6 @@
 @property (nonatomic) NSSize sizeBeforeCollapse;
 
 - (id)initWithLocation:(NSPoint)location size:(int)size andTitle:(NSString *)title;
-- (NSPoint)secondaryConnectorPoint;
 - (void)toggleCollapsed;
 
 @end

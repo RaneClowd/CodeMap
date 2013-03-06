@@ -113,12 +113,12 @@ static CMConnectorView* shared;
     return NO;
 }
 
-- (void)drawLineFrom:(CMNodeView*)nodeA to:(CMNodeView*)nodeB
+- (void)drawLineFrom:(CMNodeView*)from to:(CMNodeView*)to
 {
     NSBezierPath* line = [[NSBezierPath alloc] init];
     [line setLineWidth:3];
-    [line moveToPoint:[nodeA connectorPoint]];
-    [line lineToPoint:[nodeB connectorPoint]];
+    [line moveToPoint:[from connectorPointIsTheTarget:NO]];
+    [line lineToPoint:[to connectorPointIsTheTarget:YES]];
     [line closePath];
     
     [line stroke];

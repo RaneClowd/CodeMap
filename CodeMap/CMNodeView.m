@@ -37,7 +37,7 @@
     [target.listenerCollection addObject:self];
 }
 
-- (NSPoint)connectorPoint
+- (NSPoint)connectorPointIsTheTarget:(BOOL)isTarget
 {
     return NSMakePoint(self.frame.origin.x + self.frame.size.width/2, self.frame.origin.y + self.frame.size.height/2);
 }

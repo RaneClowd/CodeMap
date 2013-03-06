@@ -63,11 +63,11 @@
     self.textView.frame = frame;
 }
 
-- (NSPoint)connectorPoint
+- (NSPoint)connectorPointIsTheTarget:(BOOL)isTarget
 {
     CMContainerView* containingView = (CMContainerView*)[self superview];
     if (containingView.collapsed) {
-        return [containingView secondaryConnectorPoint];
+        return [containingView connectorPointIsTheTarget:isTarget];
     } else {
         return NSMakePoint([self relativeX]+self.dotRect.origin.x+kDotRadius, [self relativeY]+self.dotRect.origin.y+kDotRadius);
     }

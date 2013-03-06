@@ -40,14 +40,18 @@
     return self;
 }
 
-- (NSPoint)connectorPoint
+- (NSPoint)connectorPointIsTheTarget:(BOOL)isTarget
 {
-    return NSMakePoint([self relativeX]+self.dotRect.origin.x+kDotRadius, [self relativeY]+self.dotRect.origin.y+kDotRadius);
-}
-
-- (NSPoint)secondaryConnectorPoint
-{
-    return NSMakePoint([self relativeX]+self.secondaryDotRect.origin.x+kDotRadius, [self relativeY]+self.secondaryDotRect.origin.y+kDotRadius);
+    CMContainerView* containingView = (CMContainerView*)[self superview];
+    if (containingView.collapsed) {
+        return [containingView connectorPointIsTheTarget:isTarget];
+    } else {
+        if (isTarget) {
+            return NSMakePoint([self relativeX]+self.dotRect.origin.x+kDotRadius, [self relativeY]+self.dotRect.origin.y+kDotRadius);
+        } else {
+            return NSMakePoint([self relativeX]+self.secondaryDotRect.origin.x+kDotRadius, [self relativeY]+self.secondaryDotRect.origin.y+kDotRadius);
+        }
+    }
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
