@@ -11,8 +11,6 @@
 
 @interface CMMapDisplayView : NSView <CMSuperView>
 
-@property (nonatomic,strong) id<CMSuperView> myDisplayDel;
-
-- (id)initWithFrame:(NSRect)frame andClasses:(NSArray*)classes;
+@property (nonatomic,strong) IBOutlet id<CMSuperView> myDisplayDel;
 
 @end

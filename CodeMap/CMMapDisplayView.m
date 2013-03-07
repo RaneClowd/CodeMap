@@ -15,6 +15,8 @@
 #import "CMConnectorView.h"
 #import "CMClassView.h"
 #import "CMClassNodeCollection.h"
+#import "CMPYGraphNode.h"
+#import "CMPYObjCParser.h"
 
 @interface CMMapDisplayView () <DisplayDelegate>
 
@@ -24,40 +26,109 @@
 
 @implementation CMMapDisplayView
 
-- (id)initWithFrame:(NSRect)frame andClasses:(NSArray *)classes
+- (id)initWithFrame:(NSRect)frameRect
 {
-    self = [super initWithFrame:frame];
-    if (self) {
+    self = [super initWithFrame:frameRect];
+    [self registerForDraggedTypes:[NSArray arrayWithObjects:NSFilenamesPboardType, nil]];
+    return self;
+}
+
+- (void)displayClasses:(NSArray*)classes
+{
+    NSMutableArray* classViews = [[NSMutableArray alloc] init];
+    
+    CGFloat maxY = 800;
+    CGFloat x = 200;
+    
+    for (id<CMPYGraphNode> node in classes) {
+        CGFloat y = 150;
         
-        NSMutableArray* classViews = [[NSMutableArray alloc] init];
+        NSView* classView = [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
+        [classViews addObject:classView];
         
-        CGFloat maxY = 800;
-        CGFloat x = 200;
+        x += classView.frame.size.width + 30;
+    }
+    
+    maxY += 500;
+    
+    CGRect newFrame = self.frame;
+    newFrame.size.width = x;
+    newFrame.size.height = maxY;
+    
+    self.frame = newFrame;
+    
+    self.connectionView = [CMConnectorView sharedInstance];
+    [self.connectionView setFrame:newFrame];
+    self.connectionView.classViews = classViews;
+    [self addSubview:self.connectionView];
+    
+    [self.myDisplayDel expandIfNeededToContainFrame:self.frame];
+}
+
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+{
+    NSPasteboard *pboard;
+    NSDragOperation sourceDragMask;
+    
+    sourceDragMask = [sender draggingSourceOperationMask];
+    pboard = [sender draggingPasteboard];
+    
+    if ( [[pboard types] containsObject:NSColorPboardType] ) {
+        if (sourceDragMask & NSDragOperationGeneric) {
+            return NSDragOperationGeneric;
+        }
+    }
+    if ( [[pboard types] containsObject:NSFilenamesPboardType] ) {
+        if (sourceDragMask & NSDragOperationLink) {
+            return NSDragOperationLink;
+        } else if (sourceDragMask & NSDragOperationCopy) {
+            return NSDragOperationCopy;
+        }
+    }
+    return NSDragOperationNone;
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+    NSPasteboard *pboard;
+    NSDragOperation sourceDragMask;
+    
+    sourceDragMask = [sender draggingSourceOperationMask];
+    pboard = [sender draggingPasteboard];
+    
+    if ( [[pboard types] containsObject:NSFilenamesPboardType] ) {
+        NSArray *files = [pboard propertyListForType:NSFilenamesPboardType];
         
+        Class parserClass = [self loadClassFromBundle];
+        id<CMPYObjCParser> parser = [[parserClass alloc] init];
+        id<CMPYGraphNode> rootNode = [parser parseFile:files[0]];
+        
+        NSArray* classes = [rootNode getChildren];
         for (id<CMPYGraphNode> node in classes) {
-            CGFloat y = 150;
-            
-            NSView* classView = [self createAndAddViewFor:node atX:x andY:y trackingY:&maxY];
-            [classViews addObject:classView];
-            
-            x += classView.frame.size.width + 30;
+            [CMClassNodeCollection setClassNode:node forName:[node getText]];
         }
         
-        maxY += 500;
-        
-        CGRect newFrame = frame;
-        newFrame.size.width = x;
-        newFrame.size.height = maxY;
-        
-        self.frame = newFrame;
-        
-        self.connectionView = [CMConnectorView sharedInstance];
-        [self.connectionView setFrame:newFrame];
-        self.connectionView.classViews = classViews;
-        [self addSubview:self.connectionView];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            [self displayClasses:classes];
+        });
     }
+    return YES;
+}
 
-    return self;
+- (Class)loadClassFromBundle
+{
+    Class parserClass;
+    
+    @autoreleasepool {
+        NSString *pluginPath = [[NSBundle mainBundle]
+                                pathForResource:@"ClangHandler"
+                                ofType:@"plugin"];
+        NSBundle *pluginBundle = [NSBundle bundleWithPath:pluginPath];
+        [pluginBundle load];
+        
+        parserClass = [pluginBundle classNamed:@"ClangHandler"];
+    }
+    
+    return parserClass;
 }
 
 - (void)expandIfNeededToContainFrame:(CGRect)frame
@@ -103,6 +174,9 @@
 - (void)drawRect:(NSRect)dirtyRect
 {
     [super drawRect:dirtyRect];
+    
+    [[NSColor darkGrayColor] set];
+    NSRectFill(self.bounds);
 
     [self.connectionView setNeedsDisplay:YES];
 }

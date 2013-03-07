@@ -18,7 +18,6 @@
 - (IBAction)inClick:(id)sender;
 - (IBAction)outClick:(id)sender;
 
-- (IBAction)mapClicked:(id)sender;
 @property (strong) IBOutlet NSScrollView *scrollView;
 @property (strong,nonatomic) CMMapDisplayView* displayView;
 
@@ -55,47 +54,9 @@
     [[self.scrollView documentView] scrollPoint:newrect.origin];
 }
 
-- (IBAction)mapClicked:(id)sender
-{
-    Class parserClass = [self loadClassFromBundle];
-    
-    NSString * filePath = @"/Users/kennyskaggs/Projects/Utilities/CodeMap/CodeMap/CMObjectiveCParser.m";
-    
-    id<CMPYObjCParser> parser = [[parserClass alloc] init];
-    id<CMPYGraphNode> rootNode = [parser parseFile:filePath];
-    
-    NSArray* classes = [rootNode getChildren];
-    for (id<CMPYGraphNode> node in classes) {
-        [CMClassNodeCollection setClassNode:node forName:[node getText]];
-    }
-    
-    self.displayView = [[CMMapDisplayView alloc] initWithFrame:CGRectMake(0, 0, 100, 100) andClasses:classes];
-    self.displayView.myDisplayDel = self;
-    CGRect displayFrame = self.displayView.frame;
-    [self.scrollView.documentView setFrame:CGRectMake(0, 0, displayFrame.size.width, displayFrame.size.height)];
-    [self.scrollView.documentView addSubview:self.displayView];
-}
-
 - (void)expandIfNeededToContainFrame:(CGRect)frame
 {
     [self.scrollView.documentView setFrame:frame];
-}
-
-- (Class)loadClassFromBundle
-{
-    Class parserClass;
-    
-    @autoreleasepool {
-        NSString *pluginPath = [[NSBundle mainBundle]
-                                pathForResource:@"ClangHandler"
-                                ofType:@"plugin"];
-        NSBundle *pluginBundle = [NSBundle bundleWithPath:pluginPath];
-        [pluginBundle load];
-        
-        parserClass = [pluginBundle classNamed:@"ClangHandler"];
-    }
-    
-    return parserClass;
 }
 
 @end
