@@ -133,6 +133,7 @@
 
 - (void)expandIfNeededToContainChild:(NSView *)child
 {
+    
     CGFloat childRightBound = child.frame.origin.x + child.frame.size.width;
     CGFloat selfRightBound = self.frame.origin.x + self.frame.size.width;
     BOOL rightExceeded = selfRightBound < childRightBound;
@@ -148,6 +149,7 @@
         [self setFrame:newFrame];
     }
     
+    NSLog(@"frame %f,%f", self.frame.size.width, self.frame.size.height);
     [self.connectionView setFrame:self.frame];
     [self.myDisplayDel expandIfNeededToContainChild:self];
 }

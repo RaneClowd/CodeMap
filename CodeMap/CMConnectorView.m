@@ -51,6 +51,7 @@ static CMConnectorView* shared;
         CGRect frame = self.draggingView.frame;
         frame.origin.x += mouseLocation.x - self.oldLocation.x;
         frame.origin.y += mouseLocation.y - self.oldLocation.y;
+        NSLog(@"frame %f,%f", frame.origin.x, frame.origin.y);
         self.draggingView.frame = frame;
         
         if ([[self.draggingView superview] respondsToSelector:@selector(expandIfNeededToContainChild:)]) {
