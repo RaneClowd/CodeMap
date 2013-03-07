@@ -14,4 +14,6 @@
 
 + (CMConnectorView*) sharedInstance;
 
+@property (nonatomic,weak) NSScrollView* scrollView;
+
 @end

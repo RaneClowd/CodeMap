@@ -51,7 +51,6 @@ static CMConnectorView* shared;
         CGRect frame = self.draggingView.frame;
         frame.origin.x += mouseLocation.x - self.oldLocation.x;
         frame.origin.y += mouseLocation.y - self.oldLocation.y;
-        NSLog(@"frame %f,%f", frame.origin.x, frame.origin.y);
         self.draggingView.frame = frame;
         
         if ([[self.draggingView superview] respondsToSelector:@selector(expandIfNeededToContainChild:)]) {
@@ -62,6 +61,21 @@ static CMConnectorView* shared;
         
         [[self superview] setNeedsDisplay:YES];
     }
+    
+    /*CGRect visibleRect = [[self.scrollView contentView] documentVisibleRect];
+    CGFloat visibleBottom = visibleRect.origin.y;
+    
+    CGFloat draggingBottom = [self.draggingView relativeY];
+    
+    CGFloat bottomDifference = visibleBottom - draggingBottom;
+    
+    NSLog(@"visible bottom %f, dragging bottom %f", visibleBottom, draggingBottom);
+    if (bottomDifference > 0) {
+        NSPoint newPoint = NSMakePoint(visibleRect.origin.x + visibleRect.size.width/2, visibleRect.origin.y + visibleRect.size.height/2 - bottomDifference);
+        [[self.scrollView documentView] scrollPoint:NSMakePoint(1000, 1000)];
+        self.draggingView = nil;
+    }*/
+    
 }
 
 - (void)checkView:(NSView*)view forDraggingAt:(NSPoint)location

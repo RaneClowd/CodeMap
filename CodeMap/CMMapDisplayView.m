@@ -58,6 +58,7 @@
     self.frame = newFrame;
     
     self.connectionView = [CMConnectorView sharedInstance];
+    self.connectionView.scrollView = self.scrollView;
     [self.connectionView setFrame:newFrame];
     self.connectionView.classViews = classViews;
     [self addSubview:self.connectionView];
@@ -149,7 +150,6 @@
         [self setFrame:newFrame];
     }
     
-    NSLog(@"frame %f,%f", self.frame.size.width, self.frame.size.height);
     [self.connectionView setFrame:self.frame];
     [self.myDisplayDel expandIfNeededToContainChild:self];
 }

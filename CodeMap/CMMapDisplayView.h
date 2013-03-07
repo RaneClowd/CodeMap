@@ -12,5 +12,6 @@
 @interface CMMapDisplayView : NSView <CMSuperView>
 
 @property (nonatomic,strong) IBOutlet id<CMSuperView> myDisplayDel;
+@property (nonatomic,weak) IBOutlet NSScrollView* scrollView;
 
 @end
