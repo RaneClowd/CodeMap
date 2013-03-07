@@ -54,9 +54,9 @@
     [[self.scrollView documentView] scrollPoint:newrect.origin];
 }
 
-- (void)expandIfNeededToContainFrame:(CGRect)frame
+- (void)expandIfNeededToContainChild:(NSView *)child
 {
-    [self.scrollView.documentView setFrame:frame];
+    [self.scrollView.documentView setFrame:child.frame];
 }
 
 @end

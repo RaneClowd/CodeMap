@@ -62,7 +62,7 @@
     self.connectionView.classViews = classViews;
     [self addSubview:self.connectionView];
     
-    [self.myDisplayDel expandIfNeededToContainFrame:self.frame];
+    [self.myDisplayDel expandIfNeededToContainChild:self];
 }
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
@@ -131,13 +131,13 @@
     return parserClass;
 }
 
-- (void)expandIfNeededToContainFrame:(CGRect)frame
+- (void)expandIfNeededToContainChild:(NSView *)child
 {
-    CGFloat childRightBound = frame.origin.x + frame.size.width;
+    CGFloat childRightBound = child.frame.origin.x + child.frame.size.width;
     CGFloat selfRightBound = self.frame.origin.x + self.frame.size.width;
     BOOL rightExceeded = selfRightBound < childRightBound;
     
-    CGFloat childTopBound = frame.origin.y + frame.size.height;
+    CGFloat childTopBound = child.frame.origin.y + child.frame.size.height;
     CGFloat selfTopBound = self.frame.origin.y + self.frame.size.height;
     BOOL topExceeded = selfTopBound < childTopBound;
     
@@ -149,7 +149,7 @@
     }
     
     [self.connectionView setFrame:self.frame];
-    [self.myDisplayDel expandIfNeededToContainFrame:self.frame];
+    [self.myDisplayDel expandIfNeededToContainChild:self];
 }
 
 - (NSView*)createAndAddViewFor:(id<CMPYGraphNode>)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY

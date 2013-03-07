@@ -51,20 +51,44 @@
     return self;
 }
 
-- (void)expandIfNeededToContainFrame:(CGRect)frame
+- (void)expandIfNeededToContainChild:(NSView *)child
 {
-    CGFloat childRightBound = frame.origin.x + frame.size.width;
-    CGFloat selfRightBound = self.frame.origin.x + self.frame.size.width;
+    CGFloat childLeftBound = child.frame.origin.x;
+    BOOL leftExceeded = childLeftBound < 0;
+    
+    CGFloat childBottomBound = child.frame.origin.y;
+    BOOL bottomExceeded = childBottomBound < 0;
+    
+    CGFloat childRightBound = childLeftBound + child.frame.size.width;
+    CGFloat selfRightBound = self.frame.size.width;
     BOOL rightExceeded = selfRightBound < childRightBound;
     
-    CGFloat childTopBound = frame.origin.y + frame.size.height;
-    CGFloat selfTopBound = self.frame.origin.y + self.frame.size.height;
+    CGFloat childTopBound = childBottomBound + child.frame.size.height;
+    CGFloat selfTopBound = self.frame.size.height;
     BOOL topExceeded = selfTopBound < childTopBound;
     
-    if (topExceeded || rightExceeded) {
+    if (topExceeded || rightExceeded || bottomExceeded || leftExceeded) {
         CGRect newFrame = self.frame;
+        
         if (topExceeded) newFrame.size.height = childTopBound;
         if (rightExceeded) newFrame.size.width = childRightBound;
+        if (leftExceeded) {
+            newFrame.origin.x += childLeftBound;
+            newFrame.size.width -= childLeftBound;
+            
+            CGRect childFrame = child.frame;
+            childFrame.origin.x = 0;
+            [child setFrame:childFrame];
+        }
+        if (bottomExceeded) {
+            newFrame.origin.y += childBottomBound;
+            newFrame.size.height -= childBottomBound;
+            
+            CGRect childFrame = child.frame;
+            childFrame.origin.y = 0;
+            [child setFrame:childFrame];
+        }
+        
         [self setFrame:newFrame];
     }
     
@@ -77,7 +101,7 @@
         self.hasBeenExpanded = YES;
         self.collapsed = NO;
         [self firstExpand];
-        [((id<CMSuperView>)self.superview) expandIfNeededToContainFrame:self.frame];
+        [((id<CMSuperView>)self.superview) expandIfNeededToContainChild:self];
     } else {
         [super toggleCollapsed];
     }
@@ -138,6 +162,7 @@
     
     CGRect newFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, MAX(self.titleView.frame.size.width + 80, x), maxY);
     self.frame = newFrame;
+    [((id<CMSuperView>)self.superview) expandIfNeededToContainChild:self];
 }
 
 - (void)createAndAddViewFor:(id<CMPYGraphNode>)node atX:(CGFloat)x andY:(CGFloat)y trackingY:(CGFloat*)maxY targetingAssistant:(NSMutableDictionary*)targetingAssistant

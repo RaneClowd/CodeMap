@@ -8,6 +8,6 @@
 
 @protocol CMSuperView <NSObject>
 
-- (void)expandIfNeededToContainFrame:(CGRect)frame;
+- (void)expandIfNeededToContainChild:(NSView*)child;
 
 @end

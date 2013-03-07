@@ -53,6 +53,10 @@ static CMConnectorView* shared;
         frame.origin.y += mouseLocation.y - self.oldLocation.y;
         self.draggingView.frame = frame;
         
+        if ([[self.draggingView superview] respondsToSelector:@selector(expandIfNeededToContainChild:)]) {
+            [(CMClassView*)[self.draggingView superview] expandIfNeededToContainChild:self.draggingView];
+        }
+        
         self.oldLocation = mouseLocation;
         
         [[self superview] setNeedsDisplay:YES];
