@@ -196,6 +196,7 @@ class RootNode(GraphNode):
         self = super(RootNode, self).initWithType_andText_andHash_(0, 'root', 0)
         self.recentClass = None
         self.recentMethod = None
+        self.recentLine = None
         self.recentMethodCall= None
         return self
 
@@ -231,11 +232,13 @@ class RootNode(GraphNode):
             if (methodObj.getType() == '1method'):
                 self.recentClass.processWaitersFor_(methodObj)
 
+    def addLineOfCode_(self, lineObj):
+        self.recentLine = lineObj
+        self.recentMethod.appendChild_(lineObj)
 
     def addMethodCall_(self, methodCallObj):
-        if (self.recentMethod is not None):
-            self.recentMethodCall = methodCallObj
-            self.recentMethod.appendChild_(methodCallObj)
+        self.recentMethodCall = methodCallObj
+        self.recentLine.appendChild_(methodCallObj)
 
     def targetCallWith_isOnSelf_(self, targetKey, onSelf):
         if (not onSelf):
