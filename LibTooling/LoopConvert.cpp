@@ -127,22 +127,106 @@ public:
 
 
 
+static GtkWidget *window = NULL;
+static GdkPixmap *pixmap = NULL;
 
-
-static void hello(GtkWidget *widget, gpointer data) {
-    g_print("Hello World\n");
-}
-
-static gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
-    g_print("delete event occurred\n");
-    
-    return TRUE;
-}
+static GdkRectangle boxRect;
 
 static void destroy(GtkWidget *widget, gpointer data) {
     gtk_main_quit();
 }
 
+static gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
+    gtk_main_quit();
+    return FALSE;
+}
+
+static gint configure_event (GtkWidget *widget, GdkEventConfigure *event) {
+    if (pixmap) gdk_pixmap_unref(pixmap);
+    pixmap = gdk_pixmap_new(widget->window, widget->allocation.width, widget->allocation.height, -1);
+    
+    boxRect.x = 250; boxRect.y = 100;
+    boxRect.width = 150; boxRect.height = 70;
+    
+    gdk_draw_rectangle(pixmap, widget->style->white_gc, TRUE, 0, 0, widget->allocation.width, widget->allocation.height);
+    gdk_draw_rectangle(pixmap, widget->style->black_gc, TRUE, boxRect.x, boxRect.y, boxRect.width, boxRect.height);
+    
+    return TRUE;
+}
+
+static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, gpointer data) {
+    gdk_draw_pixmap(widget->window, widget->style->fg_gc[GTK_WIDGET_STATE(widget)], pixmap, event->area.x, event->area.y, event->area.x, event->area.y, event->area.width, event->area.height);
+    
+    return FALSE;
+}
+
+static gint motion_notify_event(GtkWidget *widget, GdkEventMotion *event) {
+    if (event->state & GDK_BUTTON1_MASK) {
+        int x = event->x, y = event->y;
+        
+        gdk_draw_rectangle(pixmap, widget->style->white_gc, TRUE, boxRect.x, boxRect.y, boxRect.width, boxRect.height);
+        gtk_widget_draw(widget, &boxRect);
+        
+        boxRect.x = x - (boxRect.width / 2); boxRect.y = y - (boxRect.height / 2);
+        
+        gdk_draw_rectangle(pixmap, widget->style->black_gc, TRUE, boxRect.x, boxRect.y, boxRect.width, boxRect.height);
+        gtk_widget_draw(widget, &boxRect);
+    }
+    
+    return TRUE;
+}
+
+
+GtkWidget* setUpDrawingWidgetInBox() {
+    GtkWidget *topLevelBox = gtk_vbox_new(FALSE, 10);
+    gtk_container_add(GTK_CONTAINER(window), topLevelBox);
+    
+    GtkWidget *drawing_area = gtk_drawing_area_new();
+    
+    gtk_widget_set_size_request(drawing_area, 500, 500);
+    g_signal_connect(G_OBJECT(drawing_area), "expose_event", G_CALLBACK(expose_event_callback), NULL);
+    g_signal_connect(G_OBJECT(drawing_area), "configure_event", G_CALLBACK(configure_event), NULL);
+    g_signal_connect(G_OBJECT(drawing_area), "motion_notify_event", G_CALLBACK(motion_notify_event), NULL);
+    
+    gtk_widget_add_events(drawing_area, GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK);
+    
+    gtk_box_pack_start(GTK_BOX(topLevelBox), drawing_area, TRUE, TRUE, 0);
+    gtk_widget_show(drawing_area);
+    
+    return topLevelBox;
+}
+
+void addButtonsToBox(GtkWidget* box) {
+    GtkWidget *subbox = gtk_hbox_new(FALSE, 10);
+    gtk_box_pack_start(GTK_BOX(box), subbox, TRUE, TRUE, 0);
+    
+    GtkWidget *button = gtk_button_new_with_label("Load");
+    //g_signal_connect(button, "clicked", G_CALLBACK(callback), (gpointer)"button 1");
+    gtk_box_pack_start(GTK_BOX(subbox), button, TRUE, TRUE, 0);
+    gtk_widget_show(button);
+    
+    button = gtk_button_new_with_label("Quit");
+    g_signal_connect_swapped(button, "clicked", G_CALLBACK(gtk_widget_destroy), window);
+    gtk_box_pack_end(GTK_BOX(subbox), button, TRUE, TRUE, 0);
+    gtk_widget_show(button);
+    
+    gtk_widget_show(subbox);
+}
+
+void setUpGtkWindow() {
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "Code Map!");
+    gtk_container_set_border_width(GTK_CONTAINER(window), 5);
+    g_signal_connect(window, "destroy", G_CALLBACK(destroy), NULL);
+    
+    g_signal_connect(window, "delete-event", G_CALLBACK(delete_event), NULL);
+    
+    GtkWidget *topLevelBox = setUpDrawingWidgetInBox();
+    addButtonsToBox(topLevelBox);
+    gtk_widget_show(topLevelBox);
+    
+    gtk_widget_show(window);
+}
 
 
 
@@ -154,27 +238,10 @@ int main(int argc, const char **argv) {
     Tool.run(newFrontendActionFactory<FindNamedClassAction>().get());
     
     
-    
     char **conv = const_cast<char **>(argv);
     gtk_init(&argc, &conv);
     
-    GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    GtkWidget *button = gtk_button_new_with_label("Hello World");
-    
-    g_signal_connect(window, "delete-event", G_CALLBACK(delete_event), NULL);
-    g_signal_connect(window, "destroy", G_CALLBACK(destroy), NULL);
-    
-    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-    
-    g_signal_connect(button, "clicked", G_CALLBACK(hello), NULL);
-    
-    g_signal_connect_swapped(button, "clicked", G_CALLBACK(gtk_widget_destroy), window);
-    
-    gtk_container_add(GTK_CONTAINER(window), button);
-    
-    gtk_widget_show(button);
-    gtk_widget_show(window);
-    
+    setUpGtkWindow();
     gtk_main();
     
     return 0;
