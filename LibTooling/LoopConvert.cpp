@@ -11,6 +11,9 @@
 using namespace clang::tooling;
 using namespace clang;
 using namespace llvm;
+using namespace std;
+
+GdkRectangle classRectangleForName(string name);
 
 // Apply a custom category to all command-line options so that they are the
 // only ones displayed.
@@ -42,8 +45,8 @@ public:
         return true;
     }*/
     
-    bool VisitObjCMethodDecl(ObjCMethodDecl *declaration) {
-        llvm::outs() << "method: " << declaration->getQualifiedNameAsString() << "\n";
+    void traverseObjCMethodDecl(ObjCMethodDecl *declaration) {
+        llvm::outs() << "\tmethod: " << declaration->getQualifiedNameAsString() << "\n";
         
         if (declaration->isThisDeclarationADefinition()) {
             //declaration->dump();
@@ -58,9 +61,11 @@ public:
                         ObjCMessageExpr *messageExpr = static_cast<ObjCMessageExpr*>(statement);
                         ObjCInterfaceDecl *receiverInterface = messageExpr->getReceiverInterface();
                         if (receiverInterface) {
-                            llvm::outs() << "\t\tcalls to:\t\t" << receiverInterface->getObjCRuntimeNameAsString() << "\t\t" << messageExpr->getSelector().getAsString() << "\n";
+                            llvm::outs() << "\t\tcalls to:\t" << receiverInterface->getObjCRuntimeNameAsString() << "\t\t\t" << messageExpr->getSelector().getAsString() << "\n";
+                            
+                            classRectangleForName(receiverInterface->getQualifiedNameAsString());
                         } else {
-                            llvm::outs() << "\t\tcalls to:\t\t(unknown)\t\t" << messageExpr->getSelector().getAsString() << "\n";
+                            llvm::outs() << "\t\tcalls to:\t(unknown)\t\t\t" << messageExpr->getSelector().getAsString() << "\n";
                         }
                     }
                 }
@@ -68,6 +73,18 @@ public:
             
             llvm::outs() << "\n";
         }
+    }
+    
+    bool VisitObjCImplDecl(ObjCImplDecl *implDecl) {
+        llvm::outs() << "impl: " << implDecl->getNameAsString() << "\n";
+        
+        classRectangleForName(implDecl->getQualifiedNameAsString());
+        
+        for (ObjCContainerDecl::method_iterator method = implDecl->meth_begin(), last_method = implDecl->meth_end(); method != last_method; ++method) {
+            traverseObjCMethodDecl(*method);
+        }
+        
+        g_print("\n");
         
         return true;
     }
@@ -126,11 +143,42 @@ public:
 };
 
 
-
 static GtkWidget *window = NULL;
 static GdkPixmap *pixmap = NULL;
 
-static GdkRectangle boxRect;
+static GdkRectangle *selectedRectangle;
+static int selectionOffsetX, selectionOffsetY;
+
+static string *classNames;
+static GdkRectangle *classRectangles;
+static int numClasses;
+
+GdkRectangle classRectangleForName(string name) {
+    int i;
+    for (i=0; i<numClasses; i++) {
+        string className = classNames[i];
+        if (className.empty()) {
+            break;
+        }
+        if (className.compare(name) == 0) {
+            return classRectangles[i];
+        }
+    }
+    
+    g_print("generating class %s as class %d\n", name.c_str(), i);
+    
+    classNames[i] = name;
+    
+    static int xPosition = 50;
+    classRectangles[i].x = xPosition;
+    xPosition += 200;
+    
+    classRectangles[i].y = 100;
+    classRectangles[i].width = 150;
+    classRectangles[i].height = 70;
+    
+    return classRectangles[i];
+}
 
 static void destroy(GtkWidget *widget, gpointer data) {
     gtk_main_quit();
@@ -145,11 +193,16 @@ static gint configure_event (GtkWidget *widget, GdkEventConfigure *event) {
     if (pixmap) gdk_pixmap_unref(pixmap);
     pixmap = gdk_pixmap_new(widget->window, widget->allocation.width, widget->allocation.height, -1);
     
-    boxRect.x = 250; boxRect.y = 100;
-    boxRect.width = 150; boxRect.height = 70;
-    
     gdk_draw_rectangle(pixmap, widget->style->white_gc, TRUE, 0, 0, widget->allocation.width, widget->allocation.height);
-    gdk_draw_rectangle(pixmap, widget->style->black_gc, TRUE, boxRect.x, boxRect.y, boxRect.width, boxRect.height);
+    
+    for (int i=0; i<numClasses; i++) {
+        if (!classNames[i].empty()) {
+            g_print("drawing rectangle for %s\n", classNames[i].c_str());
+            
+            GdkRectangle rectangle = classRectangles[i];
+            gdk_draw_rectangle(pixmap, widget->style->black_gc, TRUE, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+        }
+    }
     
     return TRUE;
 }
@@ -160,17 +213,45 @@ static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, 
     return FALSE;
 }
 
+static GdkRectangle* findSelectedRectangle(int x, int y) {
+    for (int i=0; i<numClasses; i++) {
+        if (!classNames[i].empty()) {
+            GdkRectangle rectangle = classRectangles[i];
+            if (rectangle.x <= x && rectangle.y <= y && rectangle.width + rectangle.x >= x && rectangle.height + rectangle.y >= y) {
+                return (classRectangles+i);
+            }
+        }
+    }
+    
+    return NULL;
+}
+
+static gint button_press_event(GtkWidget *widget, GdkEventButton *event) {
+    if (event->button == 1) {
+        int mouseX = event->x, mouseY = event->y;
+        selectedRectangle = findSelectedRectangle(mouseX, mouseY);
+        
+        if (selectedRectangle) {
+            selectionOffsetX = mouseX - selectedRectangle->x;
+            selectionOffsetY = mouseY - selectedRectangle->y;
+        }
+    }
+    
+    return TRUE;
+}
+
 static gint motion_notify_event(GtkWidget *widget, GdkEventMotion *event) {
-    if (event->state & GDK_BUTTON1_MASK) {
-        int x = event->x, y = event->y;
+    if (event->state & GDK_BUTTON1_MASK && selectedRectangle) {
+        int mouseX = event->x, mouseY = event->y;
         
-        gdk_draw_rectangle(pixmap, widget->style->white_gc, TRUE, boxRect.x, boxRect.y, boxRect.width, boxRect.height);
-        gtk_widget_draw(widget, &boxRect);
+        gdk_draw_rectangle(pixmap, widget->style->white_gc, TRUE, selectedRectangle->x, selectedRectangle->y, selectedRectangle->width, selectedRectangle->height);
+        gtk_widget_draw(widget, selectedRectangle);
         
-        boxRect.x = x - (boxRect.width / 2); boxRect.y = y - (boxRect.height / 2);
+        selectedRectangle->x = mouseX - selectionOffsetX;
+        selectedRectangle->y = mouseY - selectionOffsetY;
         
-        gdk_draw_rectangle(pixmap, widget->style->black_gc, TRUE, boxRect.x, boxRect.y, boxRect.width, boxRect.height);
-        gtk_widget_draw(widget, &boxRect);
+        gdk_draw_rectangle(pixmap, widget->style->black_gc, TRUE, selectedRectangle->x, selectedRectangle->y, selectedRectangle->width, selectedRectangle->height);
+        gtk_widget_draw(widget, selectedRectangle);
     }
     
     return TRUE;
@@ -183,10 +264,11 @@ GtkWidget* setUpDrawingWidgetInBox() {
     
     GtkWidget *drawing_area = gtk_drawing_area_new();
     
-    gtk_widget_set_size_request(drawing_area, 500, 500);
+    gtk_widget_set_size_request(drawing_area, 1000, 500);
     g_signal_connect(G_OBJECT(drawing_area), "expose_event", G_CALLBACK(expose_event_callback), NULL);
     g_signal_connect(G_OBJECT(drawing_area), "configure_event", G_CALLBACK(configure_event), NULL);
     g_signal_connect(G_OBJECT(drawing_area), "motion_notify_event", G_CALLBACK(motion_notify_event), NULL);
+    g_signal_connect(G_OBJECT(drawing_area), "button_press_event", G_CALLBACK(button_press_event), NULL);
     
     gtk_widget_add_events(drawing_area, GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK);
     
@@ -232,6 +314,10 @@ void setUpGtkWindow() {
 
 
 int main(int argc, const char **argv) {
+    numClasses = 10;
+    classNames = new string[10];
+    classRectangles = new GdkRectangle[10];
+    
     CommonOptionsParser OptionsParser(argc, argv, MyToolCategory);
     ClangTool Tool(OptionsParser.getCompilations(),
                    OptionsParser.getSourcePathList());
@@ -243,6 +329,9 @@ int main(int argc, const char **argv) {
     
     setUpGtkWindow();
     gtk_main();
+    
+    delete[] classNames;
+    delete[] classRectangles;
     
     return 0;
 }
