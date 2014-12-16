@@ -6,14 +6,16 @@
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Frontend/CompilerInstance.h"
+
+
+#include "ClassGraphic.h"
 #include <gtk/gtk.h>
 
 using namespace clang::tooling;
 using namespace clang;
 using namespace llvm;
-using namespace std;
 
-GdkRectangle classRectangleForName(string name);
+ClassGraphic* classGraphicForName(string name);
 
 // Apply a custom category to all command-line options so that they are the
 // only ones displayed.
@@ -63,7 +65,7 @@ public:
                         if (receiverInterface) {
                             llvm::outs() << "\t\tcalls to:\t" << receiverInterface->getObjCRuntimeNameAsString() << "\t\t\t" << messageExpr->getSelector().getAsString() << "\n";
                             
-                            classRectangleForName(receiverInterface->getQualifiedNameAsString());
+                            classGraphicForName(receiverInterface->getQualifiedNameAsString());
                         } else {
                             llvm::outs() << "\t\tcalls to:\t(unknown)\t\t\t" << messageExpr->getSelector().getAsString() << "\n";
                         }
@@ -78,7 +80,7 @@ public:
     bool VisitObjCImplDecl(ObjCImplDecl *implDecl) {
         llvm::outs() << "impl: " << implDecl->getNameAsString() << "\n";
         
-        classRectangleForName(implDecl->getQualifiedNameAsString());
+        classGraphicForName(implDecl->getQualifiedNameAsString());
         
         for (ObjCContainerDecl::method_iterator method = implDecl->meth_begin(), last_method = implDecl->meth_end(); method != last_method; ++method) {
             traverseObjCMethodDecl(*method);
@@ -143,41 +145,41 @@ public:
 };
 
 
+
 static GtkWidget *window = NULL;
 static GdkPixmap *pixmap = NULL;
 
-static GdkRectangle *selectedRectangle;
+static ClassGraphic *selectedGraphic;
 static int selectionOffsetX, selectionOffsetY;
 
-static string *classNames;
-static GdkRectangle *classRectangles;
-static int numClasses;
+static ClassGraphic classGraphics[10];
+static int numClasses = 10;
 
-GdkRectangle classRectangleForName(string name) {
+ClassGraphic* classGraphicForName(string name) {
     int i;
     for (i=0; i<numClasses; i++) {
-        string className = classNames[i];
-        if (className.empty()) {
+        ClassGraphic classGraphic = classGraphics[i];
+        if (classGraphic.name.empty()) {
             break;
         }
-        if (className.compare(name) == 0) {
-            return classRectangles[i];
+        if (classGraphic.name.compare(name) == 0) {
+            return (&classGraphics[i]);
         }
     }
     
-    g_print("generating class %s as class %d\n", name.c_str(), i);
+    g_print("generating class %s as classGraphic %d\n", name.c_str(), i);
     
-    classNames[i] = name;
+    classGraphics[i].name = name;
     
     static int xPosition = 50;
-    classRectangles[i].x = xPosition;
+    classGraphics[i].rect.x = xPosition;
     xPosition += 200;
     
-    classRectangles[i].y = 100;
-    classRectangles[i].width = 150;
-    classRectangles[i].height = 70;
+    classGraphics[i].rect.y = 100;
+    classGraphics[i].rect.width = 150;
+    classGraphics[i].rect.height = 70;
     
-    return classRectangles[i];
+    return &(classGraphics[i]);
 }
 
 static void destroy(GtkWidget *widget, gpointer data) {
@@ -189,18 +191,21 @@ static gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) 
     return FALSE;
 }
 
-static gint configure_event (GtkWidget *widget, GdkEventConfigure *event) {
+static gint configure_event(GtkWidget *widget, GdkEventConfigure *event) {
     if (pixmap) gdk_pixmap_unref(pixmap);
     pixmap = gdk_pixmap_new(widget->window, widget->allocation.width, widget->allocation.height, -1);
     
     gdk_draw_rectangle(pixmap, widget->style->white_gc, TRUE, 0, 0, widget->allocation.width, widget->allocation.height);
     
     for (int i=0; i<numClasses; i++) {
-        if (!classNames[i].empty()) {
-            g_print("drawing rectangle for %s\n", classNames[i].c_str());
+        if (!classGraphics[i].name.empty()) {
+            g_print("drawing rectangle for %s\n", classGraphics[i].name.c_str());
             
-            GdkRectangle rectangle = classRectangles[i];
+            GdkRectangle rectangle = classGraphics[i].rect;
             gdk_draw_rectangle(pixmap, widget->style->black_gc, TRUE, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+            
+            classGraphics[i].gc = widget->style->black_gc;
+            classGraphics[i].eraseGc = widget->style->white_gc;
         }
     }
     
@@ -213,12 +218,11 @@ static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, 
     return FALSE;
 }
 
-static GdkRectangle* findSelectedRectangle(int x, int y) {
+static ClassGraphic* findSelectedGraphic(int x, int y) {
     for (int i=0; i<numClasses; i++) {
-        if (!classNames[i].empty()) {
-            GdkRectangle rectangle = classRectangles[i];
-            if (rectangle.x <= x && rectangle.y <= y && rectangle.width + rectangle.x >= x && rectangle.height + rectangle.y >= y) {
-                return (classRectangles+i);
+        if (!classGraphics[i].name.empty()) {
+            if (classGraphics[i].containsPoint(x, y)) {
+                return &(classGraphics[i]);
             }
         }
     }
@@ -229,11 +233,11 @@ static GdkRectangle* findSelectedRectangle(int x, int y) {
 static gint button_press_event(GtkWidget *widget, GdkEventButton *event) {
     if (event->button == 1) {
         int mouseX = event->x, mouseY = event->y;
-        selectedRectangle = findSelectedRectangle(mouseX, mouseY);
+        selectedGraphic = findSelectedGraphic(mouseX, mouseY);
         
-        if (selectedRectangle) {
-            selectionOffsetX = mouseX - selectedRectangle->x;
-            selectionOffsetY = mouseY - selectedRectangle->y;
+        if (selectedGraphic) {
+            selectionOffsetX = mouseX - selectedGraphic->rect.x;
+            selectionOffsetY = mouseY - selectedGraphic->rect.y;
         }
     }
     
@@ -241,17 +245,10 @@ static gint button_press_event(GtkWidget *widget, GdkEventButton *event) {
 }
 
 static gint motion_notify_event(GtkWidget *widget, GdkEventMotion *event) {
-    if (event->state & GDK_BUTTON1_MASK && selectedRectangle) {
+    if (event->state & GDK_BUTTON1_MASK && selectedGraphic) {
         int mouseX = event->x, mouseY = event->y;
         
-        gdk_draw_rectangle(pixmap, widget->style->white_gc, TRUE, selectedRectangle->x, selectedRectangle->y, selectedRectangle->width, selectedRectangle->height);
-        gtk_widget_draw(widget, selectedRectangle);
-        
-        selectedRectangle->x = mouseX - selectionOffsetX;
-        selectedRectangle->y = mouseY - selectionOffsetY;
-        
-        gdk_draw_rectangle(pixmap, widget->style->black_gc, TRUE, selectedRectangle->x, selectedRectangle->y, selectedRectangle->width, selectedRectangle->height);
-        gtk_widget_draw(widget, selectedRectangle);
+        selectedGraphic->updateLocation(mouseX - selectionOffsetX, mouseY - selectionOffsetY, widget, pixmap);
     }
     
     return TRUE;
@@ -314,10 +311,6 @@ void setUpGtkWindow() {
 
 
 int main(int argc, const char **argv) {
-    numClasses = 10;
-    classNames = new string[10];
-    classRectangles = new GdkRectangle[10];
-    
     CommonOptionsParser OptionsParser(argc, argv, MyToolCategory);
     ClangTool Tool(OptionsParser.getCompilations(),
                    OptionsParser.getSourcePathList());
@@ -329,9 +322,6 @@ int main(int argc, const char **argv) {
     
     setUpGtkWindow();
     gtk_main();
-    
-    delete[] classNames;
-    delete[] classRectangles;
     
     return 0;
 }
