@@ -147,7 +147,6 @@ public:
 
 
 static GtkWidget *window = NULL;
-static GdkPixmap *pixmap = NULL;
 
 static ClassGraphic *selectedGraphic;
 static int selectionOffsetX, selectionOffsetY;
@@ -191,29 +190,21 @@ static gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) 
     return FALSE;
 }
 
-static gint configure_event(GtkWidget *widget, GdkEventConfigure *event) {
-    if (pixmap) gdk_pixmap_unref(pixmap);
-    pixmap = gdk_pixmap_new(widget->window, widget->allocation.width, widget->allocation.height, -1);
+static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, gpointer data) {
+    cairo_t *cr = gdk_cairo_create(widget->window);
     
-    gdk_draw_rectangle(pixmap, widget->style->white_gc, TRUE, 0, 0, widget->allocation.width, widget->allocation.height);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_paint(cr);
     
     for (int i=0; i<numClasses; i++) {
         if (!classGraphics[i].name.empty()) {
-            g_print("drawing rectangle for %s\n", classGraphics[i].name.c_str());
-            
-            GdkRectangle rectangle = classGraphics[i].rect;
-            gdk_draw_rectangle(pixmap, widget->style->black_gc, TRUE, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-            
-            classGraphics[i].gc = widget->style->black_gc;
-            classGraphics[i].eraseGc = widget->style->white_gc;
+            classGraphics[i].paintGraphic(widget, cr);
+        } else {
+            break;
         }
     }
     
-    return TRUE;
-}
-
-static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, gpointer data) {
-    gdk_draw_pixmap(widget->window, widget->style->fg_gc[GTK_WIDGET_STATE(widget)], pixmap, event->area.x, event->area.y, event->area.x, event->area.y, event->area.width, event->area.height);
+    cairo_destroy(cr);
     
     return FALSE;
 }
@@ -248,7 +239,7 @@ static gint motion_notify_event(GtkWidget *widget, GdkEventMotion *event) {
     if (event->state & GDK_BUTTON1_MASK && selectedGraphic) {
         int mouseX = event->x, mouseY = event->y;
         
-        selectedGraphic->updateLocation(mouseX - selectionOffsetX, mouseY - selectionOffsetY, widget, pixmap);
+        selectedGraphic->updateLocation(mouseX - selectionOffsetX, mouseY - selectionOffsetY, widget);
     }
     
     return TRUE;
@@ -263,7 +254,6 @@ GtkWidget* setUpDrawingWidgetInBox() {
     
     gtk_widget_set_size_request(drawing_area, 1000, 500);
     g_signal_connect(G_OBJECT(drawing_area), "expose_event", G_CALLBACK(expose_event_callback), NULL);
-    g_signal_connect(G_OBJECT(drawing_area), "configure_event", G_CALLBACK(configure_event), NULL);
     g_signal_connect(G_OBJECT(drawing_area), "motion_notify_event", G_CALLBACK(motion_notify_event), NULL);
     g_signal_connect(G_OBJECT(drawing_area), "button_press_event", G_CALLBACK(button_press_event), NULL);
     

@@ -15,10 +15,11 @@ public:
     string name;
     
     bool containsPoint(int x, int y);
-    void updateLocation(int x, int y, GtkWidget *widget, GdkPixmap *pixmap);
+    void updateLocation(int x, int y, GtkWidget *widget);
+    void paintGraphic(GtkWidget *widget, cairo_t *cr);
     
-    GdkGC *gc;
-    GdkGC *eraseGc;
+protected:
+    //void eraseGraphic(GtkWidget *widget, cairo_t *cr);
     
 };
 
