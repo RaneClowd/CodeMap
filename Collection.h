@@ -1,6 +1,8 @@
 #ifndef __COLLECTION_H
 #define __COLLECTION_H
 
+#include <vector>
+
 template <class Type>
 class Collection {
     
@@ -10,15 +12,10 @@ public:
     int itemCount();
     Type* itemAtIndex(int i);
     
-    void addItem(const Type &item);
+    void addItem(Type *item);
     
 protected:
-    class itemType;
-    
-    int numItems;
-    
-    Type *array;
-    int currentArraySize;
+    std::vector<Type *>vec;
 };
 
 #endif

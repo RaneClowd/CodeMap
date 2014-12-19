@@ -10,6 +10,7 @@
 #include <gtk/gtk.h>
 
 #include "ClassGraphic.h"
+#include "MethodObject.h"
 #include "Collection.h"
 
 using namespace clang::tooling;
@@ -32,87 +33,101 @@ static cl::extrahelp MoreHelp("\nMore help text...");
 
 class FindNamedClassVisitor : public RecursiveASTVisitor<FindNamedClassVisitor> {
 public:
-    
+
     /*bool VisitObjCContainerDecl(ObjCContainerDecl *declaration) {
         //declaration->dump();
-        
+
         *if (declaration->getQualifiedNameAsString() == "n::m::C") {
             FullSourceLoc fullSourceLoc = Context->getFullLoc(declaration->getLocStart());
             if (fullSourceLoc.isValid()) {
                 llvm::outs() << "Found declaration at " << fullSourceLoc.getSpellingLineNumber() << ":" << fullSourceLoc.getSpellingColumnNumber() << "\n";
             }
         }*\/
-        
+
         llvm::outs() << "\t\tcontainer: " << declaration->getQualifiedNameAsString() << "\n";
-        
+
         return true;
     }*/
-    
-    void traverseObjCMethodDecl(ObjCMethodDecl *declaration) {
+
+    MethodObject* processObjCMethodDecl(ObjCMethodDecl *declaration) {
+        MethodObject *newMethodObj = new MethodObject();
+        newMethodObj->name = declaration->getNameAsString();
+
         llvm::outs() << "\tmethod: " << declaration->getQualifiedNameAsString() << "\n";
-        
+
         if (declaration->isThisDeclarationADefinition()) {
             //declaration->dump();
             if (declaration->hasBody()) {
+                MethodObject *newMethodObj = new MethodObject();
+                newMethodObj->name = declaration->getNameAsString();
+
                 CompoundStmt *body = (CompoundStmt*)declaration->getBody();
-                
+
                 for (CompoundStmt::body_iterator I = body->body_begin(), E = body->body_end(); I != E; ++I) {
-                    
+
                     Stmt *statement = *I;
-                    
+
                     if (isa<ObjCMessageExpr>(statement)) {
                         ObjCMessageExpr *messageExpr = static_cast<ObjCMessageExpr*>(statement);
                         ObjCInterfaceDecl *receiverInterface = messageExpr->getReceiverInterface();
                         if (receiverInterface) {
                             llvm::outs() << "\t\tcalls to:\t" << receiverInterface->getObjCRuntimeNameAsString() << "\t\t\t" << messageExpr->getSelector().getAsString() << "\n";
-                            
+
                             classGraphicForName(receiverInterface->getQualifiedNameAsString());
                         } else {
                             llvm::outs() << "\t\tcalls to:\t(unknown)\t\t\t" << messageExpr->getSelector().getAsString() << "\n";
                         }
                     }
                 }
+
+                return newMethodObj;
             }
-            
+
             llvm::outs() << "\n";
         }
+
+        g_print("warning: unused method\n");
+        return NULL;
     }
-    
+
     bool VisitObjCImplDecl(ObjCImplDecl *implDecl) {
         llvm::outs() << "impl: " << implDecl->getNameAsString() << "\n";
-        
-        classGraphicForName(implDecl->getQualifiedNameAsString());
-        
+
+        ClassGraphic *classGraphic = classGraphicForName(implDecl->getQualifiedNameAsString());
         for (ObjCContainerDecl::method_iterator method = implDecl->meth_begin(), last_method = implDecl->meth_end(); method != last_method; ++method) {
-            traverseObjCMethodDecl(*method);
+            MethodObject *methodObj = processObjCMethodDecl(*method);
+            if (methodObj) {
+                classGraphic->addMethod(methodObj);
+            }
+
         }
-        
+
         g_print("\n");
-        
+
         return true;
     }
-    
+
     /*bool VisitStmt(Stmt *statement) {
         llvm::outs() << "s:\t\t" << statement->getStmtClassName() << "\n";
-        
+
         // child iterator
-        
+
         return true;
     }*/
-    
+
     /*bool VisitObjCMessageExpr(ObjCMessageExpr *messageExpr) {
         // sees things like uses of CGRectMake(...)
-        
+
         ObjCInterfaceDecl *receiverInterface = messageExpr->getReceiverInterface();
         if (receiverInterface) {
             llvm::outs() << "\t\t\t\tcall to:\t\t" << receiverInterface->getObjCRuntimeNameAsString() << "\t\t\t" << messageExpr->getSelector().getAsString() << "\n";
         } else {
             llvm::outs() << "\t\t\t\tcall to:\t\t(unknown)\t\t\t" << messageExpr->getSelector().getAsString() << "\n";
         }
-        
+
         return true;
     }*/
-    
+
 private:
     //ASTContext *Context;
 };
@@ -120,20 +135,20 @@ private:
 class FindNamedClassConsumer : public ASTConsumer {
 public:
     explicit FindNamedClassConsumer(ASTContext *Context) : Visitor() {}
-    
+
     /*virtual bool HandleTopLevelDecl(DeclGroupRef dr) {
         for (DeclGroupRef::iterator b = dr.begin(), e = dr.end(); b != e; ++b) {
             Visitor.TraverseDecl(*b);
             //(*b)->dump();
         }
-        
+
         return true;
     }*/
-    
+
     virtual void HandleTranslationUnit(ASTContext &Context) {
         Visitor.TraverseDecl(Context.getTranslationUnitDecl());
     }
-    
+
 private:
     FindNamedClassVisitor Visitor;
 };
@@ -162,22 +177,20 @@ ClassGraphic* classGraphicForName(string name) {
             return classGraphic;
         }
     }
-    
+
     g_print("generating class %s as classGraphic %d\n", name.c_str(), i);
-    
+
     ClassGraphic *newClassGraphic = new ClassGraphic();
-    
+
     newClassGraphic->name = name;
-    
+
     static int xPosition = 50;
     newClassGraphic->rect.x = xPosition;
-    xPosition += 200;
-    
+    xPosition += 100;
+
     newClassGraphic->rect.y = 100;
-    newClassGraphic->rect.width = 150;
-    newClassGraphic->rect.height = 70;
-    
-    classGraphics.addItem(*newClassGraphic);
+
+    classGraphics.addItem(newClassGraphic);
     return newClassGraphic;
 }
 
@@ -192,16 +205,16 @@ static gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) 
 
 static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, gpointer data) {
     cairo_t *cr = gdk_cairo_create(widget->window);
-    
+
     cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_paint(cr);
-    
+
     for (int i=0; i<classGraphics.itemCount(); i++) {
         classGraphics.itemAtIndex(i)->paintGraphic(widget, cr);
     }
-    
+
     cairo_destroy(cr);
-    
+
     return FALSE;
 }
 
@@ -212,7 +225,7 @@ static ClassGraphic* findSelectedGraphic(int x, int y) {
             return classGraphic;
         }
     }
-    
+
     return NULL;
 }
 
@@ -220,23 +233,23 @@ static gint button_press_event(GtkWidget *widget, GdkEventButton *event) {
     if (event->button == 1) {
         int mouseX = event->x, mouseY = event->y;
         selectedGraphic = findSelectedGraphic(mouseX, mouseY);
-        
+
         if (selectedGraphic) {
             selectionOffsetX = mouseX - selectedGraphic->rect.x;
             selectionOffsetY = mouseY - selectedGraphic->rect.y;
         }
     }
-    
+
     return TRUE;
 }
 
 static gint motion_notify_event(GtkWidget *widget, GdkEventMotion *event) {
     if (event->state & GDK_BUTTON1_MASK && selectedGraphic) {
         int mouseX = event->x, mouseY = event->y;
-        
+
         selectedGraphic->updateLocation(mouseX - selectionOffsetX, mouseY - selectionOffsetY, widget);
     }
-    
+
     return TRUE;
 }
 
@@ -244,36 +257,36 @@ static gint motion_notify_event(GtkWidget *widget, GdkEventMotion *event) {
 GtkWidget* setUpDrawingWidgetInBox() {
     GtkWidget *topLevelBox = gtk_vbox_new(FALSE, 10);
     gtk_container_add(GTK_CONTAINER(window), topLevelBox);
-    
+
     GtkWidget *drawing_area = gtk_drawing_area_new();
-    
+
     gtk_widget_set_size_request(drawing_area, 1000, 500);
     g_signal_connect(G_OBJECT(drawing_area), "expose_event", G_CALLBACK(expose_event_callback), NULL);
     g_signal_connect(G_OBJECT(drawing_area), "motion_notify_event", G_CALLBACK(motion_notify_event), NULL);
     g_signal_connect(G_OBJECT(drawing_area), "button_press_event", G_CALLBACK(button_press_event), NULL);
-    
+
     gtk_widget_add_events(drawing_area, GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK);
-    
+
     gtk_box_pack_start(GTK_BOX(topLevelBox), drawing_area, TRUE, TRUE, 0);
     gtk_widget_show(drawing_area);
-    
+
     return topLevelBox;
 }
 
 void addButtonsToBox(GtkWidget* box) {
     GtkWidget *subbox = gtk_hbox_new(FALSE, 10);
     gtk_box_pack_start(GTK_BOX(box), subbox, TRUE, TRUE, 0);
-    
+
     GtkWidget *button = gtk_button_new_with_label("Load");
     //g_signal_connect(button, "clicked", G_CALLBACK(callback), (gpointer)"button 1");
     gtk_box_pack_start(GTK_BOX(subbox), button, TRUE, TRUE, 0);
     gtk_widget_show(button);
-    
+
     button = gtk_button_new_with_label("Quit");
     g_signal_connect_swapped(button, "clicked", G_CALLBACK(gtk_widget_destroy), window);
     gtk_box_pack_end(GTK_BOX(subbox), button, TRUE, TRUE, 0);
     gtk_widget_show(button);
-    
+
     gtk_widget_show(subbox);
 }
 
@@ -282,13 +295,13 @@ void setUpGtkWindow() {
     gtk_window_set_title(GTK_WINDOW(window), "Code Map!");
     gtk_container_set_border_width(GTK_CONTAINER(window), 5);
     g_signal_connect(window, "destroy", G_CALLBACK(destroy), NULL);
-    
+
     g_signal_connect(window, "delete-event", G_CALLBACK(delete_event), NULL);
-    
+
     GtkWidget *topLevelBox = setUpDrawingWidgetInBox();
     addButtonsToBox(topLevelBox);
     gtk_widget_show(topLevelBox);
-    
+
     gtk_widget_show(window);
 }
 
@@ -300,13 +313,13 @@ int main(int argc, const char **argv) {
     ClangTool Tool(OptionsParser.getCompilations(),
                    OptionsParser.getSourcePathList());
     Tool.run(newFrontendActionFactory<FindNamedClassAction>().get());
-    
-    
+
+
     char **conv = const_cast<char **>(argv);
     gtk_init(&argc, &conv);
-    
+
     setUpGtkWindow();
     gtk_main();
-    
+
     return 0;
 }

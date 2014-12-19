@@ -23,9 +23,15 @@
 		<Linker>
 			<Add option="`pkg-config gtk+-2.0 --libs`" />
 		</Linker>
-		<Unit filename="main.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="BaseObject.cpp" />
+		<Unit filename="BaseObject.h" />
+		<Unit filename="ClassGraphic.cpp" />
+		<Unit filename="ClassGraphic.h" />
+		<Unit filename="CodeMap.cpp" />
+		<Unit filename="Collection.cpp" />
+		<Unit filename="Collection.h" />
+		<Unit filename="MethodObject.cpp" />
+		<Unit filename="MethodObject.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

@@ -1,26 +1,21 @@
 #ifndef __CLASS_GRAPHIC_H
 #define __CLASS_GRAPHIC_H
 
-#include <iostream>
-#include <gtk/gtk.h>
+#include "BaseObject.h"
+#include "MethodObject.h"
+#include "Collection.h"
 
-using namespace std;
+class ClassGraphic : public BaseObject {
 
-
-class ClassGraphic {
-    
 public:
     ClassGraphic();
-    GdkRectangle rect;
-    string name;
-    
-    bool containsPoint(int x, int y);
-    void updateLocation(int x, int y, GtkWidget *widget);
+    void addMethod(MethodObject *methodObj);
     void paintGraphic(GtkWidget *widget, cairo_t *cr);
-    
+
 protected:
-    //void eraseGraphic(GtkWidget *widget, cairo_t *cr);
-    
+    Collection<MethodObject> methodCollection;
+    int newMethodOffset = 50;
+
 };
 
 #endif

@@ -1,38 +1,27 @@
 #include "ClassGraphic.h"
 
 ClassGraphic::ClassGraphic() {
-    
+    this->paintColor[0] = 0;
+    this->paintColor[1] = 1;
+    this->paintColor[2] = 1;
+
+    this->rect.width = 300;
+    this->rect.height = 300;
 }
 
-bool ClassGraphic::containsPoint(int x, int y) {
-    return this->rect.x <= x && this->rect.y <= y && this->rect.width + this->rect.x >= x && this->rect.height + this->rect.y >= y;
+void ClassGraphic::addMethod(MethodObject *methodObj) {
+    methodObj->rect.y = this->rect.y + 50;
+
+    methodObj->rect.x = this->rect.x + this->newMethodOffset;
+    this->newMethodOffset += 100;
+
+    this->methodCollection.addItem(methodObj);
 }
 
-/*void ClassGraphic::eraseGraphic(GtkWidget *widget, cairo_t *cr) {
-    cairo_set_source_rgb(cr, 1, 1, 1);
-    
-    cairo_rectangle(cr, this->rect.x, this->rect.y, this->rect.width, this->rect.height);
-    cairo_fill(cr);
-    
-    gtk_widget_draw(widget, &(this->rect));
-}*/
+void ClassGraphic::paintGraphic(GtkWidget *widget, cairo_t* cr) {
+    BaseObject::paintGraphic(widget, cr);
 
-void ClassGraphic::paintGraphic(GtkWidget *widget, cairo_t *cr) {
-    cairo_set_source_rgb(cr, .7, .7, 1);
-    
-    cairo_rectangle(cr, this->rect.x, this->rect.y, this->rect.width, this->rect.height);
-    cairo_fill(cr);
-    
-    
-    cairo_select_font_face(cr, "Georgia", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, 14);
-    
-    cairo_set_source_rgb(cr, 0, 0, 0);
-    cairo_move_to(cr, this->rect.x, this->rect.y + 20);
-    cairo_show_text(cr, this->name.c_str());
-}
-
-void ClassGraphic::updateLocation(int x, int y, GtkWidget *widget) {
-    this->rect.x = x; this->rect.y = y;
-    gtk_widget_draw(widget, &(widget->allocation)); // TODO: Find a way to not redraw everything!!!
+    for (int i=0; i<this->methodCollection.itemCount(); i++) {
+        this->methodCollection.itemAtIndex(i)->paintGraphic(widget, cr);
+    }
 }
