@@ -15,13 +15,13 @@ void ClassGraphic::addMethod(MethodObject *methodObj) {
     methodObj->rect.x = this->rect.x + this->newMethodOffset;
     this->newMethodOffset += 100;
 
-    this->methodCollection.addItem(methodObj);
+    this->methods.push_back(methodObj);
 }
 
 void ClassGraphic::paintGraphic(GtkWidget *widget, cairo_t* cr) {
     BaseObject::paintGraphic(widget, cr);
 
-    for (int i=0; i<this->methodCollection.itemCount(); i++) {
-        this->methodCollection.itemAtIndex(i)->paintGraphic(widget, cr);
+    for (uint i=0; i<this->methods.size(); i++) {
+        this->methods[i]->paintGraphic(widget, cr);
     }
 }

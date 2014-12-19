@@ -1,9 +1,10 @@
 #ifndef __CLASS_GRAPHIC_H
 #define __CLASS_GRAPHIC_H
 
+#include <vector>
+
 #include "BaseObject.h"
 #include "MethodObject.h"
-#include "Collection.h"
 
 class ClassGraphic : public BaseObject {
 
@@ -13,7 +14,7 @@ public:
     void paintGraphic(GtkWidget *widget, cairo_t *cr);
 
 protected:
-    Collection<MethodObject> methodCollection;
+    std::vector<MethodObject*> methods;
     int newMethodOffset = 50;
 
 };

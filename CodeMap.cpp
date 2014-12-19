@@ -7,11 +7,11 @@
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Frontend/CompilerInstance.h"
 
+#include <vector>
 #include <gtk/gtk.h>
 
 #include "ClassGraphic.h"
 #include "MethodObject.h"
-#include "Collection.h"
 
 using namespace clang::tooling;
 using namespace clang;
@@ -167,12 +167,12 @@ static GtkWidget *window = NULL;
 static ClassGraphic *selectedGraphic;
 static int selectionOffsetX, selectionOffsetY;
 
-static Collection<ClassGraphic> classGraphics;
+static std::vector<ClassGraphic*> classGraphics;
 
 ClassGraphic* classGraphicForName(string name) {
     int i;
-    for (i=0; i<classGraphics.itemCount(); i++) {
-        ClassGraphic *classGraphic = classGraphics.itemAtIndex(i);
+    for (i=0; i<classGraphics.size(); i++) {
+        ClassGraphic *classGraphic = classGraphics[i];
         if (classGraphic->name.compare(name) == 0) {
             return classGraphic;
         }
@@ -190,7 +190,7 @@ ClassGraphic* classGraphicForName(string name) {
 
     newClassGraphic->rect.y = 100;
 
-    classGraphics.addItem(newClassGraphic);
+    classGraphics.push_back(newClassGraphic);
     return newClassGraphic;
 }
 
@@ -209,8 +209,8 @@ static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, 
     cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_paint(cr);
 
-    for (int i=0; i<classGraphics.itemCount(); i++) {
-        classGraphics.itemAtIndex(i)->paintGraphic(widget, cr);
+    for (int i=0; i<classGraphics.size(); i++) {
+        classGraphics[i]->paintGraphic(widget, cr);
     }
 
     cairo_destroy(cr);
@@ -219,8 +219,8 @@ static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, 
 }
 
 static ClassGraphic* findSelectedGraphic(int x, int y) {
-    for (int i=0; i<classGraphics.itemCount(); i++) {
-        ClassGraphic *classGraphic = classGraphics.itemAtIndex(i);
+    for (int i=0; i<classGraphics.size(); i++) {
+        ClassGraphic *classGraphic = classGraphics[i];
         if (classGraphic->containsPoint(x, y)) {
             return classGraphic;
         }

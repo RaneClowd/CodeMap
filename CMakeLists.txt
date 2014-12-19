@@ -7,7 +7,6 @@ include_directories(${GTK2_INCLUDE_DIRS})
 add_clang_executable(codemap
   CodeMap.cpp
   ClassGraphic.cpp
-  Collection.cpp
   BaseObject.cpp
   MethodObject.cpp
   )
