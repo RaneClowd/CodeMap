@@ -1,0 +1,26 @@
+#ifndef __CLASS_GRAPHIC_H
+#define __CLASS_GRAPHIC_H
+
+#include <iostream>
+#include <gtk/gtk.h>
+
+using namespace std;
+
+
+class ClassGraphic {
+    
+public:
+    ClassGraphic();
+    GdkRectangle rect;
+    string name;
+    
+    bool containsPoint(int x, int y);
+    void updateLocation(int x, int y, GtkWidget *widget);
+    void paintGraphic(GtkWidget *widget, cairo_t *cr);
+    
+protected:
+    //void eraseGraphic(GtkWidget *widget, cairo_t *cr);
+    
+};
+
+#endif
