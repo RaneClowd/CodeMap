@@ -9,6 +9,7 @@ add_clang_executable(codemap
   ClassGraphic.cpp
   BaseObject.cpp
   MethodObject.cpp
+  LineObject.cpp
   )
 target_link_libraries(codemap
   clangTooling

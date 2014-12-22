@@ -6,6 +6,7 @@
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Frontend/CompilerInstance.h"
+#include "clang/Lex/Lexer.h"
 
 #include <vector>
 #include <gtk/gtk.h>
@@ -33,6 +34,7 @@ static cl::extrahelp MoreHelp("\nMore help text...");
 
 class FindNamedClassVisitor : public RecursiveASTVisitor<FindNamedClassVisitor> {
 public:
+	explicit FindNamedClassVisitor(ASTContext *Context) : Context(Context) {}
 
     /*bool VisitObjCContainerDecl(ObjCContainerDecl *declaration) {
         //declaration->dump();
@@ -64,8 +66,10 @@ public:
                 CompoundStmt *body = (CompoundStmt*)declaration->getBody();
 
                 for (CompoundStmt::body_iterator I = body->body_begin(), E = body->body_end(); I != E; ++I) {
-
                     Stmt *statement = *I;
+
+                    string code = Lexer::getSourceText(CharSourceRange::getTokenRange(statement->getSourceRange()), Context->getSourceManager(), LangOptions(), 0);
+                    newMethodObj->addLine(code);
 
                     if (isa<ObjCMessageExpr>(statement)) {
                         ObjCMessageExpr *messageExpr = static_cast<ObjCMessageExpr*>(statement);
@@ -129,12 +133,12 @@ public:
     }*/
 
 private:
-    //ASTContext *Context;
+    ASTContext *Context;
 };
 
 class FindNamedClassConsumer : public ASTConsumer {
 public:
-    explicit FindNamedClassConsumer(ASTContext *Context) : Visitor() {}
+    explicit FindNamedClassConsumer(ASTContext *Context) : Visitor(Context) {}
 
     /*virtual bool HandleTopLevelDecl(DeclGroupRef dr) {
         for (DeclGroupRef::iterator b = dr.begin(), e = dr.end(); b != e; ++b) {
@@ -164,21 +168,18 @@ public:
 
 static GtkWidget *window = NULL;
 
-static ClassGraphic *selectedGraphic;
-static int selectionOffsetX, selectionOffsetY;
+static BaseObject *selectedObject;
+static int previousMouseX, previousMouseY;
 
 static std::vector<ClassGraphic*> classGraphics;
 
 ClassGraphic* classGraphicForName(string name) {
-    int i;
-    for (i=0; i<classGraphics.size(); i++) {
-        ClassGraphic *classGraphic = classGraphics[i];
+    for (auto I = classGraphics.begin(); I != classGraphics.end(); ++I) {
+        ClassGraphic *classGraphic = *I;
         if (classGraphic->name.compare(name) == 0) {
             return classGraphic;
         }
     }
-
-    g_print("generating class %s as classGraphic %d\n", name.c_str(), i);
 
     ClassGraphic *newClassGraphic = new ClassGraphic();
 
@@ -196,6 +197,10 @@ ClassGraphic* classGraphicForName(string name) {
 
 static void destroy(GtkWidget *widget, gpointer data) {
     gtk_main_quit();
+
+    for (auto I = classGraphics.begin(); I != classGraphics.end(); ++I) {
+		delete *I;
+	}
 }
 
 static gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
@@ -209,8 +214,10 @@ static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, 
     cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_paint(cr);
 
-    for (int i=0; i<classGraphics.size(); i++) {
-        classGraphics[i]->paintGraphic(widget, cr);
+    cairo_set_line_width(cr, 1);
+
+    for (auto I = classGraphics.begin(); I != classGraphics.end(); ++I) {
+        (*I)->paintGraphic(widget, cr);
     }
 
     cairo_destroy(cr);
@@ -218,12 +225,10 @@ static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, 
     return FALSE;
 }
 
-static ClassGraphic* findSelectedGraphic(int x, int y) {
-    for (int i=0; i<classGraphics.size(); i++) {
-        ClassGraphic *classGraphic = classGraphics[i];
-        if (classGraphic->containsPoint(x, y)) {
-            return classGraphic;
-        }
+static BaseObject* findSelectedObject(int x, int y) {
+    for (auto I = classGraphics.rbegin(); I != classGraphics.rend(); ++I) {
+        BaseObject *potentialObject = (*I)->objectAtPoint(x, y);
+        if (potentialObject) return potentialObject;
     }
 
     return NULL;
@@ -232,11 +237,22 @@ static ClassGraphic* findSelectedGraphic(int x, int y) {
 static gint button_press_event(GtkWidget *widget, GdkEventButton *event) {
     if (event->button == 1) {
         int mouseX = event->x, mouseY = event->y;
-        selectedGraphic = findSelectedGraphic(mouseX, mouseY);
+        selectedObject = findSelectedObject(mouseX, mouseY);
 
-        if (selectedGraphic) {
-            selectionOffsetX = mouseX - selectedGraphic->rect.x;
-            selectionOffsetY = mouseY - selectedGraphic->rect.y;
+        if (selectedObject) {
+            previousMouseX = mouseX;
+            previousMouseY = mouseY;
+        }
+    }
+
+    return TRUE;
+}
+
+static gint button_release_event(GtkWidget *widget, GdkEventButton *event) {
+    if (event->button == 1) {
+        if (selectedObject && selectedObject->parentObj) {
+        	selectedObject->parentObj->shrinkToFitChildrenIfPossible();
+            gtk_widget_draw(widget, &(widget->allocation)); // TODO: Find a way to not redraw everything!!!
         }
     }
 
@@ -244,10 +260,12 @@ static gint button_press_event(GtkWidget *widget, GdkEventButton *event) {
 }
 
 static gint motion_notify_event(GtkWidget *widget, GdkEventMotion *event) {
-    if (event->state & GDK_BUTTON1_MASK && selectedGraphic) {
-        int mouseX = event->x, mouseY = event->y;
+    if (event->state & GDK_BUTTON1_MASK && selectedObject) {
+        int deltaX = event->x - previousMouseX, deltaY = event->y - previousMouseY;
+        previousMouseX = event->x;
+        previousMouseY = event->y;
 
-        selectedGraphic->updateLocation(mouseX - selectionOffsetX, mouseY - selectionOffsetY, widget);
+        selectedObject->updateLocation(deltaX, deltaY, widget);
     }
 
     return TRUE;
@@ -264,8 +282,9 @@ GtkWidget* setUpDrawingWidgetInBox() {
     g_signal_connect(G_OBJECT(drawing_area), "expose_event", G_CALLBACK(expose_event_callback), NULL);
     g_signal_connect(G_OBJECT(drawing_area), "motion_notify_event", G_CALLBACK(motion_notify_event), NULL);
     g_signal_connect(G_OBJECT(drawing_area), "button_press_event", G_CALLBACK(button_press_event), NULL);
+    g_signal_connect(G_OBJECT(drawing_area), "button_release_event", G_CALLBACK(button_release_event), NULL);
 
-    gtk_widget_add_events(drawing_area, GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK);
+    gtk_widget_add_events(drawing_area, GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 
     gtk_box_pack_start(GTK_BOX(topLevelBox), drawing_area, TRUE, TRUE, 0);
     gtk_widget_show(drawing_area);
