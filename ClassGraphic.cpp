@@ -2,8 +2,6 @@
 
 #include <gtk/gtk.h>
 
-static const int TOP_MARGIN = 50;
-
 ClassGraphic::ClassGraphic() {
 	BaseObject::BaseObject();
 
@@ -15,22 +13,29 @@ ClassGraphic::ClassGraphic() {
 ClassGraphic::~ClassGraphic() {
 	BaseObject::~BaseObject();
 
-	for (auto I = this->methods.rbegin(); I != methods.rend(); ++I) {
-		delete *I;
+	for (auto I = methods.begin(); I != methods.end(); ++I) {
+		// delete *I; TODO: figure out how to not fail at this (keeps telling me that the "pointer was never allocated")
 	}
 }
 
-void ClassGraphic::addMethod(MethodObject *methodObj) {
-	methodObj->parentObj = this;
+MethodObject* ClassGraphic::methodForSignature(string signature) {
+	for (auto I = methods.begin(); I != methods.end(); ++I) {
+		if ((*I)->name.compare(signature) == 0) {
+			return (*I);
+		}
+	}
 
-    methodObj->rect.y = TOP_MARGIN;
+    MethodObject *newMethodObj = new MethodObject();
+    newMethodObj->name = signature;
 
-    methodObj->rect.x = this->newMethodOffset;
-    this->newMethodOffset += 50;
+    newMethodObj->parentObj = this;
+    newMethodObj->rect.y = TOP_MARGIN;
+    newMethodObj->rect.x = this->newMethodOffset;
+	this->newMethodOffset += 50;
 
-    this->methods.push_back(methodObj);
+	this->methods.push_back(newMethodObj);
 
-	this->expandForChildIfNeeded(methodObj);
+	return newMethodObj;
 }
 
 BaseObject* ClassGraphic::objectAtPoint(int x, int y) {
@@ -45,8 +50,8 @@ BaseObject* ClassGraphic::objectAtPoint(int x, int y) {
 	}
 }
 
-void ClassGraphic::paintGraphic(GtkWidget *widget, cairo_t* cr) {
-    BaseObject::paintGraphic(widget, cr);
+void ClassGraphic::paintGraphic(GtkWidget *widget, cairo_t* cr, vector<GdkPoint> *linePoints) {
+    BaseObject::paintGraphic(widget, cr, linePoints);
 
     cairo_save(cr);
 
@@ -55,7 +60,7 @@ void ClassGraphic::paintGraphic(GtkWidget *widget, cairo_t* cr) {
     cairo_clip(cr);
 
     for (auto I = this->methods.begin(); I != methods.end(); ++I) {
-        (*I)->paintGraphic(widget, cr);
+        (*I)->paintGraphic(widget, cr, linePoints);
     }
 
     cairo_restore(cr);

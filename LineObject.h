@@ -14,6 +14,13 @@ class LineObject: public BaseObject {
 public:
 	LineObject(string code);
 	virtual ~LineObject();
+
+	BaseObject *calledMethod;
+
+	void paintGraphic(GtkWidget *widget, cairo_t *cr, vector<GdkPoint> *linePoints);
+
+    GdkPoint locationForDot();
+    GdkPoint transformedConnectorLocation();
 };
 
 #endif /* __LINE_OBJECT_H_ */

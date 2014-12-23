@@ -11,12 +11,15 @@ class MethodObject : public BaseObject {
         MethodObject();
         virtual ~MethodObject();
 
-        void addLine(string code);
-        void paintGraphic(GtkWidget *widget, cairo_t *cr);
+        LineObject* addLine(string code);
+        void paintGraphic(GtkWidget *widget, cairo_t *cr, vector<GdkPoint> *linePoints);
+
+        GdkPoint locationForDot();
+        GdkPoint transformedConnectorLocation();
 
     protected:
         vector<LineObject*> lines;
-        int newLineOffset = 35;
+        int newLineOffset = TOP_MARGIN;
 
     private:
 };

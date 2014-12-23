@@ -17,7 +17,7 @@ BaseObject* BaseObject::objectAtPoint(int x, int y) {
     }
 }
 
-void BaseObject::paintGraphic(GtkWidget *widget, cairo_t *cr) {
+void BaseObject::paintGraphic(GtkWidget *widget, cairo_t *cr, vector<GdkPoint> *linePoints) {
     cairo_set_source_rgb(cr, this->paintColor[0], this->paintColor[1], this->paintColor[2]);
 
     cairo_rectangle(cr, this->rect.x, this->rect.y, this->rect.width, this->rect.height);
@@ -51,9 +51,9 @@ void BaseObject::expandForChildIfNeeded(BaseObject *child) {
 		// Need to expand downwards
 		this->rect.height = child->rect.y + child->rect.height + OBJECT_CONTAINER_MARGIN;
 	}
-	if (child->rect.y < OBJECT_CONTAINER_MARGIN) {
+	if (child->rect.y < TOP_MARGIN) {
 		// Need to shift up (and expand to keep bottom border in place)
-		int upShift = OBJECT_CONTAINER_MARGIN - child->rect.y;
+		int upShift = TOP_MARGIN - child->rect.y;
 		this->rect.y -= upShift;
 		this->rect.height += upShift;
 
@@ -68,4 +68,23 @@ void BaseObject::updateLocation(int deltaX, int deltaY, GtkWidget *widget) {
     }
 
     gtk_widget_draw(widget, &(widget->allocation)); // TODO: Find a way to not redraw everything!!!
+}
+
+GdkPoint BaseObject::transformedPointForSurroundingContext(GdkPoint point) {
+	point.x += rect.x;
+	point.y += rect.y;
+
+	if (parentObj) {
+		return parentObj->transformedPointForSurroundingContext(point);
+	} else {
+		return point;
+	}
+}
+
+GdkPoint BaseObject::locationForDot() {
+	return GdkPoint();
+}
+
+GdkPoint BaseObject::transformedConnectorLocation() {
+	return GdkPoint();
 }

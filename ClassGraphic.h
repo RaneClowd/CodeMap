@@ -1,8 +1,6 @@
 #ifndef __CLASS_GRAPHIC_H
 #define __CLASS_GRAPHIC_H
 
-#include <vector>
-
 #include "BaseObject.h"
 #include "MethodObject.h"
 
@@ -12,9 +10,9 @@ public:
     ClassGraphic();
     ~ClassGraphic();
 
-    void addMethod(MethodObject *methodObj);
+    MethodObject* methodForSignature(string signature);
 
-    void paintGraphic(GtkWidget *widget, cairo_t *cr);
+    void paintGraphic(GtkWidget *widget, cairo_t *cr, vector<GdkPoint> *linePoints);
     BaseObject* objectAtPoint(int x, int y);
 
     void shrinkToFitChildrenIfPossible();

@@ -51,7 +51,7 @@ public:
         return true;
     }*/
 
-    MethodObject* processObjCMethodDecl(ObjCMethodDecl *declaration) {
+    MethodObject* processObjCMethodDecl(ObjCMethodDecl *declaration, ClassGraphic *classGraphic) {
         MethodObject *newMethodObj = new MethodObject();
         newMethodObj->name = declaration->getNameAsString();
 
@@ -60,8 +60,7 @@ public:
         if (declaration->isThisDeclarationADefinition()) {
             //declaration->dump();
             if (declaration->hasBody()) {
-                MethodObject *newMethodObj = new MethodObject();
-                newMethodObj->name = declaration->getNameAsString();
+                MethodObject *methodObj = classGraphic->methodForSignature(declaration->getNameAsString());
 
                 CompoundStmt *body = (CompoundStmt*)declaration->getBody();
 
@@ -69,7 +68,7 @@ public:
                     Stmt *statement = *I;
 
                     string code = Lexer::getSourceText(CharSourceRange::getTokenRange(statement->getSourceRange()), Context->getSourceManager(), LangOptions(), 0);
-                    newMethodObj->addLine(code);
+                    LineObject *lineObj = methodObj->addLine(code);
 
                     if (isa<ObjCMessageExpr>(statement)) {
                         ObjCMessageExpr *messageExpr = static_cast<ObjCMessageExpr*>(statement);
@@ -77,14 +76,18 @@ public:
                         if (receiverInterface) {
                             llvm::outs() << "\t\tcalls to:\t" << receiverInterface->getObjCRuntimeNameAsString() << "\t\t\t" << messageExpr->getSelector().getAsString() << "\n";
 
-                            classGraphicForName(receiverInterface->getQualifiedNameAsString());
+                            ClassGraphic *calledClass = classGraphicForName(receiverInterface->getQualifiedNameAsString());
+                            MethodObject *calledMethod = calledClass->methodForSignature(messageExpr->getSelector().getAsString());
+                            calledClass->expandForChildIfNeeded(calledMethod);
+
+                            lineObj->calledMethod = calledMethod;
                         } else {
                             llvm::outs() << "\t\tcalls to:\t(unknown)\t\t\t" << messageExpr->getSelector().getAsString() << "\n";
                         }
                     }
                 }
 
-                return newMethodObj;
+                return methodObj;
             }
 
             llvm::outs() << "\n";
@@ -99,9 +102,9 @@ public:
 
         ClassGraphic *classGraphic = classGraphicForName(implDecl->getQualifiedNameAsString());
         for (ObjCContainerDecl::method_iterator method = implDecl->meth_begin(), last_method = implDecl->meth_end(); method != last_method; ++method) {
-            MethodObject *methodObj = processObjCMethodDecl(*method);
+            MethodObject *methodObj = processObjCMethodDecl(*method, classGraphic);
             if (methodObj) {
-                classGraphic->addMethod(methodObj);
+                classGraphic->expandForChildIfNeeded(methodObj);
             }
 
         }
@@ -198,7 +201,8 @@ ClassGraphic* classGraphicForName(string name) {
 static void destroy(GtkWidget *widget, gpointer data) {
     gtk_main_quit();
 
-    for (auto I = classGraphics.begin(); I != classGraphics.end(); ++I) {
+    for (auto I = classGraphics.rbegin(); I != classGraphics.rend(); ++I) {
+    	g_print("freeing %s\n", (*I)->name.c_str());
 		delete *I;
 	}
 }
@@ -216,8 +220,15 @@ static gboolean expose_event_callback(GtkWidget *widget, GdkEventExpose *event, 
 
     cairo_set_line_width(cr, 1);
 
+    vector<GdkPoint> linePoints;
     for (auto I = classGraphics.begin(); I != classGraphics.end(); ++I) {
-        (*I)->paintGraphic(widget, cr);
+        (*I)->paintGraphic(widget, cr, &linePoints);
+    }
+
+    for (uint i=0; i<linePoints.size(); i+=2) {
+    	cairo_move_to(cr, linePoints[i].x, linePoints[i].y);
+    	cairo_line_to(cr, linePoints[i+1].x, linePoints[i+1].y);
+    	cairo_stroke(cr);
     }
 
     cairo_destroy(cr);

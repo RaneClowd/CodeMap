@@ -1,5 +1,7 @@
 #include "MethodObject.h"
 
+#include <math.h>
+
 MethodObject::MethodObject() {
 	BaseObject::BaseObject();
 
@@ -16,20 +18,35 @@ MethodObject::~MethodObject() {
 	}
 }
 
-void MethodObject::addLine(string code) {
+LineObject* MethodObject::addLine(string code) {
 	LineObject *line = new LineObject(code);
 
 	line->rect.x = 20;
 	line->rect.y = this->newLineOffset;
+	line->parentObj = this;
 	this->newLineOffset += 40;
 
 	this->lines.push_back(line);
 
 	this->expandForChildIfNeeded(line);
+
+	return line;
 }
 
-void MethodObject::paintGraphic(GtkWidget *widget, cairo_t* cr) {
-    BaseObject::paintGraphic(widget, cr);
+GdkPoint MethodObject::locationForDot() {
+	GdkPoint point;
+	point.x = 2*CONNECTOR_RADIUS;
+	point.y = 2*CONNECTOR_RADIUS;
+
+	return point;
+}
+
+GdkPoint MethodObject::transformedConnectorLocation() {
+	return transformedPointForSurroundingContext(locationForDot());
+}
+
+void MethodObject::paintGraphic(GtkWidget *widget, cairo_t* cr, vector<GdkPoint> *linePoints) {
+    BaseObject::paintGraphic(widget, cr, linePoints);
 
     cairo_save(cr);
 
@@ -38,8 +55,12 @@ void MethodObject::paintGraphic(GtkWidget *widget, cairo_t* cr) {
     cairo_clip(cr);
 
     for (auto I = lines.begin(); I != lines.end(); ++I) {
-        (*I)->paintGraphic(widget, cr);
+        (*I)->paintGraphic(widget, cr, linePoints);
     }
+
+    GdkPoint dotCenter = locationForDot();
+    cairo_arc(cr, dotCenter.x, dotCenter.y, CONNECTOR_RADIUS, 0, 2*M_PI);
+    cairo_fill(cr);
 
     cairo_restore(cr);
 }
