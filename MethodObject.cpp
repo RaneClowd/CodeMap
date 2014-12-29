@@ -18,8 +18,8 @@ MethodObject::~MethodObject() {
 	}
 }
 
-LineObject* MethodObject::addLine(string code) {
-	LineObject *line = new LineObject(code);
+CodeLineObject* MethodObject::addLine(string code) {
+	CodeLineObject *line = new CodeLineObject(code);
 
 	line->rect.x = 20;
 	line->rect.y = this->newLineOffset;

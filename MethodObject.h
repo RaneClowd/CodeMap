@@ -4,21 +4,21 @@
 #include "BaseObject.h"
 #include <vector>
 
-#include "LineObject.h"
+#include "CodeLineObject.h"
 
 class MethodObject : public BaseObject {
     public:
         MethodObject();
         virtual ~MethodObject();
 
-        LineObject* addLine(string code);
+        CodeLineObject* addLine(string code);
         void paintGraphic(GtkWidget *widget, cairo_t *cr, vector<GdkPoint> *linePoints);
 
         GdkPoint locationForDot();
         GdkPoint transformedConnectorLocation();
 
     protected:
-        vector<LineObject*> lines;
+        vector<CodeLineObject*> lines;
         int newLineOffset = TOP_MARGIN;
 
     private:

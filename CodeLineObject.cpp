@@ -1,15 +1,15 @@
 /*
- * LineObject.cpp
+ * CodeLineObject.cpp
  *
  *  Created on: Dec 22, 2014
  *      Author: kennyskaggs
  */
 
-#include "LineObject.h"
+#include "CodeLineObject.h"
 
 #include <math.h>
 
-LineObject::LineObject(string code) {
+CodeLineObject::CodeLineObject(string code) {
 	BaseObject::BaseObject();
 
 	rect.width = 250;
@@ -23,10 +23,10 @@ LineObject::LineObject(string code) {
 	name = code;
 }
 
-LineObject::~LineObject() { }
+CodeLineObject::~CodeLineObject() { }
 
 
-GdkPoint LineObject::locationForDot() {
+GdkPoint CodeLineObject::locationForDot() {
 	GdkPoint point;
 	point.x = rect.width - (2*CONNECTOR_RADIUS);
 	point.y = rect.height / 2;
@@ -34,11 +34,11 @@ GdkPoint LineObject::locationForDot() {
 	return point;
 }
 
-GdkPoint LineObject::transformedConnectorLocation() {
+GdkPoint CodeLineObject::transformedConnectorLocation() {
 	return transformedPointForSurroundingContext(locationForDot());
 }
 
-void LineObject::paintGraphic(GtkWidget *widget, cairo_t* cr, vector<GdkPoint> *linePoints) {
+void CodeLineObject::paintGraphic(GtkWidget *widget, cairo_t* cr, vector<GdkPoint> *linePoints) {
     BaseObject::paintGraphic(widget, cr, linePoints);
 
     cairo_save(cr);

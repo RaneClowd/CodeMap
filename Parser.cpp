@@ -59,7 +59,7 @@ public:
                     Stmt *statement = *I;
 
                     string code = Lexer::getSourceText(CharSourceRange::getTokenRange(statement->getSourceRange()), Context->getSourceManager(), LangOptions(), 0);
-                    LineObject *lineObj = methodObj->addLine(code);
+                    CodeLineObject *lineObj = methodObj->addLine(code);
 
                     if (isa<ObjCMessageExpr>(statement)) {
                         ObjCMessageExpr *messageExpr = static_cast<ObjCMessageExpr*>(statement);

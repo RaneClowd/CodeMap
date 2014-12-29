@@ -1,19 +1,19 @@
 /*
- * LineObject.h
+ * CodeLineObject.h
  *
  *  Created on: Dec 22, 2014
  *      Author: kennyskaggs
  */
 
-#ifndef __LINE_OBJECT_H_
-#define __LINE_OBJECT_H_
+#ifndef __CODE_LINE_OBJECT_H_
+#define __CODE_LINE_OBJECT_H_
 
 #include "BaseObject.h"
 
-class LineObject: public BaseObject {
+class CodeLineObject: public BaseObject {
 public:
-	LineObject(string code);
-	virtual ~LineObject();
+	CodeLineObject(string code);
+	virtual ~CodeLineObject();
 
 	BaseObject *calledMethod;
 
@@ -23,4 +23,4 @@ public:
     GdkPoint transformedConnectorLocation();
 };
 
-#endif /* __LINE_OBJECT_H_ */
+#endif /* __CODE_LINE_OBJECT_H_ */
