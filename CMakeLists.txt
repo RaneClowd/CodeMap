@@ -10,6 +10,7 @@ add_clang_executable(codemap
   BaseObject.cpp
   MethodObject.cpp
   LineObject.cpp
+  Parser.cpp
   )
 target_link_libraries(codemap
   clangTooling

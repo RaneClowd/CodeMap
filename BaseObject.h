@@ -10,7 +10,7 @@ using namespace std;
 const int GRAPHIC_STROKE_WIDTH = 1;
 const int OBJECT_CONTAINER_MARGIN = 15;
 const int TOP_MARGIN = 40;
-const int CONNECTOR_RADIUS = 4;
+const int CONNECTOR_RADIUS = 2;
 
 class BaseObject {
     public:
